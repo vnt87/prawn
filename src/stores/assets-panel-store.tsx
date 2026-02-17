@@ -31,9 +31,9 @@ export type Tab = (typeof TAB_KEYS)[number];
 
 const createHugeiconsIcon =
 	({ icon }: { icon: IconSvgElement }) =>
-	({ className }: { className?: string }) => (
-		<HugeiconsIcon icon={icon} className={className} />
-	);
+		({ className }: { className?: string }) => (
+			<HugeiconsIcon icon={icon} className={className} />
+		);
 
 export const tabs = {
 	media: {
@@ -93,6 +93,8 @@ interface AssetsPanelStore {
 	/* Media */
 	mediaViewMode: MediaViewMode;
 	setMediaViewMode: (mode: MediaViewMode) => void;
+	selectedMediaId: string | null;
+	setSelectedMediaId: (id: string | null) => void;
 }
 
 export const useAssetsPanelStore = create<AssetsPanelStore>((set) => ({
@@ -104,4 +106,6 @@ export const useAssetsPanelStore = create<AssetsPanelStore>((set) => ({
 	clearHighlight: () => set({ highlightMediaId: null }),
 	mediaViewMode: "grid",
 	setMediaViewMode: (mode) => set({ mediaViewMode: mode }),
+	selectedMediaId: null,
+	setSelectedMediaId: (id) => set({ selectedMediaId: id }),
 }));

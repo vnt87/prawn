@@ -23,7 +23,7 @@ export default function Editor() {
 		<EditorProvider projectId={projectId}>
 			<div className="bg-background flex h-screen w-screen flex-col overflow-hidden">
 				<EditorHeader />
-				<div className="border border-border rounded-md overflow-hidden min-h-0 min-w-0 flex-1">
+				<div className="border-x border-b border-border rounded-b-md overflow-hidden min-h-0 min-w-0 flex-1">
 					<EditorLayout />
 				</div>
 				<MigrationDialog />

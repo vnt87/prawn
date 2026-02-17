@@ -1,124 +1,58 @@
 import type { ImageElement, VideoElement } from "@/types/timeline";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-    RefreshIcon,
-    MinusSignIcon,
-    ArrowUp01Icon,
-    ArrowDown01Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-    PropertyGroup,
-    PropertyItem,
-    PropertyItemLabel,
-    PropertyItemValue,
-} from "../property-item";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BasicVideoTab } from "./basic-video-tab";
+import { MaskTab } from "./mask-tab";
+import { RemoveBgTab } from "./remove-bg-tab";
+import { RetouchTab } from "./retouch-tab";
 
 export function VideoTab({ element }: { element: VideoElement | ImageElement }) {
     return (
-        <div className="flex flex-col pb-20">
-            {/* Transform Section */}
-            <PropertyGroup title="Transform" defaultExpanded={true}>
-                <div className="space-y-4">
-                    <PropertyItem direction="column" className="items-stretch gap-2">
-                        <div className="flex justify-between items-center">
-                            <PropertyItemLabel>Scale</PropertyItemLabel>
-                            <div className="flex items-center gap-1">
-                                <div className="bg-secondary rounded px-2 py-0.5 text-xs w-16 text-right">
-                                    100%
-                                </div>
-                                <div className="flex flex-col -gap-1">
-                                    <HugeiconsIcon
-                                        icon={ArrowUp01Icon}
-                                        className="size-2 text-muted-foreground cursor-pointer hover:text-foreground"
-                                    />
-                                    <HugeiconsIcon
-                                        icon={ArrowDown01Icon}
-                                        className="size-2 text-muted-foreground cursor-pointer hover:text-foreground"
-                                    />
-                                </div>
-                                <HugeiconsIcon
-                                    icon={RefreshIcon}
-                                    className="size-3.5 text-muted-foreground cursor-pointer hover:text-foreground ml-1"
-                                />
-                            </div>
-                        </div>
-                        <Slider defaultValue={[100]} max={200} step={1} className="w-full" />
-                    </PropertyItem>
-
-                    <PropertyItem>
-                        <PropertyItemLabel>Uniform scale</PropertyItemLabel>
-                        <Switch defaultChecked />
-                    </PropertyItem>
-
-                    <PropertyItem>
-                        <PropertyItemLabel>Position</PropertyItemLabel>
-                        <div className="flex gap-2">
-                            <div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
-                                <span className="text-muted-foreground text-xs">X</span>
-                                <input
-                                    className="bg-transparent border-none outline-none text-xs w-full text-right"
-                                    value="0"
-                                    readOnly
-                                />
-                            </div>
-                            <div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
-                                <span className="text-muted-foreground text-xs">Y</span>
-                                <input
-                                    className="bg-transparent border-none outline-none text-xs w-full text-right"
-                                    value="0"
-                                    readOnly
-                                />
-                            </div>
-                        </div>
-                    </PropertyItem>
-
-                    <PropertyItem>
-                        <PropertyItemLabel>Rotate</PropertyItemLabel>
-                        <div className="flex items-center gap-2">
-                            <div className="bg-secondary rounded px-2 py-0.5 text-xs w-16 text-right">
-                                0.00°
-                            </div>
-                            <Button size="icon" variant="ghost" className="size-6 rounded-full">
-                                <HugeiconsIcon icon={MinusSignIcon} className="size-3" />
-                            </Button>
-                        </div>
-                    </PropertyItem>
+        <div className="flex flex-col h-full">
+            <Tabs defaultValue="basic" className="w-full flex flex-col h-full">
+                <div className="px-4 py-2">
+                    <TabsList className="w-full justify-start h-8 p-1 bg-secondary/50 gap-1 rounded-lg">
+                        <TabsTrigger
+                            value="basic"
+                            className="flex-1 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md text-xs h-6 px-2"
+                        >
+                            Basic
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="remove_bg"
+                            className="flex-1 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md text-xs h-6 px-2"
+                        >
+                            Remove BG
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="mask"
+                            className="flex-1 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md text-xs h-6 px-2"
+                        >
+                            Mask
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="retouch"
+                            className="flex-1 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md text-xs h-6 px-2"
+                        >
+                            Retouch
+                        </TabsTrigger>
+                    </TabsList>
                 </div>
-            </PropertyGroup>
 
-            {/* Blend Section */}
-            <PropertyGroup title="Blend" defaultExpanded={true} hasBorderTop>
-                <div className="space-y-4">
-                    <PropertyItem>
-                        <PropertyItemLabel>Opacity</PropertyItemLabel>
-                        <div className="flex items-center gap-2">
-                            <Slider defaultValue={[100]} max={100} step={1} className="w-24" />
-                            <span className="text-xs w-8 text-right">100%</span>
-                        </div>
-                    </PropertyItem>
-
-                    <PropertyItem>
-                        <PropertyItemLabel>Mode</PropertyItemLabel>
-                        <div className="bg-secondary rounded px-3 py-1 text-xs min-w-[100px] text-center cursor-pointer">
-                            Normal
-                        </div>
-                    </PropertyItem>
+                <div className="flex-1 overflow-y-auto">
+                    <TabsContent value="basic" className="m-0 h-full">
+                        <BasicVideoTab element={element} />
+                    </TabsContent>
+                    <TabsContent value="remove_bg" className="m-0 h-full">
+                        <RemoveBgTab element={element} />
+                    </TabsContent>
+                    <TabsContent value="mask" className="m-0 h-full">
+                        <MaskTab element={element} />
+                    </TabsContent>
+                    <TabsContent value="retouch" className="m-0 h-full">
+                        <RetouchTab element={element} />
+                    </TabsContent>
                 </div>
-            </PropertyGroup>
-
-            {/* Stabilize Section */}
-            <PropertyGroup title="Stabilize" defaultExpanded={false} hasBorderTop collapsible={false}>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Switch />
-                        <span className="text-xs">Stabilize</span>
-                    </div>
-                </div>
-            </PropertyGroup>
+            </Tabs>
         </div>
     );
 }

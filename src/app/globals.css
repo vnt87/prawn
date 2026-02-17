@@ -9,6 +9,7 @@
 
 /* ===== SHRIMP Design System (Original) ===== */
 :root {
+  --header-h: 40px;
   /* Surface colors */
   --bg-app: #1a1a1a;
   --bg-header: #2b2b2b;

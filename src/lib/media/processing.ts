@@ -109,11 +109,13 @@ export async function generateThumbnail({
 export async function generateFilmstripThumbnails({
 	videoFile,
 	duration,
-	interval = 5,
+	interval = 1,
+	height = 100,
 }: {
 	videoFile: File;
 	duration: number;
 	interval?: number;
+	height?: number;
 }): Promise<string[]> {
 	const input = new Input({
 		source: new BlobSource(videoFile),
@@ -144,10 +146,10 @@ export async function generateFilmstripThumbnails({
 				const frame = await sink.getSample(sampleTime);
 				if (frame) {
 					const url = renderToThumbnailDataUrl({
-						width: videoTrack.displayWidth,
-						height: videoTrack.displayHeight,
-						draw: ({ context, width, height }) => {
-							frame.draw(context, 0, 0, width, height);
+						width: (videoTrack.displayWidth / videoTrack.displayHeight) * height,
+						height: height,
+						draw: ({ context, width: drawWidth, height: drawHeight }) => {
+							frame.draw(context, 0, 0, drawWidth, drawHeight);
 						},
 					});
 					thumbnails.push(url);
@@ -258,9 +260,8 @@ export async function processMediaAssets({
 					// Generate filmstrip thumbnails
 					// Use a 5-second interval for now, or maybe dynamic based on duration?
 					// CapCut style usually has fixed width thumbnails corresponding to time.
-					// For now, let's generate 1 every 5 seconds.
 					if (duration > 0) {
-						filmstripInterval = 5;
+						filmstripInterval = 1;
 						filmstripThumbnails = await generateFilmstripThumbnails({
 							videoFile: file,
 							duration,

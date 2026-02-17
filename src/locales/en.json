@@ -115,6 +115,19 @@
         },
         "shortcuts": {
             "title": "Keyboard shortcuts"
+        },
+        "scenes": {
+            "title": "Scenes",
+            "selectTitle": "Select scenes ({{count}})",
+            "description": "Switch between scenes in your project",
+            "selectDescription": "Select scenes to delete",
+            "select": "Select",
+            "noScenes": "No scenes available",
+            "deleteSelected": "Delete ({{count}})",
+            "deleteDialog": {
+                "title": "Delete Scenes",
+                "description": "Are you sure you want to delete {{count}} scene{{count, plural, one {} other {s}}}? This action cannot be undone."
+            }
         }
     },
     "shortcuts": {
@@ -204,18 +217,5 @@
         "failed": "Export failed",
         "copy": "Copy",
         "retry": "Retry"
-    },
-    "scenes": {
-        "title": "Scenes",
-        "selectTitle": "Select scenes ({{count}})",
-        "description": "Switch between scenes in your project",
-        "selectDescription": "Select scenes to delete",
-        "select": "Select",
-        "noScenes": "No scenes available",
-        "deleteSelected": "Delete ({{count}})",
-        "deleteDialog": {
-            "title": "Delete Scenes",
-            "description": "Are you sure you want to delete {{count}} scene{{count, plural, one {} other {s}}}? This action cannot be undone."
-        }
     }
 }

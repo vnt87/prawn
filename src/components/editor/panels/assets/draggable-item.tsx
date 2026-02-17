@@ -30,6 +30,7 @@ export interface DraggableItemProps {
 	variant?: "card" | "compact";
 	isDraggable?: boolean;
 	isHighlighted?: boolean;
+	onClick?: (e: React.MouseEvent) => void;
 }
 
 export function DraggableItem({
@@ -47,6 +48,7 @@ export function DraggableItem({
 	variant = "card",
 	isDraggable = true,
 	isHighlighted = false,
+	onClick,
 }: DraggableItemProps) {
 	const [isDragging, setIsDragging] = useState(false);
 	const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
@@ -106,6 +108,7 @@ export function DraggableItem({
 							className,
 							isHighlighted && highlightClassName,
 						)}
+						onClick={onClick}
 					>
 						<AspectRatio
 							ratio={aspectRatio}
@@ -159,6 +162,7 @@ export function DraggableItem({
 						draggable={isDraggable}
 						onDragStart={isDraggable ? handleDragStart : undefined}
 						onDragEnd={isDraggable ? handleDragEnd : undefined}
+						onClick={onClick}
 					>
 						<div className="size-6 flex-shrink-0 overflow-hidden rounded-[0.35rem]">
 							{preview}

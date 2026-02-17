@@ -43,25 +43,29 @@ export function ExportButton() {
 				<button
 					type="button"
 					className={cn(
-						"flex items-center gap-1.5 rounded-md bg-[#38BDF8] px-[0.12rem] py-[0.12rem] text-white",
-						hasProject ? "cursor-pointer" : "cursor-not-allowed opacity-50",
+						"group relative flex items-center gap-2 overflow-hidden rounded-[100px] border border-indigo-500/40 bg-transparent px-6 h-7 text-sm font-semibold text-foreground cursor-pointer transition-all duration-[600ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-transparent hover:text-white hover:rounded-[12px] active:scale-[0.95]",
+						!hasProject && "opacity-50 cursor-not-allowed hover:rounded-[100px] hover:border-indigo-500/40 hover:text-foreground hover:bg-transparent"
 					)}
 					onClick={hasProject ? handleExport : undefined}
 					disabled={!hasProject}
-					onKeyDown={(event) => {
-						if (hasProject && (event.key === "Enter" || event.key === " ")) {
-							event.preventDefault();
-							handleExport();
-						}
-					}}
 				>
-					<div className="relative flex items-center gap-1.5 rounded-[0.6rem] bg-linear-270 from-[#2567EC] to-[#37B6F7] px-4 py-1 shadow-[0_1px_3px_0px_rgba(0,0,0,0.65)]">
-						<HugeiconsIcon icon={TransitionTopIcon} className="z-50 size-4" />
-						<span className="z-50 text-[0.875rem]">Export</span>
-						<div className="absolute top-0 left-0 z-10 flex size-full items-center justify-center rounded-[0.6rem] bg-linear-to-t from-white/0 to-white/50">
-							<div className="absolute top-[0.08rem] z-50 h-[calc(100%-2px)] w-[calc(100%-2px)] rounded-[0.6rem] bg-linear-270 from-[#2567EC] to-[#37B6F7]"></div>
-						</div>
-					</div>
+					{/* Left icon (Download) - enters on hover */}
+					<Download
+						className="absolute w-4 h-4 left-[-20%] stroke-current z-[9] group-hover:left-3 transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+					/>
+
+					{/* Text */}
+					<span className="relative z-[1] -translate-x-2 group-hover:translate-x-2 transition-all duration-[800ms] ease-out">
+						Export
+					</span>
+
+					{/* Circle background fill */}
+					<span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-indigo-500 rounded-[50%] opacity-0 group-hover:w-[220px] group-hover:h-[220px] group-hover:opacity-100 transition-all duration-[800ms] ease-[cubic-bezier(0.19,1,0.22,1)]"></span>
+
+					{/* Right icon (Download) - exits on hover */}
+					<Download
+						className="absolute w-4 h-4 right-3 stroke-current z-[9] group-hover:right-[-20%] transition-all duration-[800ms] ease-[cubic-bezier(0.34,1.56,0.64,1)]"
+					/>
 				</button>
 			</PopoverTrigger>
 			{hasProject && <ExportPopover onOpenChange={setIsExportPopoverOpen} />}
@@ -144,28 +148,32 @@ function ExportPopover({
 	};
 
 	return (
-		<PopoverContent className="bg-background mr-4 flex w-80 flex-col p-0">
+		<PopoverContent className="w-[280px] p-0" align="end" sideOffset={8}>
 			{exportResult && !exportResult.success ? (
-				<ExportError
-					error={exportResult.error || "Unknown error occurred"}
-					onRetry={handleExport}
-				/>
+				<div className="p-4">
+					<ExportError
+						error={exportResult.error || "Unknown error occurred"}
+						onRetry={handleExport}
+					/>
+				</div>
 			) : (
 				<>
-					<div className="flex items-center justify-between p-3 border-b">
+					<div className="flex items-center justify-between px-4 py-3 border-b border-border">
 						<h3 className="font-medium text-sm">
 							{isExporting ? "Exporting project" : "Export project"}
 						</h3>
 					</div>
 
-					<div className="flex flex-col gap-4">
+					<div className="flex flex-col">
 						{!isExporting && (
 							<>
-								<div className="flex flex-col">
+								<div className="flex flex-col py-2">
 									<PropertyGroup
 										title="Format"
-										defaultExpanded={false}
+										defaultExpanded={true}
 										hasBorderTop={false}
+										hasBorderBottom={false}
+										className="border-b border-border/50"
 									>
 										<RadioGroup
 											value={format}
@@ -174,23 +182,30 @@ function ExportPopover({
 													setFormat(value);
 												}
 											}}
+											className="gap-2 px-1"
 										>
 											<div className="flex items-center space-x-2">
 												<RadioGroupItem value="mp4" id="mp4" />
-												<Label htmlFor="mp4">
-													MP4 (H.264) - Better compatibility
+												<Label htmlFor="mp4" className="text-sm font-normal cursor-pointer">
+													MP4 (H.264)
 												</Label>
 											</div>
 											<div className="flex items-center space-x-2">
 												<RadioGroupItem value="webm" id="webm" />
-												<Label htmlFor="webm">
-													WebM (VP9) - Smaller file size
+												<Label htmlFor="webm" className="text-sm font-normal cursor-pointer">
+													WebM (VP9)
 												</Label>
 											</div>
 										</RadioGroup>
 									</PropertyGroup>
 
-									<PropertyGroup title="Quality" defaultExpanded={false}>
+									<PropertyGroup
+										title="Quality"
+										defaultExpanded={true}
+										hasBorderBottom={false}
+										hasBorderTop={false}
+										className="border-b border-border/50"
+									>
 										<RadioGroup
 											value={quality}
 											onValueChange={(value) => {
@@ -198,30 +213,30 @@ function ExportPopover({
 													setQuality(value);
 												}
 											}}
+											className="gap-2 px-1"
 										>
 											<div className="flex items-center space-x-2">
 												<RadioGroupItem value="low" id="low" />
-												<Label htmlFor="low">Low - Smallest file size</Label>
+												<Label htmlFor="low" className="text-sm font-normal cursor-pointer">Low</Label>
 											</div>
 											<div className="flex items-center space-x-2">
 												<RadioGroupItem value="medium" id="medium" />
-												<Label htmlFor="medium">Medium - Balanced</Label>
+												<Label htmlFor="medium" className="text-sm font-normal cursor-pointer">Medium</Label>
 											</div>
 											<div className="flex items-center space-x-2">
 												<RadioGroupItem value="high" id="high" />
-												<Label htmlFor="high">High - Recommended</Label>
-											</div>
-											<div className="flex items-center space-x-2">
-												<RadioGroupItem value="very_high" id="very_high" />
-												<Label htmlFor="very_high">
-													Very High - Largest file size
-												</Label>
+												<Label htmlFor="high" className="text-sm font-normal cursor-pointer">High</Label>
 											</div>
 										</RadioGroup>
 									</PropertyGroup>
 
-									<PropertyGroup title="Audio" defaultExpanded={false}>
-										<div className="flex items-center space-x-2">
+									<PropertyGroup
+										title="Audio"
+										defaultExpanded={true}
+										hasBorderBottom={false}
+										hasBorderTop={false}
+									>
+										<div className="flex items-center space-x-2 px-1">
 											<Checkbox
 												id="include-audio"
 												checked={includeAudio}
@@ -229,37 +244,40 @@ function ExportPopover({
 													setIncludeAudio(!!checked)
 												}
 											/>
-											<Label htmlFor="include-audio">
-												Include audio in export
+											<Label htmlFor="include-audio" className="text-sm font-normal cursor-pointer">
+												Include audio
 											</Label>
 										</div>
 									</PropertyGroup>
 								</div>
 
-								<div className="p-3 pt-0">
-									<Button onClick={handleExport} className="w-full gap-2">
+								<div className="p-3 border-t border-border bg-muted/30">
+									<Button
+										onClick={handleExport}
+										className="w-full gap-2"
+										size="sm"
+									>
 										<Download className="size-4" />
-										Export
+										Export Project
 									</Button>
 								</div>
 							</>
 						)}
 
 						{isExporting && (
-							<div className="space-y-4 p-3">
-								<div className="flex flex-col">
-									<div className="flex items-center justify-between text-center">
-										<p className="text-muted-foreground mb-2 text-sm">
-											{Math.round(progress * 100)}%
-										</p>
-										<p className="text-muted-foreground mb-2 text-sm">100%</p>
+							<div className="space-y-4 p-4">
+								<div className="flex flex-col gap-2">
+									<div className="flex items-center justify-between text-xs text-muted-foreground">
+										<span>Processing...</span>
+										<span>{Math.round(progress * 100)}%</span>
 									</div>
-									<Progress value={progress * 100} className="w-full" />
+									<Progress value={progress * 100} className="w-full h-2" />
 								</div>
 
 								<Button
 									variant="outline"
-									className="w-full rounded-md"
+									className="w-full"
+									size="sm"
 									onClick={handleCancel}
 								>
 									Cancel

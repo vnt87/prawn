@@ -12,6 +12,7 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { RecordingDialog } from "@/components/editor/dialogs/recording-dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -54,12 +55,20 @@ export function MediaView() {
 	const mediaFiles = editor.media.getAssets();
 	const activeProject = editor.project.getActive();
 
-	const { mediaViewMode, setMediaViewMode, highlightMediaId, clearHighlight } =
-		useAssetsPanelStore();
-	const { highlightedId, registerElement } = useRevealItem(
+	const {
+		mediaViewMode,
+		setMediaViewMode,
+		highlightMediaId,
+		clearHighlight,
+		selectedMediaId,
+		setSelectedMediaId,
+	} = useAssetsPanelStore();
+	const { highlightedId: revealId, registerElement } = useRevealItem(
 		highlightMediaId,
 		clearHighlight,
 	);
+
+	const highlightedId = revealId || selectedMediaId;
 
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [progress, setProgress] = useState(0);
@@ -67,6 +76,41 @@ export function MediaView() {
 		"name",
 	);
 	const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+	const [isRecordingOpen, setIsRecordingOpen] = useState(false);
+
+	const handleSaveRecording = async (file: File) => {
+		if (!activeProject) return;
+		setIsProcessing(true);
+		try {
+			// We can treat the recorded file as a regular file upload
+			const processedAssets = await processMediaAssets({
+				files: [file] as unknown as FileList, // casting because processMediaAssets expects FileList but we can wrap it
+				onProgress: () => { },
+			});
+
+			// Or simpler if we trust the recording:
+			// But processMediaAssets handles thumbnails etc.
+			// Let's create a DataTransfer to make it a FileList
+			const dt = new DataTransfer();
+			dt.items.add(file);
+			const assets = await processMediaAssets({
+				files: dt.files,
+				onProgress: () => { },
+			});
+
+			for (const asset of assets) {
+				await editor.media.addMediaAsset({
+					projectId: activeProject.metadata.id,
+					asset,
+				});
+			}
+		} catch (error) {
+			console.error("Failed to save recording", error);
+			toast.error("Failed to save recording");
+		} finally {
+			setIsProcessing(false);
+		}
+	};
 
 	const processFiles = async ({ files }: { files: FileList }) => {
 		if (!files || files.length === 0) return;
@@ -205,6 +249,16 @@ export function MediaView() {
 				<div className="bg-background h-12 px-4 pr-2 flex items-center justify-between border-b">
 					<span className="text-muted-foreground text-sm">Assets</span>
 					<div className="flex items-center gap-0">
+						<Button
+							variant="text"
+							size="sm"
+							onClick={() => setIsRecordingOpen(true)}
+							disabled={isProcessing}
+							className="items-center justify-center gap-1.5 hover:bg-accent px-3 mr-1"
+						>
+							<HugeiconsIcon icon={Video01Icon} />
+							Record
+						</Button>
 						<TooltipProvider>
 							<Tooltip>
 								<TooltipTrigger asChild>
@@ -328,7 +382,10 @@ export function MediaView() {
 					</div>
 				</div>
 
-				<div className="scrollbar-thin size-full overflow-y-auto pt-1">
+				<div
+					className="scrollbar-thin size-full overflow-y-auto pt-1"
+					onClick={() => setSelectedMediaId(null)}
+				>
 					<div className="w-full flex-1 p-3 pt-0">
 						{isDragOver || filteredMediaItems.length === 0 ? (
 							<MediaDragOverlay
@@ -345,6 +402,7 @@ export function MediaView() {
 								onAddToTimeline={addElementAtTime}
 								highlightedId={highlightedId}
 								registerElement={registerElement}
+								setSelectedMediaId={setSelectedMediaId}
 							/>
 						) : (
 							<ListView
@@ -354,11 +412,18 @@ export function MediaView() {
 								onAddToTimeline={addElementAtTime}
 								highlightedId={highlightedId}
 								registerElement={registerElement}
+								setSelectedMediaId={setSelectedMediaId}
 							/>
 						)}
 					</div>
 				</div>
 			</div>
+			<RecordingDialog
+				isOpen={isRecordingOpen}
+				onClose={() => setIsRecordingOpen(false)}
+				mode="video"
+				onSave={handleSaveRecording}
+			/>
 		</>
 	);
 }
@@ -395,6 +460,7 @@ function GridView({
 	onAddToTimeline,
 	highlightedId,
 	registerElement,
+	setSelectedMediaId,
 }: {
 	items: MediaAsset[];
 	renderPreview: (item: MediaAsset) => React.ReactNode;
@@ -408,6 +474,7 @@ function GridView({
 	}) => boolean;
 	highlightedId: string | null;
 	registerElement: (id: string, element: HTMLElement | null) => void;
+	setSelectedMediaId: (id: string | null) => void;
 }) {
 	return (
 		<div
@@ -435,6 +502,10 @@ function GridView({
 							isRounded={false}
 							variant="card"
 							isHighlighted={highlightedId === item.id}
+							onClick={(e) => {
+								e.stopPropagation();
+								setSelectedMediaId(item.id);
+							}}
 						/>
 					</MediaItemWithContextMenu>
 				</div>
@@ -450,6 +521,7 @@ function ListView({
 	onAddToTimeline,
 	highlightedId,
 	registerElement,
+	setSelectedMediaId,
 }: {
 	items: MediaAsset[];
 	renderPreview: (item: MediaAsset) => React.ReactNode;
@@ -463,6 +535,7 @@ function ListView({
 	}) => boolean;
 	highlightedId: string | null;
 	registerElement: (id: string, element: HTMLElement | null) => void;
+	setSelectedMediaId: (id: string | null) => void;
 }) {
 	return (
 		<div className="space-y-1">
@@ -484,6 +557,10 @@ function ListView({
 							}
 							variant="compact"
 							isHighlighted={highlightedId === item.id}
+							onClick={(e) => {
+								e.stopPropagation();
+								setSelectedMediaId(item.id);
+							}}
 						/>
 					</MediaItemWithContextMenu>
 				</div>

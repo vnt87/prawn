@@ -115,6 +115,19 @@
         },
         "shortcuts": {
             "title": "Phím tắt bàn phím"
+        },
+        "scenes": {
+            "title": "Cảnh",
+            "selectTitle": "Chọn cảnh ({{count}})",
+            "description": "Chuyển đổi giữa các cảnh trong dự án",
+            "selectDescription": "Chọn các cảnh để xóa",
+            "select": "Chọn",
+            "noScenes": "Không có cảnh nào",
+            "deleteSelected": "Xóa ({{count}})",
+            "deleteDialog": {
+                "title": "Xóa cảnh",
+                "description": "Bạn có chắc chắn muốn xóa {{count}} cảnh không? Thao tác này không thể hoàn tác."
+            }
         }
     },
     "shortcuts": {
@@ -204,18 +217,5 @@
         "failed": "Xuất thất bại",
         "copy": "Sao chép",
         "retry": "Thử lại"
-    },
-    "scenes": {
-        "title": "Cảnh",
-        "selectTitle": "Chọn cảnh ({{count}})",
-        "description": "Chuyển đổi giữa các cảnh trong dự án",
-        "selectDescription": "Chọn các cảnh để xóa",
-        "select": "Chọn",
-        "noScenes": "Không có cảnh nào",
-        "deleteSelected": "Xóa ({{count}})",
-        "deleteDialog": {
-            "title": "Xóa cảnh",
-            "description": "Bạn có chắc chắn muốn xóa {{count}} cảnh không? Thao tác này không thể hoàn tác."
-        }
     }
 }

@@ -37,6 +37,10 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useTranslation } from "react-i18next";
+import { Mic01Icon } from "@hugeicons/core-free-icons";
+import { useState } from "react";
+import { RecordingDialog } from "@/components/editor/dialogs/recording-dialog";
+import { useSoundsStore } from "@/stores/sounds-store";
 
 export function TimelineToolbar({
 	zoomLevel,
@@ -157,9 +161,70 @@ function ToolbarLeftSection() {
 						}
 					/>
 				</Tooltip>
+
+				<RecordingTrigger />
 			</TooltipProvider>
 		</div>
 	);
+}
+
+function RecordingTrigger() {
+	const [isRecordingOpen, setIsRecordingOpen] = useState(false);
+	const { addSoundToTimeline } = useSoundsStore();
+
+	const handleSaveRecording = async (file: File) => {
+		// Create a temporary URL for the file to be used in addSoundToTimeline
+		// In a real app we might upload this to storage first, but addSoundToTimeline
+		// handles URL fetching.
+		// We need to modify addSoundToTimeline or create a new action to handle File directly.
+		// For now, we can create an object URL.
+		const url = URL.createObjectURL(file);
+
+		// Mocking a SoundEffect object for the store action
+		const soundEffect = {
+			id: Date.now(),
+			name: file.name,
+			description: "Voiceover recording",
+			url: url,
+			previewUrl: url,
+			downloadUrl: url,
+			duration: 0, // This might be an issue if duration is needed upfront
+			filesize: file.size,
+			type: "audio" as const,
+			channels: 1,
+			bitrate: 0,
+			bitdepth: 0,
+			samplerate: 0,
+			username: "Me",
+			tags: ["voiceover"],
+			license: "CC0",
+			created: new Date().toISOString(),
+			downloads: 0,
+			rating: 0,
+			ratingCount: 0,
+		};
+
+		await addSoundToTimeline({ sound: soundEffect });
+	};
+
+	return (
+		<>
+			<ToolbarButton
+				icon={<HugeiconsIcon icon={Mic01Icon} />}
+				tooltip="Record Voiceover"
+				onClick={({ event }) => {
+					event.stopPropagation();
+					setIsRecordingOpen(true);
+				}}
+			/>
+			<RecordingDialog
+				isOpen={isRecordingOpen}
+				onClose={() => setIsRecordingOpen(false)}
+				mode="audio"
+				onSave={handleSaveRecording}
+			/>
+		</>
+	)
 }
 
 function SceneSelector() {

@@ -5,6 +5,7 @@ import { useActionHandler } from "@/hooks/actions/use-action-handler";
 import { useEditor } from "../use-editor";
 import { useElementSelection } from "../timeline/element/use-element-selection";
 import { getElementsAtTime } from "@/lib/timeline";
+import { useAssetsPanelStore } from "@/stores/assets-panel-store";
 
 export function useEditorActions() {
 	const editor = useEditor();
@@ -130,9 +131,9 @@ export function useEditorActions() {
 				selectedElements.length > 0
 					? selectedElements
 					: getElementsAtTime({
-							tracks: editor.timeline.getTracks(),
-							time: currentTime,
-						});
+						tracks: editor.timeline.getTracks(),
+						time: currentTime,
+					});
 
 			if (elementsToSplit.length === 0) return;
 
@@ -152,9 +153,9 @@ export function useEditorActions() {
 				selectedElements.length > 0
 					? selectedElements
 					: getElementsAtTime({
-							tracks: editor.timeline.getTracks(),
-							time: currentTime,
-						});
+						tracks: editor.timeline.getTracks(),
+						time: currentTime,
+					});
 
 			if (elementsToSplit.length === 0) return;
 
@@ -175,9 +176,9 @@ export function useEditorActions() {
 				selectedElements.length > 0
 					? selectedElements
 					: getElementsAtTime({
-							tracks: editor.timeline.getTracks(),
-							time: currentTime,
-						});
+						tracks: editor.timeline.getTracks(),
+						time: currentTime,
+					});
 
 			if (elementsToSplit.length === 0) return;
 
@@ -193,13 +194,24 @@ export function useEditorActions() {
 	useActionHandler(
 		"delete-selected",
 		() => {
-			if (selectedElements.length === 0) {
+			if (selectedElements.length > 0) {
+				editor.timeline.deleteElements({
+					elements: selectedElements,
+				});
+				editor.selection.clearSelection();
 				return;
 			}
-			editor.timeline.deleteElements({
-				elements: selectedElements,
-			});
-			editor.selection.clearSelection();
+
+			// If no elements are selected, check for selected asset
+			const { selectedMediaId, setSelectedMediaId } =
+				useAssetsPanelStore.getState();
+			if (selectedMediaId && activeProject) {
+				editor.media.removeMediaAsset({
+					projectId: activeProject.metadata.id,
+					id: selectedMediaId,
+				});
+				setSelectedMediaId(null);
+			}
 		},
 		undefined,
 	);

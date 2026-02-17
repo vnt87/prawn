@@ -61,6 +61,7 @@ interface PropertyGroupProps {
 	className?: string;
 	hasBorderTop?: boolean;
 	hasBorderBottom?: boolean;
+	extraHeaderContent?: React.ReactNode;
 }
 
 export function PropertyGroup({
@@ -71,6 +72,7 @@ export function PropertyGroup({
 	className,
 	hasBorderTop = true,
 	hasBorderBottom = true,
+	extraHeaderContent,
 }: PropertyGroupProps) {
 	const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
@@ -89,9 +91,12 @@ export function PropertyGroup({
 					className="flex items-center justify-between p-3.5 cursor-pointer"
 					onClick={() => setIsExpanded(!isExpanded)}
 				>
-					<PropertyGroupTitle isExpanded={isExpanded}>
-						{title}
-					</PropertyGroupTitle>
+					<div className="flex items-center gap-2 flex-1">
+						<PropertyGroupTitle isExpanded={isExpanded}>
+							{title}
+						</PropertyGroupTitle>
+						{extraHeaderContent}
+					</div>
 					<HugeiconsIcon
 						icon={isExpanded ? MinusSignIcon : PlusSignIcon}
 						className={cn(
@@ -103,6 +108,7 @@ export function PropertyGroup({
 			) : (
 				<div className="flex items-center justify-between p-4">
 					<PropertyGroupTitle isExpanded>{title}</PropertyGroupTitle>
+					{extraHeaderContent}
 				</div>
 			)}
 			{(collapsible ? isExpanded : true) && (

@@ -26,10 +26,9 @@ import {
 } from "lucide-react";
 import ShrimpIcon from "@/components/shrimp-icon";
 import { useTheme } from "next-themes";
-import { RenameProjectDialog } from "./dialogs/rename-project-dialog";
+import { ExportButton } from "./export-button";
 import { DeleteProjectDialog } from "./dialogs/delete-project-dialog";
 import { ShortcutsDialog } from "./dialogs/shortcuts-dialog";
-import { ExportDialog } from "./dialogs/export-dialog";
 import { IntegrationsDialog } from "./dialogs/integrations-dialog";
 import { toast } from "sonner";
 import { SOCIAL_LINKS } from "@/constants/site-constants";
@@ -49,7 +48,7 @@ type MenuSection = (MenuItem | "---")[];
 
 export function EditorHeader() {
 	const [activeMenu, setActiveMenu] = useState<string | null>(null);
-	const [openDialog, setOpenDialog] = useState<"delete" | "shortcuts" | "export" | "integrations" | null>(null);
+	const [openDialog, setOpenDialog] = useState<"delete" | "shortcuts" | "integrations" | null>(null);
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [titleEditValue, setTitleEditValue] = useState("");
 	const editor = useEditor();
@@ -147,7 +146,6 @@ export function EditorHeader() {
 					setTitleEditValue(activeProject?.metadata.name || "");
 				}
 			},
-			{ label: t("header.exportProject"), icon: Download, action: () => setOpenDialog("export") },
 			"---",
 			{ label: t("header.deleteProject"), icon: Trash2, action: () => setOpenDialog("delete") },
 			"---",
@@ -261,6 +259,10 @@ export function EditorHeader() {
 						/>
 					</div>
 
+					<div className="mx-2">
+						<ExportButton />
+					</div>
+
 					<div className="header-divider" />
 
 					<div
@@ -347,10 +349,7 @@ export function EditorHeader() {
 				isOpen={openDialog === "shortcuts"}
 				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "shortcuts" : null)}
 			/>
-			<ExportDialog
-				open={openDialog === "export"}
-				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "export" : null)}
-			/>
+
 			<IntegrationsDialog
 				open={openDialog === "integrations"}
 				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "integrations" : null)}

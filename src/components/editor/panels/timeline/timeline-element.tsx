@@ -433,7 +433,8 @@ function ElementContent({
 				<div
 					className={`relative size-full ${isSelected ? "bg-primary" : "bg-transparent"}`}
 				>
-					{mediaAsset.filmstripThumbnails && mediaAsset.filmstripThumbnails.length > 0 ? (
+					{mediaAsset.filmstripThumbnails &&
+						mediaAsset.filmstripThumbnails.length > 0 ? (
 						<div
 							className="absolute w-full h-full flex overflow-hidden pointer-events-none align-top"
 							style={{
@@ -448,23 +449,37 @@ function ElementContent({
 									left: `${-element.trimStart * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel}px`,
 								}}
 							>
-								{mediaAsset.filmstripThumbnails.map((thumbnail, index) => {
+								{(() => {
 									const interval = mediaAsset.filmstripInterval ?? 5;
-									const width = interval * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
-									return (
-										<img
-											key={index}
-											src={thumbnail}
-											alt={`Thumbnail ${index}`}
-											className="h-full object-cover pointer-events-none select-none"
-											style={{
-												width: `${width}px`,
-												maxWidth: "none",
-											}}
-											draggable={false}
-										/>
-									);
-								})}
+									// Base width of one thumbnail interval (e.g. 1s or 5s) at current zoom
+									const baseWidth =
+										interval * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
+
+									// Adaptive density:
+									// If zoomed out (small baseWidth), combine multiple intervals into one thumbnail render (skip some)
+									// We want visualized thumbnails to be roughly TARGET_WIDTH wide.
+									const TARGET_WIDTH = 100;
+									const step = Math.max(1, Math.ceil(TARGET_WIDTH / baseWidth));
+									const width = baseWidth * step;
+
+									return mediaAsset.filmstripThumbnails.map((thumbnail, index) => {
+										if (index % step !== 0) return null;
+
+										return (
+											<img
+												key={index}
+												src={thumbnail}
+												alt={`Thumbnail ${index}`}
+												className="h-full object-cover pointer-events-none select-none"
+												style={{
+													width: `${width}px`,
+													maxWidth: "none",
+												}}
+												draggable={false}
+											/>
+										);
+									});
+								})()}
 							</div>
 						</div>
 					) : (

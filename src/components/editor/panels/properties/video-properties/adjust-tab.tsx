@@ -1,4 +1,5 @@
 import type { ImageElement, VideoElement } from "@/types/timeline";
+import { cn } from "@/utils/ui";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -29,6 +30,36 @@ export function AdjustTab({ element }: { element: VideoElement | ImageElement })
                 </div>
             </PropertyGroup>
 
+            <PropertyGroup title="Color" defaultExpanded={true} hasBorderTop>
+                <div className="space-y-6">
+                    <AdjustSlider label="Temp" defaultValue={0} min={-100} max={100} trackGradient="linear-gradient(to right, #3b82f6, #f3f4f6, #eab308)" />
+                    <AdjustSlider label="Tint" defaultValue={0} min={-100} max={100} trackGradient="linear-gradient(to right, #22c55e, #f3f4f6, #d946ef)" />
+                    <AdjustSlider label="Saturation" defaultValue={0} min={-100} max={100} trackGradient="linear-gradient(to right, #6b7280, #ef4444)" />
+                </div>
+            </PropertyGroup>
+
+            <PropertyGroup title="Lightness" defaultExpanded={true} hasBorderTop>
+                <div className="space-y-6">
+                    <AdjustSlider label="Exposure" defaultValue={0} min={-100} max={100} />
+                    <AdjustSlider label="Contrast" defaultValue={0} min={-100} max={100} />
+                    <AdjustSlider label="Highlight" defaultValue={0} min={-100} max={100} />
+                    <AdjustSlider label="Shadow" defaultValue={0} min={-100} max={100} />
+                    <AdjustSlider label="Whites" defaultValue={0} min={-100} max={100} />
+                    <AdjustSlider label="Blacks" defaultValue={0} min={-100} max={100} />
+                    <AdjustSlider label="Brilliance" defaultValue={0} min={-100} max={100} />
+                </div>
+            </PropertyGroup>
+
+            <PropertyGroup title="Effects" defaultExpanded={true} hasBorderTop>
+                <div className="space-y-6">
+                    <AdjustSlider label="Sharpen" defaultValue={0} min={0} max={100} />
+                    <AdjustSlider label="Clarity" defaultValue={0} min={0} max={100} />
+                    <AdjustSlider label="Particles" defaultValue={0} min={0} max={100} />
+                    <AdjustSlider label="Fade" defaultValue={0} min={0} max={100} />
+                    <AdjustSlider label="Vignette" defaultValue={0} min={0} max={100} />
+                </div>
+            </PropertyGroup>
+
             <PropertyGroup title="LUT" defaultExpanded={true} hasBorderTop>
                 <div className="space-y-4">
                     <PropertyItem direction="column" className="items-stretch gap-2">
@@ -52,6 +83,46 @@ export function AdjustTab({ element }: { element: VideoElement | ImageElement })
                     </div>
                 </div>
             </PropertyGroup>
+        </div>
+    );
+}
+
+function AdjustSlider({
+    label,
+    defaultValue,
+    min,
+    max,
+    trackGradient,
+}: {
+    label: string;
+    defaultValue: number;
+    min: number;
+    max: number;
+    trackGradient?: string;
+}) {
+    return (
+        <div className="space-y-2">
+            <div className="flex justify-between items-center">
+                <span className="text-xs text-muted-foreground">{label}</span>
+                <div className="bg-secondary/50 rounded px-2 py-0.5 text-[10px] w-12 text-center">
+                    {defaultValue}
+                </div>
+            </div>
+            <div className="relative flex items-center h-4">
+                {trackGradient && (
+                    <div
+                        className="absolute h-1 w-full rounded-full opacity-50"
+                        style={{ background: trackGradient }}
+                    />
+                )}
+                <Slider
+                    defaultValue={[defaultValue]}
+                    min={min}
+                    max={max}
+                    step={1}
+                    className={cn("w-full", trackGradient && "z-10")}
+                />
+            </div>
         </div>
     );
 }
