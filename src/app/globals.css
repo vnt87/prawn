@@ -490,6 +490,19 @@
   color: white;
 }
 
+.header-menu-dropdown-label {
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: var(--text-secondary);
+  font-size: 11px;
+  text-transform: uppercase;
+  cursor: default;
+  pointer-events: none;
+}
+
+
 .header-menu-dropdown-item .shortcut {
   color: var(--text-secondary);
   font-size: 10px;

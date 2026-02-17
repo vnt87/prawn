@@ -277,7 +277,7 @@ export function EditorHeader() {
 
 						{settingsOpen && (
 							<div className="header-menu-dropdown" style={{ right: 8, left: 'auto', minWidth: 160 }}>
-								<div className="header-menu-dropdown-item" style={{ cursor: 'default', fontSize: 11, color: 'var(--text-secondary)', padding: '4px 12px' }}>
+								<div className="header-menu-dropdown-label">
 									{t("common.general")}
 								</div>
 								<div
@@ -294,7 +294,7 @@ export function EditorHeader() {
 
 								<div className="header-menu-dropdown-divider" style={{ borderTop: "1px solid var(--border-color)", margin: "4px 0" }} />
 
-								<div className="header-menu-dropdown-item" style={{ cursor: 'default', fontSize: 11, color: 'var(--text-secondary)', padding: '4px 12px' }}>
+								<div className="header-menu-dropdown-label">
 									{t("common.theme")}
 								</div>
 								{themeOptions.map((opt) => (
@@ -315,7 +315,7 @@ export function EditorHeader() {
 
 								<div className="header-menu-dropdown-divider" style={{ borderTop: "1px solid var(--border-color)", margin: "4px 0" }} />
 
-								<div className="header-menu-dropdown-item" style={{ cursor: 'default', fontSize: 11, color: 'var(--text-secondary)', padding: '4px 12px' }}>
+								<div className="header-menu-dropdown-label">
 									{t("common.language")}
 								</div>
 								{languageOptions.map((opt) => (
