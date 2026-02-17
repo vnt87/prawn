@@ -20,6 +20,7 @@ import {
 	Undo,
 	Redo,
 	Download,
+	Plus,
 	LucideIcon
 } from "lucide-react";
 import ShrimpIcon from "@/components/shrimp-icon";
@@ -68,6 +69,18 @@ export function EditorHeader() {
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
+	const handleNewProject = async () => {
+		try {
+			await editor.project.prepareExit();
+			const projectId = await editor.project.createNewProject({
+				name: "Untitled Project",
+			});
+			router.push(`/editor/${projectId}`);
+		} catch (error) {
+			toast.error("Failed to create new project");
+		}
+	};
+
 	const handleExit = async () => {
 		try {
 			await editor.project.prepareExit();
@@ -76,7 +89,7 @@ export function EditorHeader() {
 			console.error("Failed to prepare project exit:", error);
 		} finally {
 			editor.project.closeProject();
-			router.push("/projects");
+			router.push("/");
 		}
 	};
 
@@ -108,12 +121,14 @@ export function EditorHeader() {
 
 	const menuData: Record<string, MenuSection> = {
 		"File": [
+			{ label: "New Project", icon: Plus, action: handleNewProject, shortcut: "⌘N" },
+			"---",
 			{ label: "Rename Project...", icon: Edit3, action: () => setOpenDialog("rename") },
 			{ label: "Export Project...", icon: Download, action: () => setOpenDialog("export") },
 			"---",
 			{ label: "Delete Project...", icon: Trash2, action: () => setOpenDialog("delete") },
 			"---",
-			{ label: "Exit to Projects", icon: LogOut, action: handleExit },
+			{ label: "All Projects", icon: LogOut, action: handleExit },
 		],
 		"Edit": [
 			{ label: "Undo", icon: Undo, action: () => editor.command.undo(), shortcut: "⌘Z" },
@@ -136,7 +151,7 @@ export function EditorHeader() {
 		<>
 			<div className="header">
 				<div className="header-left">
-					<div className="header-brand" onClick={() => router.push("/projects")}>
+					<div className="header-brand" onClick={() => router.push("/")}>
 						<ShrimpIcon className="brand-icon" />
 						<span className="brand-text">Prawn</span>
 					</div>

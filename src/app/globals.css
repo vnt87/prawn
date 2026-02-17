@@ -60,6 +60,17 @@
   --radius-lg: 4px;
   --transition: 120ms ease;
 
+  --hover-overlay: rgba(255, 255, 255, 0.05);
+  --active-overlay: rgba(255, 255, 255, 0.1);
+  --strong-overlay: rgba(255, 255, 255, 0.15);
+
+  --shadow-dropdown: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+
+  /* Canvas Checks (checkerboard) */
+  --canvas-check-1: #2b2b2b;
+  --canvas-check-2: #1e1e1e;
+
   /* ===== OpenCut Mappings (SHRIMP-ified) ===== */
   /* We map standard OpenCut/Shadcn variables to use SHRIMP tokens */
 
@@ -120,16 +131,87 @@
   /* shadcn uses --radius */
 }
 
-/* Force Dark Mode styles everywhere for now, matching SHRIMP's dark-first approach */
-.dark {
-  /* Inherits from :root because we set :root to be the Dark Theme */
-}
-
-/* Light Mode (Optional - if we want to map to SHRIMP Light later) */
-/* For now, just alias to root to avoid breakage */
+/* Light Mode */
 [data-theme="light"],
 .light {
-  /* We can map to SHRIMP Light variables here if we import them */
+  --bg-app: #f5f5f5;
+  --bg-header: #ffffff;
+  --bg-toolbar: #ffffff;
+  --bg-panel: #ffffff;
+  --bg-canvas: #e0e0e0;
+  --bg-input: #f0f0f0;
+  --bg-tab-active: #ffffff;
+  --bg-tab-inactive: #e8e8e8;
+  --bg-layer-hover: rgba(0, 0, 0, 0.05);
+  --bg-layer-selected: rgba(49, 130, 206, 0.1);
+  --bg-status: #ffffff;
+  --bg-ruler: #f8f8f8;
+  --bg-brush-cell: #ffffff;
+  --bg-scrollbar-thumb: #cccccc;
+
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-muted: #717171;
+  --text-active: #000000;
+
+  --border-main: #d1d1d1;
+  --border-subtle: #e5e5e5;
+  --border-input: #cbd5e0;
+  --border-divider: #e5e5e5;
+
+  --accent-active: #3182ce;
+  --accent-selected: #90cdf4;
+
+  --hover-overlay: rgba(0, 0, 0, 0.05);
+  --active-overlay: rgba(0, 0, 0, 0.1);
+  --strong-overlay: rgba(0, 0, 0, 0.15);
+
+  --shadow-dropdown: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  /* Canvas Checks (checkerboard) */
+  --canvas-check-1: #ffffff;
+  --canvas-check-2: #eeeeee;
+
+  /* ===== Re-map OpenCut Variables for Light Mode ===== */
+  --background: var(--bg-app);
+  --foreground: var(--text-primary);
+
+  --card: var(--bg-panel);
+  --card-foreground: var(--text-primary);
+
+  --popover: var(--bg-panel);
+  --popover-hover: var(--bg-layer-hover);
+  --popover-foreground: var(--text-primary);
+
+  --primary: var(--accent-active);
+  --primary-foreground: #ffffff;
+
+  --secondary: var(--bg-tab-inactive);
+  --secondary-border: var(--border-main);
+  --secondary-foreground: var(--text-primary);
+
+  --muted: var(--bg-input);
+  --muted-foreground: var(--text-muted);
+
+  --accent: var(--bg-layer-hover);
+  --accent-foreground: var(--text-active);
+
+  --border: var(--border-main);
+  --input: var(--bg-input);
+  --ring: var(--accent-active);
+
+  --sidebar-background: var(--bg-panel);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: var(--accent-active);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--bg-layer-hover);
+  --sidebar-accent-foreground: var(--text-active);
+  --sidebar-border: var(--border-main);
+  --sidebar-ring: var(--accent-active);
+  --sidebar: var(--bg-panel);
+
+  color-scheme: light;
 }
 
 .panel {

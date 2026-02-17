@@ -43,7 +43,7 @@ export function AssetsPanel() {
 	};
 
 	return (
-		<div className="panel bg-background flex h-full rounded-sm border overflow-hidden">
+		<div className="panel bg-background flex h-full overflow-hidden">
 			<TabBar />
 			<Separator orientation="vertical" />
 			<div className="flex-1 overflow-hidden">{viewMap[activeTab]}</div>

@@ -73,9 +73,9 @@ export function Header() {
 								40k+
 							</Button>
 						</Link>
-						<Link href="/projects">
+						<Link href="/">
 							<Button variant="foreground" className="text-sm">
-								Projects
+								Editor
 								<ArrowRight className="size-4" />
 							</Button>
 						</Link>

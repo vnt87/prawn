@@ -17,7 +17,7 @@ export function PropertiesPanel() {
 	});
 
 	return (
-		<div className="panel bg-background h-full rounded-sm border overflow-hidden">
+		<div className="panel bg-background h-full overflow-hidden">
 			{selectedElements.length > 0 ? (
 				<ScrollArea className="h-full">
 					{elementsWithTracks.map(({ track, element }) => {

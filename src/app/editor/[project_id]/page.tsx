@@ -12,7 +12,6 @@ import { Timeline } from "@/components/editor/panels/timeline";
 import { PreviewPanel } from "@/components/editor/panels/preview";
 import { EditorHeader } from "@/components/editor/editor-header";
 import { EditorProvider } from "@/components/providers/editor-provider";
-import { Onboarding } from "@/components/editor/onboarding";
 import { MigrationDialog } from "@/components/editor/dialogs/migration-dialog";
 import { usePanelStore } from "@/stores/panel-store";
 
@@ -24,10 +23,9 @@ export default function Editor() {
 		<EditorProvider projectId={projectId}>
 			<div className="bg-background flex h-screen w-screen flex-col overflow-hidden">
 				<EditorHeader />
-				<div className="min-h-0 min-w-0 flex-1">
+				<div className="border border-border rounded-md overflow-hidden min-h-0 min-w-0 flex-1">
 					<EditorLayout />
 				</div>
-				<Onboarding />
 				<MigrationDialog />
 			</div>
 		</EditorProvider>
@@ -40,7 +38,7 @@ function EditorLayout() {
 	return (
 		<ResizablePanelGroup
 			direction="vertical"
-			className="size-full gap-[0.18rem]"
+			className="size-full"
 			onLayout={(sizes) => {
 				setPanel("mainContent", sizes[0] ?? panels.mainContent);
 				setPanel("timeline", sizes[1] ?? panels.timeline);
@@ -54,7 +52,7 @@ function EditorLayout() {
 			>
 				<ResizablePanelGroup
 					direction="horizontal"
-					className="size-full gap-[0.19rem] px-3"
+					className="size-full"
 					onLayout={(sizes) => {
 						setPanel("tools", sizes[0] ?? panels.tools);
 						setPanel("preview", sizes[1] ?? panels.preview);
@@ -99,7 +97,7 @@ function EditorLayout() {
 				defaultSize={panels.timeline}
 				minSize={15}
 				maxSize={70}
-				className="min-h-0 px-3 pb-3"
+				className="min-h-0"
 			>
 				<Timeline />
 			</ResizablePanel>
