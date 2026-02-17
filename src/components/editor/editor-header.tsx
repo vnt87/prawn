@@ -31,7 +31,6 @@ import { ShortcutsDialog } from "./dialogs/shortcuts-dialog";
 import { ExportDialog } from "./dialogs/export-dialog";
 import { toast } from "sonner";
 import { SOCIAL_LINKS } from "@/constants/site-constants";
-import { FaDiscord } from "react-icons/fa6";
 import { IconType } from "react-icons";
 
 interface MenuItem {
@@ -45,7 +44,9 @@ type MenuSection = (MenuItem | "---")[];
 
 export function EditorHeader() {
 	const [activeMenu, setActiveMenu] = useState<string | null>(null);
-	const [openDialog, setOpenDialog] = useState<"rename" | "delete" | "shortcuts" | "export" | null>(null);
+	const [openDialog, setOpenDialog] = useState<"delete" | "shortcuts" | "export" | null>(null);
+	const [isEditingTitle, setIsEditingTitle] = useState(false);
+	const [titleEditValue, setTitleEditValue] = useState("");
 	const editor = useEditor();
 	const activeProject = editor.project.getActive();
 	const router = useRouter();
@@ -95,15 +96,20 @@ export function EditorHeader() {
 
 	const handleRename = async (newName: string) => {
 		if (!activeProject) return;
+		const trimmedName = newName.trim();
+		if (!trimmedName || trimmedName === activeProject.metadata.name) {
+			setIsEditingTitle(false);
+			return;
+		}
 		try {
 			await editor.project.renameProject({
 				id: activeProject.metadata.id,
-				name: newName.trim(),
+				name: trimmedName,
 			});
 		} catch (error) {
 			toast.error("Failed to rename project");
 		} finally {
-			setOpenDialog(null);
+			setIsEditingTitle(false);
 		}
 	};
 
@@ -123,7 +129,12 @@ export function EditorHeader() {
 		"File": [
 			{ label: "New Project", icon: Plus, action: handleNewProject, shortcut: "⌘N" },
 			"---",
-			{ label: "Rename Project...", icon: Edit3, action: () => setOpenDialog("rename") },
+			{
+				label: "Rename Project...", icon: Edit3, action: () => {
+					setIsEditingTitle(true);
+					setTitleEditValue(activeProject?.metadata.name || "");
+				}
+			},
 			{ label: "Export Project...", icon: Download, action: () => setOpenDialog("export") },
 			"---",
 			{ label: "Delete Project...", icon: Trash2, action: () => setOpenDialog("delete") },
@@ -136,8 +147,7 @@ export function EditorHeader() {
 		],
 		"Help": [
 			{ label: "Keyboard Shortcuts", icon: Keyboard, action: () => setOpenDialog("shortcuts"), shortcut: "?" },
-			{ label: "Discord Community", icon: FaDiscord, action: () => window.open(SOCIAL_LINKS.discord, "_blank") },
-			{ label: "GitHub Source", icon: Github, action: () => window.open("https://github.com/vunam/webgimp", "_blank") },
+			{ label: "GitHub Source", icon: Github, action: () => window.open("https://github.com/vnt87/prawn", "_blank") },
 		]
 	};
 
@@ -196,9 +206,35 @@ export function EditorHeader() {
 					</div>
 				</div>
 
-				{/* Center Project Name Display */}
-				<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none opacity-50 text-xs font-medium">
-					{activeProject?.metadata.name}
+				{/* Center Project Name Display / Inline Edit */}
+				<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
+					{isEditingTitle ? (
+						<input
+							autoFocus
+							className="bg-background border-accent-active h-6 w-48 rounded-sm border px-2 text-center text-xs font-medium outline-hidden"
+							value={titleEditValue}
+							onChange={(e) => setTitleEditValue(e.target.value)}
+							onBlur={() => handleRename(titleEditValue)}
+							onKeyDown={(e) => {
+								if (e.key === "Enter") handleRename(titleEditValue);
+								if (e.key === "Escape") {
+									setIsEditingTitle(false);
+									setTitleEditValue(activeProject?.metadata.name || "");
+								}
+							}}
+						/>
+					) : (
+						<div
+							className="cursor-pointer select-none text-xs font-medium opacity-70 transition-opacity hover:opacity-100"
+							onDoubleClick={() => {
+								setIsEditingTitle(true);
+								setTitleEditValue(activeProject?.metadata.name || "");
+							}}
+							title="Double-click to rename"
+						>
+							{activeProject?.metadata.name}
+						</div>
+					)}
 				</div>
 
 				<div className="header-right">
@@ -250,12 +286,6 @@ export function EditorHeader() {
 				</div>
 			</div>
 
-			<RenameProjectDialog
-				isOpen={openDialog === "rename"}
-				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "rename" : null)}
-				onConfirm={handleRename}
-				projectName={activeProject?.metadata.name || ""}
-			/>
 			<DeleteProjectDialog
 				isOpen={openDialog === "delete"}
 				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "delete" : null)}
