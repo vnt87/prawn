@@ -19,6 +19,7 @@ import { clamp } from "@/utils/math";
 import { useEditor } from "@/hooks/use-editor";
 import { DEFAULT_COLOR } from "@/constants/project-constants";
 import { MIN_FONT_SIZE, MAX_FONT_SIZE } from "@/constants/text-constants";
+import { useTranslation } from "react-i18next";
 
 export function TextProperties({
 	element,
@@ -27,6 +28,7 @@ export function TextProperties({
 	element: TextElement;
 	trackId: string;
 }) {
+	const { t } = useTranslation();
 	const editor = useEditor();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [, forceRender] = useReducer((x: number) => x + 1, 0);
@@ -218,9 +220,13 @@ export function TextProperties({
 	return (
 		<div className="flex h-full flex-col" ref={containerRef}>
 			<PanelBaseView className="p-0">
-				<PropertyGroup title="Content" hasBorderTop={false} collapsible={false}>
+				<PropertyGroup
+					title={t("properties.text.content")}
+					hasBorderTop={false}
+					collapsible={false}
+				>
 					<Textarea
-						placeholder="Name"
+						placeholder={t("properties.text.placeholder")}
 						value={contentDisplay}
 						className="bg-accent min-h-20"
 						onFocus={() => {
@@ -277,10 +283,10 @@ export function TextProperties({
 						}}
 					/>
 				</PropertyGroup>
-				<PropertyGroup title="Typography" collapsible={false}>
+				<PropertyGroup title={t("properties.text.typography")} collapsible={false}>
 					<div className="space-y-6">
 						<PropertyItem direction="column">
-							<PropertyItemLabel>Font</PropertyItemLabel>
+							<PropertyItemLabel>{t("properties.text.font")}</PropertyItemLabel>
 							<PropertyItemValue>
 								<FontPicker
 									defaultValue={element.fontFamily}
@@ -299,13 +305,11 @@ export function TextProperties({
 							</PropertyItemValue>
 						</PropertyItem>
 						<PropertyItem direction="column">
-							<PropertyItemLabel>Style</PropertyItemLabel>
+							<PropertyItemLabel>{t("properties.text.style")}</PropertyItemLabel>
 							<PropertyItemValue>
 								<div className="flex items-center gap-2">
 									<Button
-										variant={
-											element.fontWeight === "bold" ? "default" : "outline"
-										}
+										variant={element.fontWeight === "bold" ? "default" : "outline"}
 										size="sm"
 										onClick={() =>
 											editor.timeline.updateElements({
@@ -315,9 +319,7 @@ export function TextProperties({
 														elementId: element.id,
 														updates: {
 															fontWeight:
-																element.fontWeight === "bold"
-																	? "normal"
-																	: "bold",
+																element.fontWeight === "bold" ? "normal" : "bold",
 														},
 													},
 												],
@@ -328,9 +330,7 @@ export function TextProperties({
 										B
 									</Button>
 									<Button
-										variant={
-											element.fontStyle === "italic" ? "default" : "outline"
-										}
+										variant={element.fontStyle === "italic" ? "default" : "outline"}
 										size="sm"
 										onClick={() =>
 											editor.timeline.updateElements({
@@ -340,9 +340,7 @@ export function TextProperties({
 														elementId: element.id,
 														updates: {
 															fontStyle:
-																element.fontStyle === "italic"
-																	? "normal"
-																	: "italic",
+																element.fontStyle === "italic" ? "normal" : "italic",
 														},
 													},
 												],
@@ -354,9 +352,7 @@ export function TextProperties({
 									</Button>
 									<Button
 										variant={
-											element.textDecoration === "underline"
-												? "default"
-												: "outline"
+											element.textDecoration === "underline" ? "default" : "outline"
 										}
 										size="sm"
 										onClick={() =>
@@ -381,9 +377,7 @@ export function TextProperties({
 									</Button>
 									<Button
 										variant={
-											element.textDecoration === "line-through"
-												? "default"
-												: "outline"
+											element.textDecoration === "line-through" ? "default" : "outline"
 										}
 										size="sm"
 										onClick={() =>
@@ -410,7 +404,7 @@ export function TextProperties({
 							</PropertyItemValue>
 						</PropertyItem>
 						<PropertyItem direction="column">
-							<PropertyItemLabel>Font size</PropertyItemLabel>
+							<PropertyItemLabel>{t("properties.text.fontSize")}</PropertyItemLabel>
 							<PropertyItemValue>
 								<div className="flex items-center gap-2">
 									<Slider
@@ -472,9 +466,7 @@ export function TextProperties({
 											fontSizeDraft.current = element.fontSize.toString();
 											forceRender();
 										}}
-										onChange={(e) =>
-											handleFontSizeChange({ value: e.target.value })
-										}
+										onChange={(e) => handleFontSizeChange({ value: e.target.value })}
 										onBlur={handleFontSizeBlur}
 										className="bg-accent h-7 w-12 [appearance:textfield] rounded-sm px-2 text-center !text-xs [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
 									/>
@@ -483,10 +475,10 @@ export function TextProperties({
 						</PropertyItem>
 					</div>
 				</PropertyGroup>
-				<PropertyGroup title="Appearance" collapsible={false}>
+				<PropertyGroup title={t("properties.text.appearance")} collapsible={false}>
 					<div className="space-y-6">
 						<PropertyItem direction="column">
-							<PropertyItemLabel>Color</PropertyItemLabel>
+							<PropertyItemLabel>{t("properties.text.color")}</PropertyItemLabel>
 							<PropertyItemValue>
 								<ColorPicker
 									value={uppercase({
@@ -496,28 +488,16 @@ export function TextProperties({
 										if (initialColorRef.current === null) {
 											initialColorRef.current = element.color || "#FFFFFF";
 										}
-										if (initialColorRef.current !== null) {
-											editor.timeline.updateElements({
-												updates: [
-													{
-														trackId,
-														elementId: element.id,
-														updates: { color: `#${color}` },
-													},
-												],
-												pushHistory: false,
-											});
-										} else {
-											editor.timeline.updateElements({
-												updates: [
-													{
-														trackId,
-														elementId: element.id,
-														updates: { color: `#${color}` },
-													},
-												],
-											});
-										}
+										editor.timeline.updateElements({
+											updates: [
+												{
+													trackId,
+													elementId: element.id,
+													updates: { color: `#${color}` },
+												},
+											],
+											pushHistory: false,
+										});
 									}}
 									onChangeEnd={(color) => {
 										if (initialColorRef.current !== null) {
@@ -549,7 +529,7 @@ export function TextProperties({
 							</PropertyItemValue>
 						</PropertyItem>
 						<PropertyItem direction="column">
-							<PropertyItemLabel>Opacity</PropertyItemLabel>
+							<PropertyItemLabel>{t("properties.text.opacity")}</PropertyItemLabel>
 							<PropertyItemValue>
 								<div className="flex items-center gap-2">
 									<Slider
@@ -606,14 +586,10 @@ export function TextProperties({
 										max={100}
 										onFocus={() => {
 											isEditingOpacity.current = true;
-											opacityDraft.current = Math.round(
-												element.opacity * 100,
-											).toString();
+											opacityDraft.current = Math.round(element.opacity * 100).toString();
 											forceRender();
 										}}
-										onChange={(e) =>
-											handleOpacityChange({ value: e.target.value })
-										}
+										onChange={(e) => handleOpacityChange({ value: e.target.value })}
 										onBlur={handleOpacityBlur}
 										className="bg-accent h-7 w-12 [appearance:textfield] rounded-sm text-center !text-xs [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
 									/>
@@ -621,7 +597,7 @@ export function TextProperties({
 							</PropertyItemValue>
 						</PropertyItem>
 						<PropertyItem direction="column">
-							<PropertyItemLabel>Background</PropertyItemLabel>
+							<PropertyItemLabel>{t("properties.text.background")}</PropertyItemLabel>
 							<PropertyItemValue>
 								<ColorPicker
 									value={
@@ -629,9 +605,7 @@ export function TextProperties({
 											? lastSelectedColor.current.replace("#", "")
 											: element.backgroundColor.replace("#", "")
 									}
-									onChange={(color) =>
-										handleColorChange({ color: `#${color}` })
-									}
+									onChange={(color) => handleColorChange({ color: `#${color}` })}
 									onChangeEnd={(color) => handleColorChangeEnd({ color })}
 									containerRef={containerRef}
 									className={

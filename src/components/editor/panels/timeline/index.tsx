@@ -52,8 +52,10 @@ import { useEditor } from "@/hooks/use-editor";
 import { useTimelinePlayhead } from "@/hooks/timeline/use-timeline-playhead";
 import { DragLine } from "./drag-line";
 import { invokeAction } from "@/lib/actions";
+import { useTranslation } from "react-i18next";
 
 export function Timeline() {
+	const { t } = useTranslation();
 	const tracksContainerHeight = { min: 0, max: 800 };
 	const { snappingEnabled } = useTimelineStore();
 	const { clearElementSelection, setElementSelection } = useElementSelection();
@@ -204,7 +206,7 @@ export function Timeline() {
 				"panel bg-background relative flex h-full flex-col overflow-hidden"
 			}
 			{...dragProps}
-			aria-label="Timeline"
+			aria-label={t("assets.timeline")}
 		>
 			<TimelineToolbar
 				zoomLevel={zoomLevel}
@@ -441,7 +443,7 @@ export function Timeline() {
 															invokeAction("paste-copied");
 														}}
 													>
-														Paste elements
+														{t("timeline.paste")}
 													</ContextMenuItem>
 													<ContextMenuItem
 														onClick={(e) => {
@@ -454,8 +456,8 @@ export function Timeline() {
 														<HugeiconsIcon icon={VolumeHighIcon} />
 														<span>
 															{canTracktHaveAudio(track) && track.muted
-																? "Unmute track"
-																: "Mute track"}
+																? t("timeline.track.unmute")
+																: t("timeline.track.mute")}
 														</span>
 													</ContextMenuItem>
 													<ContextMenuItem
@@ -469,8 +471,8 @@ export function Timeline() {
 														<HugeiconsIcon icon={ViewIcon} />
 														<span>
 															{canTrackBeHidden(track) && track.hidden
-																? "Show track"
-																: "Hide track"}
+																? t("timeline.track.show")
+																: t("timeline.track.hide")}
 														</span>
 													</ContextMenuItem>
 													<ContextMenuItem
@@ -483,7 +485,7 @@ export function Timeline() {
 														variant="destructive"
 													>
 														<HugeiconsIcon icon={Delete02Icon} />
-														Delete track
+														{t("timeline.track.delete")}
 													</ContextMenuItem>
 												</ContextMenuContent>
 											</ContextMenu>

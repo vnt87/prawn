@@ -10,8 +10,8 @@ import { Label } from "@/components/ui/label";
 import { useIntegrationsStore } from "@/stores/integrations-store";
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Database, Image, Music, Cloud, Bot } from "lucide-react";
-import { cn } from "@/utils/ui";
+import { Database, Music, Cloud, Bot } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function IntegrationsDialog({
     open,
@@ -20,6 +20,7 @@ export function IntegrationsDialog({
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }) {
+    const { t } = useTranslation();
     const store = useIntegrationsStore();
     const [values, setValues] = useState(store);
 
@@ -46,7 +47,7 @@ export function IntegrationsDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-3xl h-[600px] max-h-[85vh] overflow-hidden flex flex-col p-0 gap-0">
                 <DialogHeader className="px-6 py-4 border-b">
-                    <DialogTitle>Integrations</DialogTitle>
+                    <DialogTitle>{t("integrations.title")}</DialogTitle>
                 </DialogHeader>
 
                 <div className="flex-1 overflow-hidden">
@@ -54,19 +55,19 @@ export function IntegrationsDialog({
                         <TabsList className="flex flex-col h-full w-48 justify-start gap-1 p-2 bg-muted/30 border-r">
                             <TabsTrigger value="database" className="w-full justify-start gap-2 px-3">
                                 <Database size={16} />
-                                Database
+                                {t("integrations.database")}
                             </TabsTrigger>
                             <TabsTrigger value="assets" className="w-full justify-start gap-2 px-3">
                                 <Music size={16} />
-                                Assets
+                                {t("integrations.assets")}
                             </TabsTrigger>
                             <TabsTrigger value="storage" className="w-full justify-start gap-2 px-3">
                                 <Cloud size={16} />
-                                Storage
+                                {t("integrations.storage")}
                             </TabsTrigger>
                             <TabsTrigger value="ai" className="w-full justify-start gap-2 px-3">
                                 <Bot size={16} />
-                                AI
+                                {t("integrations.ai")}
                             </TabsTrigger>
                         </TabsList>
 
@@ -75,11 +76,11 @@ export function IntegrationsDialog({
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 pb-2 border-b">
                                         <Database className="text-muted-foreground" />
-                                        <h3 className="text-lg font-medium">Upstash Redis</h3>
+                                        <h3 className="text-lg font-medium">{t("integrations.upstash.title")}</h3>
                                     </div>
                                     <div className="grid gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="upstashRedisUrl">REST URL</Label>
+                                            <Label htmlFor="upstashRedisUrl">{t("integrations.upstash.url")}</Label>
                                             <Input
                                                 id="upstashRedisUrl"
                                                 value={values.upstashRedisUrl}
@@ -88,7 +89,7 @@ export function IntegrationsDialog({
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="upstashRedisToken">REST Token</Label>
+                                            <Label htmlFor="upstashRedisToken">{t("integrations.upstash.token")}</Label>
                                             <Input
                                                 id="upstashRedisToken"
                                                 type="password"
@@ -101,17 +102,15 @@ export function IntegrationsDialog({
                                 </div>
                             </TabsContent>
 
-
-
                             <TabsContent value="assets" className="mt-0 space-y-6">
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 pb-2 border-b">
                                         <Music className="text-muted-foreground" />
-                                        <h3 className="text-lg font-medium">Freesound</h3>
+                                        <h3 className="text-lg font-medium">{t("integrations.freesound.title")}</h3>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="freesoundClientId">Client ID</Label>
+                                            <Label htmlFor="freesoundClientId">{t("integrations.freesound.clientId")}</Label>
                                             <Input
                                                 id="freesoundClientId"
                                                 value={values.freesoundClientId}
@@ -120,7 +119,7 @@ export function IntegrationsDialog({
                                             />
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="freesoundApiKey">API Key</Label>
+                                            <Label htmlFor="freesoundApiKey">{t("integrations.freesound.apiKey")}</Label>
                                             <Input
                                                 id="freesoundApiKey"
                                                 type="password"
@@ -137,11 +136,11 @@ export function IntegrationsDialog({
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 pb-2 border-b">
                                         <Cloud className="text-muted-foreground" />
-                                        <h3 className="text-lg font-medium">Cloudflare R2</h3>
+                                        <h3 className="text-lg font-medium">{t("integrations.cloudflare.title")}</h3>
                                     </div>
                                     <div className="grid gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="cloudflareAccountId">Account ID</Label>
+                                            <Label htmlFor="cloudflareAccountId">{t("integrations.cloudflare.accountId")}</Label>
                                             <Input
                                                 id="cloudflareAccountId"
                                                 value={values.cloudflareAccountId}
@@ -151,7 +150,7 @@ export function IntegrationsDialog({
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="grid gap-2">
-                                                <Label htmlFor="r2AccessKeyId">Access Key ID</Label>
+                                                <Label htmlFor="r2AccessKeyId">{t("integrations.cloudflare.accessKeyId")}</Label>
                                                 <Input
                                                     id="r2AccessKeyId"
                                                     value={values.r2AccessKeyId}
@@ -160,7 +159,7 @@ export function IntegrationsDialog({
                                                 />
                                             </div>
                                             <div className="grid gap-2">
-                                                <Label htmlFor="r2SecretAccessKey">Secret Access Key</Label>
+                                                <Label htmlFor="r2SecretAccessKey">{t("integrations.cloudflare.secretAccessKey")}</Label>
                                                 <Input
                                                     id="r2SecretAccessKey"
                                                     type="password"
@@ -171,7 +170,7 @@ export function IntegrationsDialog({
                                             </div>
                                         </div>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="r2BucketName">Bucket Name</Label>
+                                            <Label htmlFor="r2BucketName">{t("integrations.cloudflare.bucketName")}</Label>
                                             <Input
                                                 id="r2BucketName"
                                                 value={values.r2BucketName}
@@ -187,17 +186,29 @@ export function IntegrationsDialog({
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 pb-2 border-b">
                                         <Bot className="text-muted-foreground" />
-                                        <h3 className="text-lg font-medium">Modal AI</h3>
+                                        <h3 className="text-lg font-medium">{t("integrations.modal.title")}</h3>
                                     </div>
                                     <div className="grid gap-4">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="modalTranscriptionUrl">Transcription URL</Label>
+                                            <Label htmlFor="modalTranscriptionUrl">{t("integrations.modal.transcriptionUrl")}</Label>
                                             <Input
                                                 id="modalTranscriptionUrl"
                                                 value={values.modalTranscriptionUrl}
                                                 onChange={(e) => handleChange("modalTranscriptionUrl", e.target.value)}
                                                 placeholder="https://user-modal-app.modal.run"
                                             />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="sttServiceUrl">{t("integrations.stt.url")}</Label>
+                                            <Input
+                                                id="sttServiceUrl"
+                                                value={values.sttServiceUrl}
+                                                onChange={(e) => handleChange("sttServiceUrl", e.target.value)}
+                                                placeholder="http://localhost:8000"
+                                            />
+                                            <p className="text-xs text-muted-foreground">
+                                                {t("integrations.stt.description")}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -208,9 +219,9 @@ export function IntegrationsDialog({
 
                 <div className="px-6 py-4 border-t flex justify-end gap-2 bg-background">
                     <Button variant="outline" onClick={() => onOpenChange(false)}>
-                        Cancel
+                        {t("common.cancel")}
                     </Button>
-                    <Button onClick={handleSave}>Save Changes</Button>
+                    <Button onClick={handleSave}>{t("common.saveChanges")}</Button>
                 </div>
             </DialogContent>
         </Dialog>

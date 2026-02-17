@@ -5,6 +5,7 @@ import { useEditor } from "@/hooks/use-editor";
 import { getRulerConfig, shouldShowLabel } from "@/lib/timeline/ruler-utils";
 import { useScrollPosition } from "@/hooks/timeline/use-scroll-position";
 import { TimelineTick } from "./timeline-tick";
+import { useTranslation } from "react-i18next";
 
 interface TimelineRulerProps {
 	zoomLevel: number;
@@ -27,6 +28,7 @@ export function TimelineRuler({
 	handleRulerTrackingMouseDown,
 	handleRulerMouseDown,
 }: TimelineRulerProps) {
+	const { t } = useTranslation();
 	const editor = useEditor();
 	const duration = editor.timeline.getTotalDuration();
 	const pixelsPerSecond = TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
@@ -108,7 +110,7 @@ export function TimelineRuler({
 			onWheel={handleWheel}
 			onClick={handleTimelineContentClick}
 			onMouseDown={handleRulerTrackingMouseDown}
-			onKeyDown={() => {}}
+			onKeyDown={() => { }}
 		>
 			<div
 				role="none"

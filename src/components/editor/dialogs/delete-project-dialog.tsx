@@ -10,6 +10,8 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 export function DeleteProjectDialog({
 	isOpen,
@@ -22,6 +24,8 @@ export function DeleteProjectDialog({
 	onConfirm: () => void;
 	projectNames: string[];
 }) {
+	const { t } = useTranslation();
+	const [confirmValue, setConfirmValue] = useState("");
 	const count = projectNames.length;
 	const isSingle = count === 1;
 	const singleName = isSingle ? projectNames[0] : null;
@@ -37,45 +41,47 @@ export function DeleteProjectDialog({
 				<DialogHeader>
 					<DialogTitle>
 						{singleName ? (
-							<>
-								{"Delete '"}
-								<span className="inline-block max-w-[300px] truncate align-bottom">
-									{singleName}
-								</span>
-								{"'?"}
-							</>
+							t("dialogs.delete.titleSingle", { name: singleName })
 						) : (
-							`Delete ${count} projects?`
+							t("dialogs.delete.titlePlural", { count })
 						)}
 					</DialogTitle>
 				</DialogHeader>
 				<DialogBody>
 					<Alert variant="destructive">
-						<AlertTitle>Warning</AlertTitle>
+						<AlertTitle>{t("dialogs.delete.warning")}</AlertTitle>
 						<AlertDescription>
-							This will permanently delete{" "}
-							{singleName ? `"${singleName}"` : `${count} projects`} and all
-							associated files.
+							{singleName ? (
+								t("dialogs.delete.descriptionSingle", { name: singleName })
+							) : (
+								t("dialogs.delete.descriptionPlural", { count })
+							)}
 						</AlertDescription>
 					</Alert>
 					<div className="flex flex-col gap-3">
 						<Label className="text-xs font-semibold text-slate-500">
-							Type "DELETE" to confirm
+							{t("dialogs.delete.confirmLabel")}
 						</Label>
 						<Input
 							type="text"
-							placeholder="DELETE"
+							placeholder={t("dialogs.delete.confirmPlaceholder")}
 							size="lg"
 							variant="destructive"
+							value={confirmValue}
+							onChange={(e) => setConfirmValue(e.target.value)}
 						/>
 					</div>
 				</DialogBody>
 				<DialogFooter>
 					<Button variant="outline" onClick={() => onOpenChange(false)}>
-						Cancel
+						{t("common.cancel")}
 					</Button>
-					<Button variant="destructive" onClick={onConfirm}>
-						Delete project
+					<Button
+						variant="destructive"
+						onClick={onConfirm}
+						disabled={confirmValue !== "DELETE"}
+					>
+						{t("dialogs.delete.confirmButton")}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

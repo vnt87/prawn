@@ -139,9 +139,8 @@ export function TimelineElement({
 		<ContextMenu>
 			<ContextMenuTrigger asChild>
 				<div
-					className={`absolute top-0 h-full select-none ${
-						isBeingDragged ? "z-30" : "z-10"
-					}`}
+					className={`absolute top-0 h-full select-none ${isBeingDragged ? "z-30" : "z-10"
+						}`}
 					style={{
 						left: `${elementLeft}px`,
 						width: `${elementWidth}px`,
@@ -162,6 +161,7 @@ export function TimelineElement({
 						onElementClick={onElementClick}
 						onElementMouseDown={onElementMouseDown}
 						handleResizeStart={handleResizeStart}
+						zoomLevel={zoomLevel}
 					/>
 				</div>
 			</ContextMenuTrigger>
@@ -234,6 +234,7 @@ function ElementInner({
 	onElementClick,
 	onElementMouseDown,
 	handleResizeStart,
+	zoomLevel,
 }: {
 	element: TimelineElementType;
 	track: TimelineTrack;
@@ -252,6 +253,7 @@ function ElementInner({
 		elementId: string;
 		side: "left" | "right";
 	}) => void;
+	zoomLevel: number;
 }) {
 	return (
 		<div
@@ -273,26 +275,27 @@ function ElementInner({
 						track={track}
 						isSelected={isSelected}
 						mediaAssets={mediaAssets}
+						zoomLevel={zoomLevel}
 					/>
 				</div>
 
 				{(hasAudio
 					? isMuted
 					: canElementBeHidden(element) && element.hidden) && (
-					<div className="bg-opacity-50 pointer-events-none absolute inset-0 flex items-center justify-center bg-black">
-						{hasAudio ? (
-							<HugeiconsIcon
-								icon={VolumeHighIcon}
-								className="size-6 text-white"
-							/>
-						) : (
-							<HugeiconsIcon
-								icon={VolumeOffIcon}
-								className="size-6 text-white"
-							/>
-						)}
-					</div>
-				)}
+						<div className="bg-opacity-50 pointer-events-none absolute inset-0 flex items-center justify-center bg-black">
+							{hasAudio ? (
+								<HugeiconsIcon
+									icon={VolumeHighIcon}
+									className="size-6 text-white"
+								/>
+							) : (
+								<HugeiconsIcon
+									icon={VolumeOffIcon}
+									className="size-6 text-white"
+								/>
+							)}
+						</div>
+					)}
 			</button>
 
 			{isSelected && (
@@ -344,11 +347,13 @@ function ElementContent({
 	track,
 	isSelected,
 	mediaAssets,
+	zoomLevel,
 }: {
 	element: TimelineElementType;
 	track: TimelineTrack;
 	isSelected: boolean;
 	mediaAssets: MediaAsset[];
+	zoomLevel: number;
 }) {
 	if (element.type === "text") {
 		return (
@@ -424,22 +429,58 @@ function ElementContent({
 			mediaAsset.type === "image" ? mediaAsset.url : mediaAsset.thumbnailUrl;
 
 		return (
-			<div className="flex size-full items-center justify-center">
+			<div className="flex size-full items-center justify-center overflow-hidden">
 				<div
 					className={`relative size-full ${isSelected ? "bg-primary" : "bg-transparent"}`}
 				>
-					<div
-						className="absolute right-0 left-0"
-						style={{
-							backgroundImage: imageUrl ? `url(${imageUrl})` : "none",
-							backgroundRepeat: "repeat-x",
-							backgroundSize: `${tileWidth}px ${trackHeight}px`,
-							backgroundPosition: "left center",
-							pointerEvents: "none",
-							top: isSelected ? "0.25rem" : "0rem",
-							bottom: isSelected ? "0.25rem" : "0rem",
-						}}
-					/>
+					{mediaAsset.filmstripThumbnails && mediaAsset.filmstripThumbnails.length > 0 ? (
+						<div
+							className="absolute w-full h-full flex overflow-hidden pointer-events-none align-top"
+							style={{
+								top: isSelected ? "0.25rem" : "0rem",
+								bottom: isSelected ? "0.25rem" : "0rem",
+								height: isSelected ? "calc(100% - 0.5rem)" : "100%",
+							}}
+						>
+							<div
+								className="flex h-full absolute"
+								style={{
+									left: `${-element.trimStart * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel}px`,
+								}}
+							>
+								{mediaAsset.filmstripThumbnails.map((thumbnail, index) => {
+									const interval = mediaAsset.filmstripInterval ?? 5;
+									const width = interval * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
+									return (
+										<img
+											key={index}
+											src={thumbnail}
+											alt={`Thumbnail ${index}`}
+											className="h-full object-cover pointer-events-none select-none"
+											style={{
+												width: `${width}px`,
+												maxWidth: "none",
+											}}
+											draggable={false}
+										/>
+									);
+								})}
+							</div>
+						</div>
+					) : (
+						<div
+							className="absolute right-0 left-0"
+							style={{
+								backgroundImage: imageUrl ? `url(${imageUrl})` : "none",
+								backgroundRepeat: "repeat-x",
+								backgroundSize: `${tileWidth}px ${trackHeight}px`,
+								backgroundPosition: "left center",
+								pointerEvents: "none",
+								top: isSelected ? "0.25rem" : "0rem",
+								bottom: isSelected ? "0.25rem" : "0rem",
+							}}
+						/>
+					)}
 				</div>
 			</div>
 		);

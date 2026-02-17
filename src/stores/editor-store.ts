@@ -9,6 +9,7 @@ interface LayoutGuideSettings {
 }
 
 interface EditorState {
+	language: string;
 	isInitializing: boolean;
 	isPanelsReady: boolean;
 	canvasPresets: TCanvasSize[];
@@ -18,11 +19,13 @@ interface EditorState {
 	initializeApp: () => Promise<void>;
 	setLayoutGuide: (settings: Partial<LayoutGuideSettings>) => void;
 	toggleLayoutGuide: (platform: TPlatformLayout) => void;
+	setLanguage: (lang: string) => void;
 }
 
 export const useEditorStore = create<EditorState>()(
 	persist(
 		(set) => ({
+			language: "en",
 			isInitializing: true,
 			isPanelsReady: false,
 			canvasPresets: DEFAULT_CANVAS_PRESETS,
@@ -59,11 +62,16 @@ export const useEditorStore = create<EditorState>()(
 					},
 				}));
 			},
+
+			setLanguage: (lang) => {
+				set({ language: lang });
+			},
 		}),
 		{
 			name: "editor-settings",
 			partialize: (state) => ({
 				layoutGuide: state.layoutGuide,
+				language: state.language,
 			}),
 		},
 	),

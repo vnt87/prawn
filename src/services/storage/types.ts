@@ -26,6 +26,8 @@ export interface MediaAssetData {
 	fps?: number;
 	ephemeral?: boolean;
 	thumbnailUrl?: string;
+	filmstripThumbnails?: string[];
+	filmstripInterval?: number;
 }
 
 export type SerializedScene = Omit<TScene, "createdAt" | "updatedAt"> & {

@@ -19,6 +19,7 @@ import {
 import { PropertyGroup } from "@/components/editor/panels/properties/property-item";
 import { useEditor } from "@/hooks/use-editor";
 import { DEFAULT_EXPORT_OPTIONS } from "@/constants/export-constants";
+import { useTranslation } from "react-i18next";
 
 interface ExportDialogProps {
     open: boolean;
@@ -26,6 +27,7 @@ interface ExportDialogProps {
 }
 
 export function ExportDialog({ open, onOpenChange }: ExportDialogProps) {
+    const { t } = useTranslation();
     const editor = useEditor();
     const activeProject = editor.project.getActive();
     const [format, setFormat] = useState<ExportFormat>(
@@ -101,7 +103,7 @@ export function ExportDialog({ open, onOpenChange }: ExportDialogProps) {
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>{isExporting ? "Exporting project" : "Export project"}</DialogTitle>
+                    <DialogTitle>{isExporting ? t("export.exportingTitle") : t("export.title")}</DialogTitle>
                 </DialogHeader>
 
                 <div className="flex flex-col gap-4 py-4">
@@ -116,7 +118,7 @@ export function ExportDialog({ open, onOpenChange }: ExportDialogProps) {
                                 <>
                                     <div className="flex flex-col gap-4">
                                         <PropertyGroup
-                                            title="Format"
+                                            title={t("export.format")}
                                             defaultExpanded={true}
                                             hasBorderTop={false}
                                         >
@@ -132,19 +134,19 @@ export function ExportDialog({ open, onOpenChange }: ExportDialogProps) {
                                                 <div className="flex items-center space-x-2">
                                                     <RadioGroupItem value="mp4" id="mp4" />
                                                     <Label htmlFor="mp4">
-                                                        MP4 (H.264) - Better compatibility
+                                                        {t("export.mp4Label")}
                                                     </Label>
                                                 </div>
                                                 <div className="flex items-center space-x-2">
                                                     <RadioGroupItem value="webm" id="webm" />
                                                     <Label htmlFor="webm">
-                                                        WebM (VP9) - Smaller file size
+                                                        {t("export.webmLabel")}
                                                     </Label>
                                                 </div>
                                             </RadioGroup>
                                         </PropertyGroup>
 
-                                        <PropertyGroup title="Quality" defaultExpanded={false}>
+                                        <PropertyGroup title={t("export.quality")} defaultExpanded={false}>
                                             <RadioGroup
                                                 value={quality}
                                                 onValueChange={(value) => {
@@ -156,24 +158,24 @@ export function ExportDialog({ open, onOpenChange }: ExportDialogProps) {
                                             >
                                                 <div className="flex items-center space-x-2">
                                                     <RadioGroupItem value="low" id="low" />
-                                                    <Label htmlFor="low">Low</Label>
+                                                    <Label htmlFor="low">{t("export.low")}</Label>
                                                 </div>
                                                 <div className="flex items-center space-x-2">
                                                     <RadioGroupItem value="medium" id="medium" />
-                                                    <Label htmlFor="medium">Medium</Label>
+                                                    <Label htmlFor="medium">{t("export.medium")}</Label>
                                                 </div>
                                                 <div className="flex items-center space-x-2">
                                                     <RadioGroupItem value="high" id="high" />
-                                                    <Label htmlFor="high">High</Label>
+                                                    <Label htmlFor="high">{t("export.high")}</Label>
                                                 </div>
                                                 <div className="flex items-center space-x-2">
                                                     <RadioGroupItem value="very_high" id="very_high" />
-                                                    <Label htmlFor="very_high">Very High</Label>
+                                                    <Label htmlFor="very_high">{t("export.veryHigh")}</Label>
                                                 </div>
                                             </RadioGroup>
                                         </PropertyGroup>
 
-                                        <PropertyGroup title="Audio" defaultExpanded={false}>
+                                        <PropertyGroup title={t("export.audio")} defaultExpanded={false}>
                                             <div className="flex items-center space-x-2">
                                                 <Checkbox
                                                     id="include-audio"
@@ -183,7 +185,7 @@ export function ExportDialog({ open, onOpenChange }: ExportDialogProps) {
                                                     }
                                                 />
                                                 <Label htmlFor="include-audio">
-                                                    Include audio in export
+                                                    {t("export.includeAudio")}
                                                 </Label>
                                             </div>
                                         </PropertyGroup>
@@ -192,7 +194,7 @@ export function ExportDialog({ open, onOpenChange }: ExportDialogProps) {
                                     <div className="pt-2">
                                         <Button onClick={handleExport} className="w-full gap-2">
                                             <Download className="size-4" />
-                                            Export
+                                            {t("export.button")}
                                         </Button>
                                     </div>
                                 </>
@@ -215,7 +217,7 @@ export function ExportDialog({ open, onOpenChange }: ExportDialogProps) {
                                         className="w-full"
                                         onClick={handleCancel}
                                     >
-                                        Cancel
+                                        {t("common.cancel")}
                                     </Button>
                                 </div>
                             )}
@@ -242,6 +244,7 @@ function ExportError({
     error: string;
     onRetry: () => void;
 }) {
+    const { t } = useTranslation();
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
@@ -253,7 +256,7 @@ function ExportError({
     return (
         <div className="space-y-4">
             <div className="flex flex-col gap-1.5">
-                <p className="text-destructive text-sm font-medium">Export failed</p>
+                <p className="text-destructive text-sm font-medium">{t("export.failed")}</p>
                 <p className="text-muted-foreground text-xs">{error}</p>
             </div>
 
@@ -265,7 +268,7 @@ function ExportError({
                     onClick={handleCopy}
                 >
                     {copied ? <Check className="text-constructive" /> : <Copy />}
-                    Copy
+                    {t("export.copy")}
                 </Button>
                 <Button
                     variant="outline"
@@ -274,7 +277,7 @@ function ExportError({
                     onClick={onRetry}
                 >
                     <RotateCcw />
-                    Retry
+                    {t("export.retry")}
                 </Button>
             </div>
         </div>

@@ -13,9 +13,11 @@ import {
 	tabs,
 	useAssetsPanelStore,
 } from "@/stores/assets-panel-store";
+import { useTranslation } from "react-i18next";
 
 export function TabBar() {
 	const { activeTab, setActiveTab } = useAssetsPanelStore();
+	const { t } = useTranslation();
 	const [showTopFade, setShowTopFade] = useState(false);
 	const [showBottomFade, setShowBottomFade] = useState(false);
 	const scrollRef = useRef<HTMLDivElement>(null);
@@ -53,12 +55,13 @@ export function TabBar() {
 			>
 				{TAB_KEYS.map((tabKey) => {
 					const tab = tabs[tabKey];
+					const translatedLabel = t(`assets.${tabKey}`);
 					return (
 						<Tooltip key={tabKey} delayDuration={10}>
 							<TooltipTrigger asChild>
 								<Button
 									variant={activeTab === tabKey ? "secondary" : "text"}
-									aria-label={tab.label}
+									aria-label={translatedLabel}
 									className={cn(
 										"flex-col !p-1.5 !rounded-sm !h-auto [&_svg]:size-4.5",
 										activeTab !== tabKey && "border border-transparent text-muted-foreground",
@@ -75,7 +78,7 @@ export function TabBar() {
 								sideOffset={8}
 							>
 								<div className="text-foreground text-sm leading-none font-medium">
-									{tab.label}
+									{translatedLabel}
 								</div>
 							</TooltipContent>
 						</Tooltip>

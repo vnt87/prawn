@@ -1,0 +1,221 @@
+{
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "rename": "Rename",
+        "export": "Export",
+        "settings": "Settings",
+        "theme": "Theme",
+        "language": "Language",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System",
+        "general": "General",
+        "integrations": "Integrations",
+        "comingSoon": "Coming soon",
+        "shortcuts": "Keyboard shortcuts",
+        "github": "GitHub Source",
+        "resetDefaults": "Reset to default",
+        "conflictError": "Key \"{{key}}\" is already bound to \"{{action}}\"",
+        "or": "or",
+        "clickToEdit": "Click to edit shortcut",
+        "pressAnyKey": "Press any key combination...",
+        "saveChanges": "Save Changes"
+    },
+    "header": {
+        "file": "File",
+        "edit": "Edit",
+        "help": "Help",
+        "newProject": "New Project",
+        "renameProject": "Rename Project...",
+        "exportProject": "Export Project...",
+        "deleteProject": "Delete Project...",
+        "allProjects": "All Projects",
+        "undo": "Undo",
+        "redo": "Redo",
+        "searchPlaceholder": "Search (⌘/)"
+    },
+    "assets": {
+        "media": "Media",
+        "sounds": "Sounds",
+        "text": "Text",
+        "stickers": "Stickers",
+        "effects": "Effects",
+        "transitions": "Transitions",
+        "captions": "Captions",
+        "filters": "Filters",
+        "adjustment": "Adjustment",
+        "settings": "Settings",
+        "comingSoon": "{{name}} view coming soon..."
+    },
+    "timeline": {
+        "toolbar": {
+            "snap": "Snap",
+            "zoom": "Zoom",
+            "split": "Split element",
+            "splitLeft": "Split left",
+            "splitRight": "Split right",
+            "duplicate": "Duplicate element",
+            "delete": "Delete element",
+            "addBookmark": "Add bookmark",
+            "removeBookmark": "Remove bookmark",
+            "noScene": "No Scene",
+            "snapping": "Auto snapping",
+            "ripple": "Ripple editing"
+        },
+        "track": {
+            "mute": "Mute track",
+            "unmute": "Unmute track",
+            "show": "Show track",
+            "hide": "Hide track",
+            "delete": "Delete track"
+        },
+        "paste": "Paste",
+        "ruler": "Timeline ruler",
+        "bookmarks": "Bookmarks",
+        "seekBookmark": "Seek to bookmark at {{time}}s"
+    },
+    "properties": {
+        "empty": {
+            "title": "It's empty here",
+            "description": "Click an element on the timeline to edit its properties"
+        },
+        "text": {
+            "content": "Content",
+            "typography": "Typography",
+            "appearance": "Appearance",
+            "font": "Font",
+            "style": "Style",
+            "fontSize": "Font size",
+            "color": "Color",
+            "opacity": "Opacity",
+            "background": "Background",
+            "placeholder": "Name"
+        },
+        "video": "Video properties",
+        "audio": "Audio properties"
+    },
+    "dialogs": {
+        "delete": {
+            "titleSingle": "Delete '{{name}}'?",
+            "titlePlural": "Delete {{count}} projects?",
+            "warning": "Warning",
+            "descriptionSingle": "This will permanently delete \"{{name}}\" and all associated files.",
+            "descriptionPlural": "This will permanently delete {{count}} projects and all associated files.",
+            "confirmLabel": "Type \"DELETE\" to confirm",
+            "confirmPlaceholder": "DELETE",
+            "confirmButton": "Delete project"
+        },
+        "rename": {
+            "title": "Rename Project",
+            "label": "Project Name",
+            "placeholder": "Enter project name...",
+            "confirmButton": "Rename"
+        },
+        "shortcuts": {
+            "title": "Keyboard shortcuts"
+        }
+    },
+    "shortcuts": {
+        "categories": {
+            "playback": "Playback",
+            "navigation": "Navigation",
+            "editing": "Editing",
+            "selection": "Selection",
+            "history": "History",
+            "timeline": "Timeline",
+            "controls": "Controls"
+        },
+        "actions": {
+            "toggle-play": "Play/Pause",
+            "stop-playback": "Stop playback",
+            "seek-forward": "Seek forward 1 second",
+            "seek-backward": "Seek backward 1 second",
+            "frame-step-forward": "Frame step forward",
+            "frame-step-backward": "Frame step backward",
+            "jump-forward": "Jump forward 5 seconds",
+            "jump-backward": "Jump backward 5 seconds",
+            "goto-start": "Go to timeline start",
+            "goto-end": "Go to timeline end",
+            "split": "Split elements at playhead",
+            "split-left": "Split and remove left",
+            "split-right": "Split and remove right",
+            "delete-selected": "Delete selected elements",
+            "copy-selected": "Copy selected elements",
+            "paste-copied": "Paste elements at playhead",
+            "toggle-snapping": "Toggle snapping",
+            "select-all": "Select all elements",
+            "duplicate-selected": "Duplicate selected element",
+            "toggle-elements-muted-selected": "Mute/unmute selected elements",
+            "toggle-elements-visibility-selected": "Show/hide selected elements",
+            "toggle-bookmark": "Toggle bookmark at playhead",
+            "undo": "Undo",
+            "redo": "Redo"
+        }
+    },
+    "integrations": {
+        "title": "Integrations",
+        "database": "Database",
+        "assets": "Assets",
+        "storage": "Storage",
+        "ai": "AI",
+        "upstash": {
+            "title": "Upstash Redis",
+            "url": "REST URL",
+            "token": "REST Token"
+        },
+        "freesound": {
+            "title": "Freesound",
+            "clientId": "Client ID",
+            "apiKey": "API Key"
+        },
+        "cloudflare": {
+            "title": "Cloudflare R2",
+            "accountId": "Account ID",
+            "accessKeyId": "Access Key ID",
+            "secretAccessKey": "Secret Access Key",
+            "bucketName": "Bucket Name"
+        },
+        "modal": {
+            "title": "Modal AI",
+            "transcriptionUrl": "Transcription URL"
+        },
+        "stt": {
+            "title": "STT Service",
+            "url": "Custom STT Service URL",
+            "description": "URL for local Docker STT service (e.g. http://localhost:8000)"
+        }
+    },
+    "export": {
+        "title": "Export project",
+        "exportingTitle": "Exporting project",
+        "format": "Format",
+        "quality": "Quality",
+        "audio": "Audio",
+        "mp4Label": "MP4 (H.264) - Better compatibility",
+        "webmLabel": "WebM (VP9) - Smaller file size",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "veryHigh": "Very High",
+        "includeAudio": "Include audio in export",
+        "button": "Export",
+        "failed": "Export failed",
+        "copy": "Copy",
+        "retry": "Retry"
+    },
+    "scenes": {
+        "title": "Scenes",
+        "selectTitle": "Select scenes ({{count}})",
+        "description": "Switch between scenes in your project",
+        "selectDescription": "Select scenes to delete",
+        "select": "Select",
+        "noScenes": "No scenes available",
+        "deleteSelected": "Delete ({{count}})",
+        "deleteDialog": {
+            "title": "Delete Scenes",
+            "description": "Are you sure you want to delete {{count}} scene{{count, plural, one {} other {s}}}? This action cannot be undone."
+        }
+    }
+}

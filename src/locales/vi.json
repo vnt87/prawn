@@ -1,0 +1,221 @@
+{
+    "common": {
+        "save": "Lưu",
+        "cancel": "Hủy",
+        "delete": "Xóa",
+        "rename": "Đổi tên",
+        "export": "Xuất",
+        "settings": "Cài đặt",
+        "theme": "Giao diện",
+        "language": "Ngôn ngữ",
+        "light": "Sáng",
+        "dark": "Tối",
+        "system": "Hệ thống",
+        "general": "Chung",
+        "integrations": "Tích hợp",
+        "comingSoon": "Sắp ra mắt",
+        "shortcuts": "Phím tắt",
+        "github": "Mã nguồn GitHub",
+        "resetDefaults": "Đặt lại về mặc định",
+        "conflictError": "Phím \"{{key}}\" đã được gán cho \"{{action}}\"",
+        "or": "hoặc",
+        "clickToEdit": "Nhấp để chỉnh sửa phím tắt",
+        "pressAnyKey": "Nhấn tổ hợp phím bất kỳ...",
+        "saveChanges": "Lưu thay đổi"
+    },
+    "header": {
+        "file": "Tệp",
+        "edit": "Chỉnh sửa",
+        "help": "Trợ giúp",
+        "newProject": "Dự án mới",
+        "renameProject": "Đổi tên dự án...",
+        "exportProject": "Xuất dự án...",
+        "deleteProject": "Xóa dự án...",
+        "allProjects": "Tất cả dự án",
+        "undo": "Hoàn tác",
+        "redo": "Làm lại",
+        "searchPlaceholder": "Tìm kiếm (⌘/)"
+    },
+    "assets": {
+        "media": "Phương tiện",
+        "sounds": "Âm thanh",
+        "text": "Văn bản",
+        "stickers": "Nhãn dán",
+        "effects": "Hiệu ứng",
+        "transitions": "Chuyển cảnh",
+        "captions": "Phụ đề",
+        "filters": "Bộ lọc",
+        "adjustment": "Điều chỉnh",
+        "settings": "Cài đặt",
+        "comingSoon": "Giao diện {{name}} sắp ra mắt..."
+    },
+    "timeline": {
+        "toolbar": {
+            "snap": "Dính",
+            "zoom": "Phóng to/thu nhỏ",
+            "split": "Chia nhỏ thành phần",
+            "splitLeft": "Chia bên trái",
+            "splitRight": "Chia bên phải",
+            "duplicate": "Nhân bản thành phần",
+            "delete": "Xóa thành phần",
+            "addBookmark": "Thêm dấu mốc",
+            "removeBookmark": "Xóa dấu mốc",
+            "noScene": "Không có cảnh",
+            "snapping": "Tự động bắt dính",
+            "ripple": "Chế độ Ripple"
+        },
+        "track": {
+            "mute": "Tắt tiếng nhạc",
+            "unmute": "Bật tiếng nhạc",
+            "show": "Hiện track",
+            "hide": "Ẩn track",
+            "delete": "Xóa track"
+        },
+        "paste": "Dán",
+        "ruler": "Thước thời gian",
+        "bookmarks": "Dấu mốc",
+        "seekBookmark": "Đi tới dấu mốc lúc {{time}}s"
+    },
+    "properties": {
+        "empty": {
+            "title": "Ở đây chưa có gì",
+            "description": "Nhấp vào một thành phần trên dòng thời gian để chỉnh sửa thuộc tính"
+        },
+        "text": {
+            "content": "Nội dung",
+            "typography": "Chữ",
+            "appearance": "Hiển thị",
+            "font": "Phông chữ",
+            "style": "Định dạng",
+            "fontSize": "Cỡ chữ",
+            "color": "Màu sắc",
+            "opacity": "Độ mờ",
+            "background": "Nền",
+            "placeholder": "Tên"
+        },
+        "video": "Thuộc tính video",
+        "audio": "Thuộc tính âm thanh"
+    },
+    "dialogs": {
+        "delete": {
+            "titleSingle": "Xóa '{{name}}'?",
+            "titlePlural": "Xóa {{count}} dự án?",
+            "warning": "Cảnh báo",
+            "descriptionSingle": "Thao tác này sẽ xóa vĩnh viễn \"{{name}}\" và tất cả các tệp liên quan.",
+            "descriptionPlural": "Thao tác này sẽ xóa vĩnh viễn {{count}} dự án và tất cả các tệp liên quan.",
+            "confirmLabel": "Nhập \"DELETE\" để xác nhận",
+            "confirmPlaceholder": "DELETE",
+            "confirmButton": "Xóa dự án"
+        },
+        "rename": {
+            "title": "Đổi tên dự án",
+            "label": "Tên dự án",
+            "placeholder": "Nhập tên dự án...",
+            "confirmButton": "Đổi tên"
+        },
+        "shortcuts": {
+            "title": "Phím tắt bàn phím"
+        }
+    },
+    "shortcuts": {
+        "categories": {
+            "playback": "Phát lại",
+            "navigation": "Điều hướng",
+            "editing": "Chỉnh sửa",
+            "selection": "Lựa chọn",
+            "history": "Lịch sử",
+            "timeline": "Dòng thời gian",
+            "controls": "Điều khiển"
+        },
+        "actions": {
+            "toggle-play": "Phát/Tạm dừng",
+            "stop-playback": "Dừng phát",
+            "seek-forward": "Tiến tới 1 giây",
+            "seek-backward": "Lùi lại 1 giây",
+            "frame-step-forward": "Tiến tới 1 khung hình",
+            "frame-step-backward": "Lùi lại 1 khung hình",
+            "jump-forward": "Tiến tới 5 giây",
+            "jump-backward": "Lùi lại 5 giây",
+            "goto-start": "Về đầu dòng thời gian",
+            "goto-end": "Đến cuối dòng thời gian",
+            "split": "Chia nhỏ thành phần tại con trỏ",
+            "split-left": "Chia và xóa bên trái",
+            "split-right": "Chia và xóa bên phải",
+            "delete-selected": "Xóa các thành phần đã chọn",
+            "copy-selected": "Sao chép các thành phần đã chọn",
+            "paste-copied": "Dán các thành phần tại con trỏ",
+            "toggle-snapping": "Bật/tắt chế độ dính",
+            "select-all": "Chọn tất cả thành phần",
+            "duplicate-selected": "Nhân bản thành phần đã chọn",
+            "toggle-elements-muted-selected": "Bật/tắt tiếng thành phần đã chọn",
+            "toggle-elements-visibility-selected": "Hiện/ẩn thành phần đã chọn",
+            "toggle-bookmark": "Bật/tắt dấu mốc tại con trỏ",
+            "undo": "Hoàn tác",
+            "redo": "Làm lại"
+        }
+    },
+    "integrations": {
+        "title": "Tích hợp",
+        "database": "Cơ sở dữ liệu",
+        "assets": "Tài nguyên",
+        "storage": "Lưu trữ",
+        "ai": "AI",
+        "upstash": {
+            "title": "Upstash Redis",
+            "url": "REST URL",
+            "token": "REST Token"
+        },
+        "freesound": {
+            "title": "Freesound",
+            "clientId": "Client ID",
+            "apiKey": "API Key"
+        },
+        "cloudflare": {
+            "title": "Cloudflare R2",
+            "accountId": "Account ID",
+            "accessKeyId": "Access Key ID",
+            "secretAccessKey": "Secret Access Key",
+            "bucketName": "Bucket Name"
+        },
+        "modal": {
+            "title": "Modal AI",
+            "transcriptionUrl": "URL chuyển ngữ"
+        },
+        "stt": {
+            "title": "Dịch vụ STT",
+            "url": "URL dịch vụ STT tùy chỉnh",
+            "description": "URL cho dịch vụ STT Docker cục bộ (ví dụ: http://localhost:8000)"
+        }
+    },
+    "export": {
+        "title": "Xuất dự án",
+        "exportingTitle": "Đang xuất dự án",
+        "format": "Định dạng",
+        "quality": "Chất lượng",
+        "audio": "Âm thanh",
+        "mp4Label": "MP4 (H.264) - Tương thích tốt hơn",
+        "webmLabel": "WebM (VP9) - Dung lượng tệp nhỏ hơn",
+        "low": "Thấp",
+        "medium": "Trung bình",
+        "high": "Cao",
+        "veryHigh": "Rất cao",
+        "includeAudio": "Bao gồm âm thanh khi xuất",
+        "button": "Xuất",
+        "failed": "Xuất thất bại",
+        "copy": "Sao chép",
+        "retry": "Thử lại"
+    },
+    "scenes": {
+        "title": "Cảnh",
+        "selectTitle": "Chọn cảnh ({{count}})",
+        "description": "Chuyển đổi giữa các cảnh trong dự án",
+        "selectDescription": "Chọn các cảnh để xóa",
+        "select": "Chọn",
+        "noScenes": "Không có cảnh nào",
+        "deleteSelected": "Xóa ({{count}})",
+        "deleteDialog": {
+            "title": "Xóa cảnh",
+            "description": "Bạn có chắc chắn muốn xóa {{count}} cảnh không? Thao tác này không thể hoàn tác."
+        }
+    }
+}

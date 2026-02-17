@@ -30,14 +30,15 @@ class TranscriptionService {
 		modelId?: TranscriptionModelId;
 		onProgress?: ProgressCallback;
 	}): Promise<TranscriptionResult> {
-		const { modalTranscriptionUrl } = useIntegrationsStore.getState();
+		const { modalTranscriptionUrl, sttServiceUrl } = useIntegrationsStore.getState();
+		const remoteUrl = sttServiceUrl || modalTranscriptionUrl;
 
-		if (modalTranscriptionUrl) {
+		if (remoteUrl) {
 			try {
 				return await this.transcribeRemote({
 					audioData,
 					language,
-					url: modalTranscriptionUrl,
+					url: remoteUrl,
 					onProgress,
 				});
 			} catch (error) {

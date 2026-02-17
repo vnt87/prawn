@@ -4,7 +4,7 @@ import { getMediaTypeFromFile } from "@/lib/media/media-utils";
 import { getVideoInfo } from "./mediabunny";
 import { Input, ALL_FORMATS, BlobSource, VideoSampleSink } from "mediabunny";
 
-export interface ProcessedMediaAsset extends Omit<MediaAsset, "id"> {}
+export interface ProcessedMediaAsset extends Omit<MediaAsset, "id"> { }
 
 const THUMBNAIL_MAX_WIDTH = 1280;
 const THUMBNAIL_MAX_HEIGHT = 720;
@@ -106,6 +106,65 @@ export async function generateThumbnail({
 	}
 }
 
+export async function generateFilmstripThumbnails({
+	videoFile,
+	duration,
+	interval = 5,
+}: {
+	videoFile: File;
+	duration: number;
+	interval?: number;
+}): Promise<string[]> {
+	const input = new Input({
+		source: new BlobSource(videoFile),
+		formats: ALL_FORMATS,
+	});
+
+	const videoTrack = await input.getPrimaryVideoTrack();
+	if (!videoTrack) {
+		throw new Error("No video track found in the file");
+	}
+
+	const canDecode = await videoTrack.canDecode();
+	if (!canDecode) {
+		throw new Error("Video codec not supported for decoding");
+	}
+
+	const sink = new VideoSampleSink(videoTrack);
+	const thumbnails: string[] = [];
+	const numberOfThumbnails = Math.ceil(duration / interval);
+
+	try {
+		for (let i = 0; i < numberOfThumbnails; i++) {
+			const time = i * interval;
+			// Ensure we don't go beyond duration
+			const sampleTime = Math.min(time, duration - 0.1);
+
+			try {
+				const frame = await sink.getSample(sampleTime);
+				if (frame) {
+					const url = renderToThumbnailDataUrl({
+						width: videoTrack.displayWidth,
+						height: videoTrack.displayHeight,
+						draw: ({ context, width, height }) => {
+							frame.draw(context, 0, 0, width, height);
+						},
+					});
+					thumbnails.push(url);
+					frame.close();
+				}
+			} catch (e) {
+				console.warn(`Failed to generate thumbnail at ${sampleTime}s`, e);
+			}
+		}
+	} finally {
+		// sink.close() if available? Types don't show it, but good to check. 
+		// input.close()?
+	}
+
+	return thumbnails;
+}
+
 export async function generateImageThumbnail({
 	imageFile,
 }: {
@@ -168,6 +227,8 @@ export async function processMediaAssets({
 
 		const url = URL.createObjectURL(file);
 		let thumbnailUrl: string | undefined;
+		let filmstripThumbnails: string[] | undefined;
+		let filmstripInterval: number | undefined;
 		let duration: number | undefined;
 		let width: number | undefined;
 		let height: number | undefined;
@@ -193,6 +254,19 @@ export async function processMediaAssets({
 						videoFile: file,
 						timeInSeconds: 1,
 					});
+
+					// Generate filmstrip thumbnails
+					// Use a 5-second interval for now, or maybe dynamic based on duration?
+					// CapCut style usually has fixed width thumbnails corresponding to time.
+					// For now, let's generate 1 every 5 seconds.
+					if (duration > 0) {
+						filmstripInterval = 5;
+						filmstripThumbnails = await generateFilmstripThumbnails({
+							videoFile: file,
+							duration,
+							interval: filmstripInterval,
+						});
+					}
 				} catch (error) {
 					console.warn("Video processing failed", error);
 				}
@@ -207,6 +281,8 @@ export async function processMediaAssets({
 				file,
 				url,
 				thumbnailUrl,
+				filmstripThumbnails,
+				filmstripInterval,
 				duration,
 				width,
 				height,

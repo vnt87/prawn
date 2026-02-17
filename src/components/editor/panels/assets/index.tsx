@@ -9,9 +9,11 @@ import { SettingsView } from "./views/settings";
 import { SoundsView } from "./views/sounds";
 import { StickersView } from "./views/stickers";
 import { TextView } from "./views/text";
+import { useTranslation } from "react-i18next";
 
 export function AssetsPanel() {
 	const { activeTab } = useAssetsPanelStore();
+	const { t } = useTranslation();
 
 	const viewMap: Record<Tab, React.ReactNode> = {
 		media: <MediaView />,
@@ -20,23 +22,23 @@ export function AssetsPanel() {
 		stickers: <StickersView />,
 		effects: (
 			<div className="text-muted-foreground p-4">
-				Effects view coming soon...
+				{t("assets.comingSoon", { name: t("assets.effects") })}
 			</div>
 		),
 		transitions: (
 			<div className="text-muted-foreground p-4">
-				Transitions view coming soon...
+				{t("assets.comingSoon", { name: t("assets.transitions") })}
 			</div>
 		),
 		captions: <Captions />,
 		filters: (
 			<div className="text-muted-foreground p-4">
-				Filters view coming soon...
+				{t("assets.comingSoon", { name: t("assets.filters") })}
 			</div>
 		),
 		adjustment: (
 			<div className="text-muted-foreground p-4">
-				Adjustment view coming soon...
+				{t("assets.comingSoon", { name: t("assets.adjustment") })}
 			</div>
 		),
 		settings: <SettingsView />,

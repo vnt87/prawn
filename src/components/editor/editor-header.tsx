@@ -34,6 +34,9 @@ import { IntegrationsDialog } from "./dialogs/integrations-dialog";
 import { toast } from "sonner";
 import { SOCIAL_LINKS } from "@/constants/site-constants";
 import { IconType } from "react-icons";
+import { useTranslation } from "react-i18next";
+import { useEditorStore } from "@/stores/editor-store";
+import { Globe } from "lucide-react";
 
 interface MenuItem {
 	label: string;
@@ -54,6 +57,8 @@ export function EditorHeader() {
 	const router = useRouter();
 	const menuRef = useRef<HTMLDivElement>(null);
 	const { theme, setTheme } = useTheme();
+	const { t, i18n } = useTranslation();
+	const { language, setLanguage } = useEditorStore();
 
 	const [settingsOpen, setSettingsOpen] = useState(false);
 	const settingsRef = useRef<HTMLDivElement>(null);
@@ -80,7 +85,7 @@ export function EditorHeader() {
 			});
 			router.push(`/editor/${projectId}`);
 		} catch (error) {
-			toast.error("Failed to create new project");
+			toast.error(t("header.newProject") + " failed");
 		}
 	};
 
@@ -109,7 +114,7 @@ export function EditorHeader() {
 				name: trimmedName,
 			});
 		} catch (error) {
-			toast.error("Failed to rename project");
+			toast.error(t("header.renameProject") + " failed");
 		} finally {
 			setIsEditingTitle(false);
 		}
@@ -121,42 +126,47 @@ export function EditorHeader() {
 			await editor.project.deleteProjects({ ids: [activeProject.metadata.id] });
 			router.push("/projects");
 		} catch (error) {
-			toast.error("Failed to delete project");
+			toast.error(t("header.deleteProject") + " failed");
 		} finally {
 			setOpenDialog(null);
 		}
 	};
 
+	const languageOptions = [
+		{ value: "en", label: "English" },
+		{ value: "vi", label: "Tiếng Việt" },
+	];
+
 	const menuData: Record<string, MenuSection> = {
-		"File": [
-			{ label: "New Project", icon: Plus, action: handleNewProject, shortcut: "⌘N" },
+		[t("header.file")]: [
+			{ label: t("header.newProject"), icon: Plus, action: handleNewProject, shortcut: "⌘N" },
 			"---",
 			{
-				label: "Rename Project...", icon: Edit3, action: () => {
+				label: t("header.renameProject"), icon: Edit3, action: () => {
 					setIsEditingTitle(true);
 					setTitleEditValue(activeProject?.metadata.name || "");
 				}
 			},
-			{ label: "Export Project...", icon: Download, action: () => setOpenDialog("export") },
+			{ label: t("header.exportProject"), icon: Download, action: () => setOpenDialog("export") },
 			"---",
-			{ label: "Delete Project...", icon: Trash2, action: () => setOpenDialog("delete") },
+			{ label: t("header.deleteProject"), icon: Trash2, action: () => setOpenDialog("delete") },
 			"---",
-			{ label: "All Projects", icon: LogOut, action: handleExit },
+			{ label: t("header.allProjects"), icon: LogOut, action: handleExit },
 		],
-		"Edit": [
-			{ label: "Undo", icon: Undo, action: () => editor.command.undo(), shortcut: "⌘Z" },
-			{ label: "Redo", icon: Redo, action: () => editor.command.redo(), shortcut: "⇧⌘Z" },
+		[t("header.edit")]: [
+			{ label: t("header.undo"), icon: Undo, action: () => editor.command.undo(), shortcut: "⌘Z" },
+			{ label: t("header.redo"), icon: Redo, action: () => editor.command.redo(), shortcut: "⇧⌘Z" },
 		],
-		"Help": [
-			{ label: "Keyboard Shortcuts", icon: Keyboard, action: () => setOpenDialog("shortcuts"), shortcut: "?" },
-			{ label: "GitHub Source", icon: Github, action: () => window.open("https://github.com/vnt87/prawn", "_blank") },
+		[t("header.help")]: [
+			{ label: t("common.shortcuts"), icon: Keyboard, action: () => setOpenDialog("shortcuts"), shortcut: "?" },
+			{ label: t("common.github"), icon: Github, action: () => window.open("https://github.com/vnt87/prawn", "_blank") },
 		]
 	};
 
 	const themeOptions = [
-		{ value: "light", label: "Light", icon: Sun },
-		{ value: "dark", label: "Dark", icon: Moon },
-		{ value: "system", label: "System", icon: Monitor },
+		{ value: "light", label: t("common.light"), icon: Sun },
+		{ value: "dark", label: t("common.dark"), icon: Moon },
+		{ value: "system", label: t("common.system"), icon: Monitor },
 	];
 
 	return (
@@ -232,7 +242,7 @@ export function EditorHeader() {
 								setIsEditingTitle(true);
 								setTitleEditValue(activeProject?.metadata.name || "");
 							}}
-							title="Double-click to rename"
+							title={t("header.renameProject")}
 						>
 							{activeProject?.metadata.name}
 						</div>
@@ -244,7 +254,7 @@ export function EditorHeader() {
 						<Search className="search-icon" />
 						<input
 							type="text"
-							placeholder="Search (⌘/)"
+							placeholder={t("header.searchPlaceholder")}
 							readOnly
 							className="cursor-default"
 						/* Not implemented yet */
@@ -255,7 +265,7 @@ export function EditorHeader() {
 
 					<div
 						className="header-icon-btn"
-						title="Theme Settings"
+						title={t("common.settings")}
 						onClick={() => setSettingsOpen(!settingsOpen)}
 						ref={settingsRef}
 					>
@@ -263,9 +273,9 @@ export function EditorHeader() {
 						<ChevronDown size={12} strokeWidth={3} style={{ marginLeft: 4 }} />
 
 						{settingsOpen && (
-							<div className="header-menu-dropdown" style={{ right: 8, left: 'auto', minWidth: 150 }}>
+							<div className="header-menu-dropdown" style={{ right: 8, left: 'auto', minWidth: 160 }}>
 								<div className="header-menu-dropdown-item" style={{ cursor: 'default', fontSize: 11, color: 'var(--text-secondary)', padding: '4px 12px' }}>
-									General
+									{t("common.general")}
 								</div>
 								<div
 									className="header-menu-dropdown-item"
@@ -276,13 +286,13 @@ export function EditorHeader() {
 									}}
 								>
 									<Puzzle size={14} style={{ marginRight: 8 }} />
-									Integrations
+									{t("common.integrations")}
 								</div>
 
 								<div className="header-menu-dropdown-divider" style={{ borderTop: "1px solid var(--border-color)", margin: "4px 0" }} />
 
 								<div className="header-menu-dropdown-item" style={{ cursor: 'default', fontSize: 11, color: 'var(--text-secondary)', padding: '4px 12px' }}>
-									Theme
+									{t("common.theme")}
 								</div>
 								{themeOptions.map((opt) => (
 									<div
@@ -297,6 +307,28 @@ export function EditorHeader() {
 										<opt.icon size={14} style={{ marginRight: 8 }} />
 										{opt.label}
 										{(theme === opt.value || (theme === "system" && opt.value === "system")) && <Check size={14} style={{ marginLeft: 'auto' }} />}
+									</div>
+								))}
+
+								<div className="header-menu-dropdown-divider" style={{ borderTop: "1px solid var(--border-color)", margin: "4px 0" }} />
+
+								<div className="header-menu-dropdown-item" style={{ cursor: 'default', fontSize: 11, color: 'var(--text-secondary)', padding: '4px 12px' }}>
+									{t("common.language")}
+								</div>
+								{languageOptions.map((opt) => (
+									<div
+										key={opt.value}
+										className="header-menu-dropdown-item"
+										onClick={(e) => {
+											e.stopPropagation();
+											setLanguage(opt.value);
+											i18n.changeLanguage(opt.value);
+											setSettingsOpen(false);
+										}}
+									>
+										<Globe size={14} style={{ marginRight: 8 }} />
+										{opt.label}
+										{language === opt.value && <Check size={14} style={{ marginLeft: 'auto' }} />}
 									</div>
 								))}
 							</div>

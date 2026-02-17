@@ -3,6 +3,7 @@ import { TIMELINE_CONSTANTS } from "@/constants/timeline-constants";
 import { getSnappedSeekTime } from "@/lib/time";
 import { Bookmark02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useTranslation } from "react-i18next";
 
 interface TimelineBookmarksRowProps {
 	zoomLevel: number;
@@ -21,6 +22,7 @@ export function TimelineBookmarksRow({
 	handleRulerTrackingMouseDown,
 	handleRulerMouseDown,
 }: TimelineBookmarksRowProps) {
+	const { t } = useTranslation();
 	const editor = useEditor();
 	const activeScene = editor.scenes.getActiveScene();
 
@@ -31,7 +33,7 @@ export function TimelineBookmarksRow({
 				style={{
 					width: `${dynamicTimelineWidth}px`,
 				}}
-				aria-label="Timeline ruler"
+				aria-label={t("timeline.bookmarks")}
 				type="button"
 				onWheel={handleWheel}
 				onClick={handleTimelineContentClick}
@@ -59,6 +61,7 @@ export function TimelineBookmark({
 	time: number;
 	zoomLevel: number;
 }) {
+	const { t } = useTranslation();
 	const editor = useEditor();
 	const activeProject = editor.project.getActive();
 	const duration = editor.timeline.getTotalDuration();
@@ -67,8 +70,8 @@ export function TimelineBookmark({
 		event,
 	}: {
 		event:
-			| React.MouseEvent<HTMLButtonElement>
-			| React.KeyboardEvent<HTMLButtonElement>;
+		| React.MouseEvent<HTMLButtonElement>
+		| React.KeyboardEvent<HTMLButtonElement>;
 	}) => {
 		event.stopPropagation();
 		const framesPerSecond = activeProject?.settings.fps ?? 30;
@@ -86,7 +89,7 @@ export function TimelineBookmark({
 			style={{
 				left: `${time * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel}px`,
 			}}
-			aria-label={`Seek to bookmark at ${time}s`}
+			aria-label={t("timeline.seekBookmark", { time })}
 			type="button"
 			onMouseDown={(event) => {
 				event.preventDefault();

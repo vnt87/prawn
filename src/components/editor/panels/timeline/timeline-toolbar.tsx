@@ -36,6 +36,7 @@ import {
 	Layers01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useTranslation } from "react-i18next";
 
 export function TimelineToolbar({
 	zoomLevel,
@@ -50,9 +51,9 @@ export function TimelineToolbar({
 		const newZoomLevel =
 			direction === "in"
 				? Math.min(
-						TIMELINE_CONSTANTS.ZOOM_MAX,
-						zoomLevel * TIMELINE_CONSTANTS.ZOOM_BUTTON_FACTOR,
-					)
+					TIMELINE_CONSTANTS.ZOOM_MAX,
+					zoomLevel * TIMELINE_CONSTANTS.ZOOM_BUTTON_FACTOR,
+				)
 				: Math.max(minZoom, zoomLevel / TIMELINE_CONSTANTS.ZOOM_BUTTON_FACTOR);
 		setZoomLevel({ zoom: newZoomLevel });
 	};
@@ -118,7 +119,7 @@ function ToolbarLeftSection() {
 					icon={<SplitSquareHorizontal />}
 					tooltip="Coming soon" /* separate audio */
 					disabled={true}
-					onClick={({ event: _event }) => {}}
+					onClick={({ event: _event }) => { }}
 				/>
 
 				<ToolbarButton
@@ -133,7 +134,7 @@ function ToolbarLeftSection() {
 					icon={<HugeiconsIcon icon={SnowIcon} />}
 					tooltip="Coming soon" /* freeze frame */
 					disabled={true}
-					onClick={({ event: _event }) => {}}
+					onClick={({ event: _event }) => { }}
 				/>
 
 				<ToolbarButton
@@ -171,7 +172,7 @@ function SceneSelector() {
 				<SplitButtonLeft>{currentScene?.name || "No Scene"}</SplitButtonLeft>
 				<SplitButtonSeparator />
 				<ScenesView>
-					<SplitButtonRight onClick={() => {}} type="button">
+					<SplitButtonRight onClick={() => { }} type="button">
 						<HugeiconsIcon icon={Layers01Icon} className="size-4" />
 					</SplitButtonRight>
 				</ScenesView>

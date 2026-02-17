@@ -24,8 +24,10 @@ import {
 import { canDeleteScene, getMainScene } from "@/lib/scenes";
 import { toast } from "sonner";
 import { useEditor } from "@/hooks/use-editor";
+import { useTranslation } from "react-i18next";
 
 export function ScenesView({ children }: { children: React.ReactNode }) {
+	const { t } = useTranslation();
 	const editor = useEditor();
 	const scenes = editor.scenes.getScenes();
 	const currentScene = editor.scenes.getActiveScene();
@@ -96,12 +98,14 @@ export function ScenesView({ children }: { children: React.ReactNode }) {
 			<SheetContent>
 				<SheetHeader>
 					<SheetTitle>
-						{isSelectMode ? `Select scenes (${selectedScenes.size})` : "Scenes"}
+						{isSelectMode
+							? t("dialogs.scenes.selectTitle", { count: selectedScenes.size })
+							: t("dialogs.scenes.title")}
 					</SheetTitle>
 					<SheetDescription>
 						{isSelectMode
-							? "Select scenes to delete"
-							: "Switch between scenes in your project"}
+							? t("dialogs.scenes.selectDescription")
+							: t("dialogs.scenes.description")}
 					</SheetDescription>
 				</SheetHeader>
 				<div className="flex flex-col gap-4 py-4">
@@ -113,7 +117,7 @@ export function ScenesView({ children }: { children: React.ReactNode }) {
 							onClick={handleSelectMode}
 						>
 							<ListCheck />
-							{isSelectMode ? "Cancel" : "Select"}
+							{isSelectMode ? t("common.cancel") : t("dialogs.scenes.select")}
 						</Button>
 						{isSelectMode && (
 							<DeleteDialog
@@ -128,7 +132,9 @@ export function ScenesView({ children }: { children: React.ReactNode }) {
 										size="sm"
 									>
 										<Trash2 />
-										Delete ({selectedScenes.size})
+										{t("dialogs.scenes.deleteSelected", {
+											count: selectedScenes.size,
+										})}
 									</Button>
 								}
 							/>
@@ -136,7 +142,7 @@ export function ScenesView({ children }: { children: React.ReactNode }) {
 					</div>
 					{scenes.length === 0 ? (
 						<div className="text-muted-foreground text-sm">
-							No scenes available
+							{t("dialogs.scenes.noScenes")}
 						</div>
 					) : (
 						<div className="space-y-2">
@@ -147,11 +153,11 @@ export function ScenesView({ children }: { children: React.ReactNode }) {
 									className={cn(
 										"w-full justify-between font-normal",
 										currentScene?.id === scene.id &&
-											!isSelectMode &&
-											"border-primary !text-primary",
+										!isSelectMode &&
+										"border-primary !text-primary",
 										isSelectMode &&
-											selectedScenes.has(scene.id) &&
-											"bg-accent border-foreground/30",
+										selectedScenes.has(scene.id) &&
+										"bg-accent border-foreground/30",
 									)}
 									onClick={() => handleSceneSwitch(scene.id)}
 								>
@@ -159,8 +165,8 @@ export function ScenesView({ children }: { children: React.ReactNode }) {
 									<div className="flex items-center gap-2">
 										{((isSelectMode && selectedScenes.has(scene.id)) ||
 											(!isSelectMode && currentScene?.id === scene.id)) && (
-											<Check className="size-4" />
-										)}
+												<Check className="size-4" />
+											)}
 									</div>
 								</Button>
 							))}
@@ -183,6 +189,7 @@ function DeleteDialog({
 	disabled?: boolean;
 	trigger: React.ReactNode;
 }) {
+	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
 
 	const handleDelete = () => {
@@ -195,22 +202,21 @@ function DeleteDialog({
 			<DialogTrigger asChild>{trigger}</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Delete Scenes</DialogTitle>
+					<DialogTitle>{t("dialogs.scenes.deleteDialog.title")}</DialogTitle>
 					<DialogDescription>
-						Are you sure you want to delete {count} scene
-						{count === 1 ? "" : "s"}? This action cannot be undone.
+						{t("dialogs.scenes.deleteDialog.description", { count })}
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter>
 					<Button variant="outline" onClick={() => setOpen(false)}>
-						Cancel
+						{t("common.cancel")}
 					</Button>
 					<Button
 						variant="destructive"
 						onClick={handleDelete}
 						disabled={disabled}
 					>
-						Delete
+						{t("common.delete")}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

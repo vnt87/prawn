@@ -18,6 +18,7 @@ interface IntegrationsState {
 
     // AI
     modalTranscriptionUrl: string;
+    sttServiceUrl: string;
 
     // Actions
     setIntegration: (key: keyof Omit<IntegrationsState, "setIntegration">, value: string) => void;
@@ -35,6 +36,7 @@ export const useIntegrationsStore = create<IntegrationsState>()(
             r2SecretAccessKey: "",
             r2BucketName: "",
             modalTranscriptionUrl: "",
+            sttServiceUrl: "",
 
             setIntegration: (key, value) => {
                 set((state) => ({
