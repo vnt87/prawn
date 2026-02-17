@@ -21,7 +21,8 @@ import {
 	Redo,
 	Download,
 	Plus,
-	LucideIcon
+	LucideIcon,
+	Puzzle
 } from "lucide-react";
 import ShrimpIcon from "@/components/shrimp-icon";
 import { useTheme } from "next-themes";
@@ -29,6 +30,7 @@ import { RenameProjectDialog } from "./dialogs/rename-project-dialog";
 import { DeleteProjectDialog } from "./dialogs/delete-project-dialog";
 import { ShortcutsDialog } from "./dialogs/shortcuts-dialog";
 import { ExportDialog } from "./dialogs/export-dialog";
+import { IntegrationsDialog } from "./dialogs/integrations-dialog";
 import { toast } from "sonner";
 import { SOCIAL_LINKS } from "@/constants/site-constants";
 import { IconType } from "react-icons";
@@ -44,7 +46,7 @@ type MenuSection = (MenuItem | "---")[];
 
 export function EditorHeader() {
 	const [activeMenu, setActiveMenu] = useState<string | null>(null);
-	const [openDialog, setOpenDialog] = useState<"delete" | "shortcuts" | "export" | null>(null);
+	const [openDialog, setOpenDialog] = useState<"delete" | "shortcuts" | "export" | "integrations" | null>(null);
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [titleEditValue, setTitleEditValue] = useState("");
 	const editor = useEditor();
@@ -263,6 +265,23 @@ export function EditorHeader() {
 						{settingsOpen && (
 							<div className="header-menu-dropdown" style={{ right: 8, left: 'auto', minWidth: 150 }}>
 								<div className="header-menu-dropdown-item" style={{ cursor: 'default', fontSize: 11, color: 'var(--text-secondary)', padding: '4px 12px' }}>
+									General
+								</div>
+								<div
+									className="header-menu-dropdown-item"
+									onClick={(e) => {
+										e.stopPropagation();
+										setOpenDialog("integrations");
+										setSettingsOpen(false);
+									}}
+								>
+									<Puzzle size={14} style={{ marginRight: 8 }} />
+									Integrations
+								</div>
+
+								<div className="header-menu-dropdown-divider" style={{ borderTop: "1px solid var(--border-color)", margin: "4px 0" }} />
+
+								<div className="header-menu-dropdown-item" style={{ cursor: 'default', fontSize: 11, color: 'var(--text-secondary)', padding: '4px 12px' }}>
 									Theme
 								</div>
 								{themeOptions.map((opt) => (
@@ -299,6 +318,10 @@ export function EditorHeader() {
 			<ExportDialog
 				open={openDialog === "export"}
 				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "export" : null)}
+			/>
+			<IntegrationsDialog
+				open={openDialog === "integrations"}
+				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "integrations" : null)}
 			/>
 		</>
 	);
