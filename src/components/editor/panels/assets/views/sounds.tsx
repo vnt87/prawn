@@ -24,6 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useSoundSearch } from "@/hooks/use-sound-search";
 import { useSoundsStore } from "@/stores/sounds-store";
+import { useIntegrationsStore } from "@/stores/integrations-store";
 import type { SavedSound, SoundEffect } from "@/types/sounds";
 import { cn } from "@/utils/ui";
 import {
@@ -90,6 +91,7 @@ function SoundEffectsView() {
 		setHasNextPage,
 		setTotalCount,
 	} = useSoundsStore();
+	const { freesoundApiKey, freesoundClientId } = useIntegrationsStore();
 	const {
 		results: searchResults,
 		isLoading: isSearching,
@@ -132,6 +134,12 @@ function SoundEffectsView() {
 
 				const response = await fetch(
 					"/api/sounds/search?page_size=50&sort=downloads",
+					{
+						headers: {
+							"X-Freesound-ApiKey": freesoundApiKey,
+							"X-Freesound-ClientId": freesoundClientId,
+						},
+					},
 				);
 
 				if (!shouldIgnore) {
@@ -555,11 +563,10 @@ function AudioItem({ sound, isPlaying, onPlay }: AudioItemProps) {
 				<Button
 					variant="text"
 					size="icon"
-					className={`hover:text-foreground w-auto !opacity-100 ${
-						isSaved
-							? "text-red-500 hover:text-red-600"
-							: "text-muted-foreground"
-					}`}
+					className={`hover:text-foreground w-auto !opacity-100 ${isSaved
+						? "text-red-500 hover:text-red-600"
+						: "text-muted-foreground"
+						}`}
 					onClick={handleSaveClick}
 					title={isSaved ? "Remove from saved" : "Save sound"}
 				>

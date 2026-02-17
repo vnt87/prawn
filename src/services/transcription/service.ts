@@ -9,6 +9,7 @@ import {
 	TRANSCRIPTION_MODELS,
 } from "@/constants/transcription-constants";
 import type { WorkerMessage, WorkerResponse } from "./worker";
+import { useIntegrationsStore } from "@/stores/integrations-store";
 
 type ProgressCallback = (progress: TranscriptionProgress) => void;
 
@@ -29,6 +30,25 @@ class TranscriptionService {
 		modelId?: TranscriptionModelId;
 		onProgress?: ProgressCallback;
 	}): Promise<TranscriptionResult> {
+		const { modalTranscriptionUrl } = useIntegrationsStore.getState();
+
+		if (modalTranscriptionUrl) {
+			try {
+				return await this.transcribeRemote({
+					audioData,
+					language,
+					url: modalTranscriptionUrl,
+					onProgress,
+				});
+			} catch (error) {
+				console.warn(
+					"Remote transcription failed, falling back to local:",
+					error,
+				);
+				// Fall back to local worker
+			}
+		}
+
 		await this.ensureWorker({ modelId, onProgress });
 
 		return new Promise((resolve, reject) => {
@@ -78,6 +98,80 @@ class TranscriptionService {
 				language,
 			} satisfies WorkerMessage);
 		});
+	}
+
+	private async transcribeRemote({
+		audioData,
+		language,
+		url,
+		onProgress,
+	}: {
+		audioData: Float32Array;
+		language: TranscriptionLanguage;
+		url: string;
+		onProgress?: ProgressCallback;
+	}): Promise<TranscriptionResult> {
+		onProgress?.({
+			status: "transcribing",
+			progress: 0,
+			message: "Sending audio to remote service...",
+		});
+
+		// Convert Float32Array to 16-bit PCM WAV for better compatibility
+		const wavBlob = this.createTranscriptionWav(audioData);
+		const formData = new FormData();
+		formData.append("audio", wavBlob, "audio.wav");
+		formData.append("language", language);
+
+		const response = await fetch(url, {
+			method: "POST",
+			body: formData,
+		});
+
+		if (!response.ok) {
+			throw new Error(`Remote transcription failed: ${response.statusText}`);
+		}
+
+		const result = await response.json();
+		return {
+			text: result.text,
+			segments: result.segments || [],
+			language: result.language || language,
+		};
+	}
+
+	private createTranscriptionWav(samples: Float32Array): Blob {
+		const buffer = new ArrayBuffer(44 + samples.length * 2);
+		const view = new DataView(buffer);
+
+		const writeString = (offset: number, string: string) => {
+			for (let i = 0; i < string.length; i++) {
+				view.setUint8(offset + i, string.charCodeAt(i));
+			}
+		};
+
+		writeString(0, "RIFF");
+		view.setUint32(4, 36 + samples.length * 2, true);
+		writeString(8, "WAVE");
+		writeString(12, "fmt ");
+		view.setUint32(16, 16, true);
+		view.setUint16(20, 1, true); // PCM
+		view.setUint16(22, 1, true); // Mono
+		view.setUint32(24, 16000, true); // Sample rate (Whisper usually expects 16k)
+		view.setUint32(28, 16000 * 2, true); // Byte rate
+		view.setUint16(32, 2, true); // Block align
+		view.setUint16(34, 16, true); // Bits per sample
+		writeString(36, "data");
+		view.setUint32(40, samples.length * 2, true);
+
+		let offset = 44;
+		for (let i = 0; i < samples.length; i++) {
+			const s = Math.max(-1, Math.min(1, samples[i]));
+			view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+			offset += 2;
+		}
+
+		return new Blob([buffer], { type: "audio/wav" });
 	}
 
 	cancel() {

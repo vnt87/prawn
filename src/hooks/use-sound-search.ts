@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useSoundsStore } from "@/stores/sounds-store";
+import { useIntegrationsStore } from "@/stores/integrations-store";
 
 export function useSoundSearch({
 	query,
@@ -30,6 +31,8 @@ export function useSoundSearch({
 		resetPagination,
 	} = useSoundsStore();
 
+	const { freesoundApiKey, freesoundClientId } = useIntegrationsStore();
+
 	const loadMore = async () => {
 		if (isLoadingMore || !hasNextPage) return;
 
@@ -49,6 +52,12 @@ export function useSoundSearch({
 			searchParams.set("commercial_only", commercialOnly.toString());
 			const response = await fetch(
 				`/api/sounds/search?${searchParams.toString()}`,
+				{
+					headers: {
+						"X-Freesound-ApiKey": freesoundApiKey,
+						"X-Freesound-ClientId": freesoundClientId,
+					},
+				},
 			);
 
 			if (response.ok) {
@@ -62,7 +71,7 @@ export function useSoundSearch({
 
 				setCurrentPage({ page: nextPage });
 				setHasNextPage({ hasNext: !!data.next });
-				setTotalCount(data.count);
+				setTotalCount({ count: data.count });
 			} else {
 				setSearchError({ error: `Load more failed: ${response.status}` });
 			}
@@ -97,6 +106,12 @@ export function useSoundSearch({
 
 				const response = await fetch(
 					`/api/sounds/search?q=${encodeURIComponent(query)}&type=effects&page=1`,
+					{
+						headers: {
+							"X-Freesound-ApiKey": freesoundApiKey,
+							"X-Freesound-ClientId": freesoundClientId,
+						},
+					},
 				);
 
 				if (!ignore) {
@@ -140,6 +155,8 @@ export function useSoundSearch({
 		setHasNextPage,
 		setTotalCount,
 		resetPagination,
+		freesoundApiKey,
+		freesoundClientId,
 	]);
 
 	return {
