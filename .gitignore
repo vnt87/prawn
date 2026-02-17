@@ -8,3 +8,4 @@
 .next/
 node_modules/
 .vercel
+.agent*/
