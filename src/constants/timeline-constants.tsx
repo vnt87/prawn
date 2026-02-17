@@ -5,7 +5,7 @@ import {
 	Music,
 	Type,
 } from "lucide-react";
-import { OcVideoIcon } from "@opencut/ui/icons";
+import { OcVideoIcon } from "@nvai/ui/icons";
 
 export const TRACK_COLORS: Record<TrackType, { background: string }> = {
 	video: {

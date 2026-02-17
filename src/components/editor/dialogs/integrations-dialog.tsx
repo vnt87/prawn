@@ -175,7 +175,7 @@ export function IntegrationsDialog({
                                                 id="r2BucketName"
                                                 value={values.r2BucketName}
                                                 onChange={(e) => handleChange("r2BucketName", e.target.value)}
-                                                placeholder="prawn-assets"
+                                                placeholder="nvai-assets"
                                             />
                                         </div>
                                     </div>

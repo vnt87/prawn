@@ -5,7 +5,7 @@ import { Toaster } from "../components/ui/sonner";
 import { TooltipProvider } from "../components/ui/tooltip";
 import { I18nProvider } from "../components/providers/i18n-provider";
 import { baseMetaData } from "./metadata";
-import { webEnv } from "@opencut/env/web";
+import { webEnv } from "@nvai/env/web";
 import { Inter } from "next/font/google";
 
 const siteFont = Inter({ subsets: ["latin"] });

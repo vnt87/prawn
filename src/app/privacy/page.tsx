@@ -10,13 +10,13 @@ import { Separator } from "@/components/ui/separator";
 import { SOCIAL_LINKS } from "@/constants/site-constants";
 
 export const metadata: Metadata = {
-	title: "Privacy Policy - OpenCut",
+	title: "Privacy Policy - NVAI",
 	description:
-		"Learn how OpenCut handles your data and privacy. Our commitment to protecting your information while you edit videos.",
+		"Learn how NVAI handles your data and privacy. Our commitment to protecting your information while you edit videos.",
 	openGraph: {
-		title: "Privacy Policy - OpenCut",
+		title: "Privacy Policy - NVAI",
 		description:
-			"Learn how OpenCut handles your data and privacy. Our commitment to protecting your information while you edit videos.",
+			"Learn how NVAI handles your data and privacy. Our commitment to protecting your information while you edit videos.",
 		type: "website",
 	},
 };
@@ -65,10 +65,10 @@ export default function PrivacyPage() {
 						<p className="mt-4">
 							Questions? Email us at{" "}
 							<a
-								href="mailto:oss@opencut.app"
+								href="mailto:contact@nvai.app"
 								className="text-primary hover:underline"
 							>
-								oss@opencut.app
+								contact@nvai.app
 							</a>
 						</p>
 					</AccordionContent>
@@ -113,17 +113,7 @@ export default function PrivacyPage() {
 					stored locally in your browser using IndexedDB.
 				</p>
 				<p>
-					We use{" "}
-					<a
-						href="https://www.better-auth.com"
-						target="_blank"
-						rel="noopener"
-						className="text-primary hover:underline"
-					>
-						Better Auth
-					</a>{" "}
-					for secure authentication and follow industry-standard security
-					practices.
+					We prioritize security and follow industry-standard practices to protect your data.
 				</p>
 			</section>
 
@@ -172,7 +162,7 @@ export default function PrivacyPage() {
 						Databuddy
 					</a>{" "}
 					for completely anonymized and non-invasive analytics to understand how
-					people use OpenCut.
+					people use Video Audio Editor.
 				</p>
 				<p>
 					This helps us improve the editor, but we never collect personal
@@ -197,7 +187,7 @@ export default function PrivacyPage() {
 
 			<section className="flex flex-col gap-3">
 				<h2 className="text-2xl font-semibold">Third-Party Services</h2>
-				<p>OpenCut integrates with these services:</p>
+				<p>The Video Audio Editor integrates with these services:</p>
 				<ul className="list-disc space-y-2 pl-6">
 					<li>
 						<strong>Google OAuth:</strong> For optional Google sign-in (governed
@@ -226,7 +216,7 @@ export default function PrivacyPage() {
 			<section className="flex flex-col gap-3">
 				<h2 className="text-2xl font-semibold">Open Source Transparency</h2>
 				<p>
-					OpenCut is completely open source. You can review our code, see
+					The Video Audio Editor is completely open source. You can review our code, see
 					exactly how we handle data, and even self-host the application if you
 					prefer.
 				</p>
@@ -259,10 +249,10 @@ export default function PrivacyPage() {
 					</a>
 					, email us at{" "}
 					<a
-						href="mailto:oss@opencut.app"
+						href="mailto:contact@nvai.app"
 						className="text-primary hover:underline"
 					>
-						oss@opencut.app
+						contact@nvai.app
 					</a>
 					, or reach out on{" "}
 					<a
@@ -280,7 +270,7 @@ export default function PrivacyPage() {
 			<Separator />
 
 			<p className="text-muted-foreground text-sm">
-				Last updated: July 14, 2025
+				Last updated: February 17, 2026
 			</p>
 		</BasePage>
 	);

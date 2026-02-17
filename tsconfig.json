@@ -27,13 +27,13 @@
       "@/*": [
         "./src/*"
       ],
-      "@opencut/ui": [
+      "@nvai/ui": [
         "./src/packages_internal/ui/index.ts"
       ],
-      "@opencut/ui/*": [
+      "@nvai/ui/*": [
         "./src/packages_internal/ui/*"
       ],
-      "@opencut/env/*": [
+      "@nvai/env/*": [
         "./src/packages_internal/env/*"
       ]
     },

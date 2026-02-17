@@ -1,9 +1,9 @@
-import { OcDataBuddyIcon, } from "@opencut/ui/icons";
+import { OcDataBuddyIcon, } from "@nvai/ui/icons";
 
-export const SITE_URL = "https://opencut.app";
+export const SITE_URL = "http://localhost:3000";
 
 export const SITE_INFO = {
-	title: "OpenCut",
+	title: "Video Audio Editor - Powered by NVAI",
 	description:
 		"A simple but powerful video editor that gets the job done. In your browser.",
 	url: SITE_URL,
@@ -22,17 +22,17 @@ export type ExternalTool = {
 export const EXTERNAL_TOOLS: ExternalTool[] = [
 	{
 		name: "Databuddy",
-		description: "GDPR compliant analytics and user insights for OpenCut",
-		url: "https://databuddy.cc?utm_source=opencut",
+		description: "GDPR compliant analytics and user insights for NVAI",
+		url: "https://databuddy.cc?utm_source=nvai",
 		icon: OcDataBuddyIcon,
 	},
 ];
 
-export const DEFAULT_LOGO_URL = "/logos/opencut/svg/logo.svg";
+export const DEFAULT_LOGO_URL = "/logos/nvai/svg/logo.svg";
 
 export const SOCIAL_LINKS = {
-	x: "https://x.com/opencutapp",
-	github: "https://github.com/OpenCut-app/OpenCut",
+	x: "https://x.com/nvai_app",
+	github: "https://github.com/vnt87/prawn",
 	discord: "https://discord.com/invite/Mu3acKZvCp",
 };
 
@@ -43,17 +43,4 @@ export type Sponsor = {
 	description: string;
 };
 
-export const SPONSORS: Sponsor[] = [
-	{
-		name: "Fal.ai",
-		url: "https://fal.ai?utm_source=opencut",
-		logo: "/logos/others/fal.svg",
-		description: "Generative image, video, and audio models all in one place.",
-	},
-	{
-		name: "Vercel",
-		url: "https://vercel.com?utm_source=opencut",
-		logo: "/logos/others/vercel.svg",
-		description: "Platform where we deploy and host OpenCut.",
-	},
-];
+export const SPONSORS: Sponsor[] = [];

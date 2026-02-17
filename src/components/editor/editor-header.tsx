@@ -172,7 +172,7 @@ export function EditorHeader() {
 				<div className="header-left">
 					<div className="header-brand" onClick={() => router.push("/")}>
 						<ShrimpIcon className="brand-icon" />
-						<span className="brand-text">Prawn</span>
+						<span className="brand-text">Video Audio Editor</span>
 					</div>
 
 					<div className="header-menu" ref={menuRef}>

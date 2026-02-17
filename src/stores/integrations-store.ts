@@ -46,7 +46,7 @@ export const useIntegrationsStore = create<IntegrationsState>()(
             },
         }),
         {
-            name: "prawn-integrations",
+            name: "nvai-integrations",
         },
     ),
 );

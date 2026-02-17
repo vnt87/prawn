@@ -44,7 +44,7 @@ import {
 	ArrowDown,
 	Info,
 } from "lucide-react";
-import { OcVideoIcon } from "@opencut/ui/icons";
+import { OcVideoIcon } from "@nvai/ui/icons";
 import { Label } from "@/components/ui/label";
 import {
 	DropdownMenu,

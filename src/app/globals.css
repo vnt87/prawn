@@ -72,8 +72,8 @@
   --canvas-check-1: #2b2b2b;
   --canvas-check-2: #1e1e1e;
 
-  /* ===== OpenCut Mappings (SHRIMP-ified) ===== */
-  /* We map standard OpenCut/Shadcn variables to use SHRIMP tokens */
+  /* ===== NVAI Mappings (SHRIMP-ified) ===== */
+  /* We map standard NVAI/Shadcn variables to use SHRIMP tokens */
 
   --background: var(--bg-app);
   --foreground: var(--text-primary);
@@ -174,7 +174,7 @@
   --canvas-check-1: #ffffff;
   --canvas-check-2: #eeeeee;
 
-  /* ===== Re-map OpenCut Variables for Light Mode ===== */
+  /* ===== Re-map NVAI Variables for Light Mode ===== */
   --background: var(--bg-app);
   --foreground: var(--text-primary);
 

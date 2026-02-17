@@ -35,7 +35,7 @@ export default function RootPage() {
         <div className="bg-background flex h-screen w-screen items-center justify-center">
             <div className="flex flex-col items-center gap-4">
                 <Loader2 className="text-muted-foreground size-8 animate-spin" />
-                <p className="text-muted-foreground text-sm">Loading Prawn...</p>
+                <p className="text-muted-foreground text-sm">Loading Video Audio Editor...</p>
             </div>
         </div>
     );
