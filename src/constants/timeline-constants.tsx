@@ -1,11 +1,10 @@
 import type { TTimelineViewState } from "@/types/project";
 import type { TrackType } from "@/types/timeline";
 import {
-	Happy01Icon,
-	MusicNote03Icon,
-	TextIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+	Smile,
+	Music,
+	Type,
+} from "lucide-react";
 import { OcVideoIcon } from "@opencut/ui/icons";
 
 export const TRACK_COLORS: Record<TrackType, { background: string }> = {
@@ -51,20 +50,17 @@ export const DEFAULT_TIMELINE_VIEW_STATE: TTimelineViewState = {
 export const TRACK_ICONS: Record<TrackType, React.ReactNode> = {
 	video: <OcVideoIcon className="text-muted-foreground size-4 shrink-0" />,
 	text: (
-		<HugeiconsIcon
-			icon={TextIcon}
+		<Type
 			className="text-muted-foreground size-4 shrink-0"
 		/>
 	),
 	audio: (
-		<HugeiconsIcon
-			icon={MusicNote03Icon}
+		<Music
 			className="text-muted-foreground size-4 shrink-0"
 		/>
 	),
 	sticker: (
-		<HugeiconsIcon
-			icon={Happy01Icon}
+		<Smile
 			className="text-muted-foreground size-4 shrink-0"
 		/>
 	),

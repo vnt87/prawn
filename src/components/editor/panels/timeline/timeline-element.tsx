@@ -31,18 +31,16 @@ import { getActionDefinition, type TAction, invokeAction } from "@/lib/actions";
 import { useElementSelection } from "@/hooks/timeline/element/use-element-selection";
 import Image from "next/image";
 import {
-	ScissorIcon,
-	Delete02Icon,
-	Copy01Icon,
-	ViewIcon,
-	ViewOffSlashIcon,
-	VolumeHighIcon,
-	VolumeOffIcon,
-	VolumeMute02Icon,
-	Search01Icon,
-	Exchange01Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+	Scissors,
+	Trash2,
+	Copy,
+	Eye,
+	EyeOff,
+	Volume2,
+	VolumeX,
+	Search,
+	ArrowLeftRight,
+} from "lucide-react";
 import { uppercase } from "@/utils/string";
 import type { ComponentProps } from "react";
 
@@ -168,7 +166,7 @@ export function TimelineElement({
 			<ContextMenuContent className="z-200 w-64">
 				<ActionMenuItem
 					action="split"
-					icon={<HugeiconsIcon icon={ScissorIcon} />}
+					icon={<Scissors className="size-4" />}
 				>
 					Split
 				</ActionMenuItem>
@@ -190,7 +188,7 @@ export function TimelineElement({
 				{selectedElements.length === 1 && (
 					<ActionMenuItem
 						action="duplicate-selected"
-						icon={<HugeiconsIcon icon={Copy01Icon} />}
+						icon={<Copy className="size-4" />}
 					>
 						Duplicate
 					</ActionMenuItem>
@@ -198,13 +196,13 @@ export function TimelineElement({
 				{selectedElements.length === 1 && hasMediaId(element) && (
 					<>
 						<ContextMenuItem
-							icon={<HugeiconsIcon icon={Search01Icon} />}
+							icon={<Search className="size-4" />}
 							onClick={(event) => handleRevealInMedia({ event })}
 						>
 							Reveal media
 						</ContextMenuItem>
 						<ContextMenuItem
-							icon={<HugeiconsIcon icon={Exchange01Icon} />}
+							icon={<ArrowLeftRight className="size-4" />}
 							disabled
 						>
 							Replace media
@@ -284,13 +282,11 @@ function ElementInner({
 					: canElementBeHidden(element) && element.hidden) && (
 						<div className="bg-opacity-50 pointer-events-none absolute inset-0 flex items-center justify-center bg-black">
 							{hasAudio ? (
-								<HugeiconsIcon
-									icon={VolumeHighIcon}
+								<Volume2
 									className="size-6 text-white"
 								/>
 							) : (
-								<HugeiconsIcon
-									icon={VolumeOffIcon}
+								<VolumeX
 									className="size-6 text-white"
 								/>
 							)}
@@ -510,7 +506,7 @@ function CopyMenuItem() {
 	return (
 		<ActionMenuItem
 			action="copy-selected"
-			icon={<HugeiconsIcon icon={Copy01Icon} />}
+			icon={<Copy className="size-4" />}
 		>
 			Copy
 		</ActionMenuItem>
@@ -528,12 +524,12 @@ function MuteMenuItem({
 }) {
 	const getIcon = () => {
 		if (isMultipleSelected && isCurrentElementSelected) {
-			return <HugeiconsIcon icon={VolumeMute02Icon} />;
+			return <VolumeX className="size-4" />;
 		}
 		return isMuted ? (
-			<HugeiconsIcon icon={VolumeHighIcon} />
+			<Volume2 className="size-4" />
 		) : (
-			<HugeiconsIcon icon={VolumeOffIcon} />
+			<VolumeX className="size-4" />
 		);
 	};
 
@@ -557,12 +553,12 @@ function VisibilityMenuItem({
 
 	const getIcon = () => {
 		if (isMultipleSelected && isCurrentElementSelected) {
-			return <HugeiconsIcon icon={ViewOffSlashIcon} />;
+			return <EyeOff className="size-4" />;
 		}
 		return isHidden ? (
-			<HugeiconsIcon icon={ViewIcon} />
+			<Eye className="size-4" />
 		) : (
-			<HugeiconsIcon icon={ViewOffSlashIcon} />
+			<EyeOff className="size-4" />
 		);
 	};
 
@@ -591,7 +587,7 @@ function DeleteMenuItem({
 		<ActionMenuItem
 			action="delete-selected"
 			variant="destructive"
-			icon={<HugeiconsIcon icon={Delete02Icon} />}
+			icon={<Trash2 className="size-4" />}
 		>
 			{isMultipleSelected && isCurrentElementSelected
 				? `Delete ${selectedCount} elements`

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { cn } from "@/utils/ui";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { MinusSignIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
+import { Minus, Plus } from "lucide-react";
 
 interface PropertyItemProps {
 	direction?: "row" | "column";
@@ -97,13 +96,12 @@ export function PropertyGroup({
 						</PropertyGroupTitle>
 						{extraHeaderContent}
 					</div>
-					<HugeiconsIcon
-						icon={isExpanded ? MinusSignIcon : PlusSignIcon}
-						className={cn(
-							"size-3",
-							isExpanded ? "text-foreground" : "text-muted-foreground",
-						)}
-					/>
+					<div className={cn(
+						"flex items-center justify-center size-3",
+						isExpanded ? "text-foreground" : "text-muted-foreground",
+					)}>
+						{isExpanded ? <Minus className="size-3" /> : <Plus className="size-3" />}
+					</div>
 				</button>
 			) : (
 				<div className="flex items-center justify-between p-4">

@@ -2,14 +2,13 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-	Delete02Icon,
-	TaskAdd02Icon,
-	ViewIcon,
-	ViewOffSlashIcon,
-	VolumeHighIcon,
-	VolumeOffIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+	Trash2,
+	ClipboardPaste,
+	Eye,
+	EyeOff,
+	Volume2,
+	VolumeX,
+} from "lucide-react";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -260,8 +259,8 @@ export function Timeline() {
 														<TrackToggleIcon
 															isOff={track.muted}
 															icons={{
-																on: VolumeHighIcon,
-																off: VolumeOffIcon,
+																on: Volume2,
+																off: VolumeX,
 															}}
 															onClick={() =>
 																editor.timeline.toggleTrackMute({
@@ -274,8 +273,8 @@ export function Timeline() {
 														<TrackToggleIcon
 															isOff={track.hidden}
 															icons={{
-																on: ViewIcon,
-																off: ViewOffSlashIcon,
+																on: Eye,
+																off: EyeOff,
 															}}
 															onClick={() =>
 																editor.timeline.toggleTrackVisibility({
@@ -437,7 +436,7 @@ export function Timeline() {
 												</ContextMenuTrigger>
 												<ContextMenuContent className="z-200 w-40">
 													<ContextMenuItem
-														icon={<HugeiconsIcon icon={TaskAdd02Icon} />}
+														icon={<ClipboardPaste className="size-4" />}
 														onClick={(e) => {
 															e.stopPropagation();
 															invokeAction("paste-copied");
@@ -453,7 +452,7 @@ export function Timeline() {
 															});
 														}}
 													>
-														<HugeiconsIcon icon={VolumeHighIcon} />
+														<Volume2 className="size-4" />
 														<span>
 															{canTracktHaveAudio(track) && track.muted
 																? t("timeline.track.unmute")
@@ -468,7 +467,7 @@ export function Timeline() {
 															});
 														}}
 													>
-														<HugeiconsIcon icon={ViewIcon} />
+														<Eye className="size-4" />
 														<span>
 															{canTrackBeHidden(track) && track.hidden
 																? t("timeline.track.show")
@@ -484,7 +483,7 @@ export function Timeline() {
 														}}
 														variant="destructive"
 													>
-														<HugeiconsIcon icon={Delete02Icon} />
+														<Trash2 className="size-4" />
 														{t("timeline.track.delete")}
 													</ContextMenuItem>
 												</ContextMenuContent>
@@ -512,22 +511,20 @@ function TrackToggleIcon({
 }: {
 	isOff: boolean;
 	icons: {
-		on: IconSvgElement;
-		off: IconSvgElement;
+		on: any;
+		off: any;
 	};
 	onClick: () => void;
 }) {
 	return (
 		<>
 			{isOff ? (
-				<HugeiconsIcon
-					icon={icons.off}
+				<icons.off
 					className="text-destructive size-4 cursor-pointer"
 					onClick={onClick}
 				/>
 			) : (
-				<HugeiconsIcon
-					icon={icons.on}
+				<icons.on
 					className="text-muted-foreground size-4 cursor-pointer"
 					onClick={onClick}
 				/>

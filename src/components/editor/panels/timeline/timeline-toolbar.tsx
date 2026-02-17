@@ -22,22 +22,20 @@ import { cn } from "@/utils/ui";
 import { useTimelineStore } from "@/stores/timeline-store";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-	Bookmark02Icon,
-	Delete02Icon,
-	SnowIcon,
-	ScissorIcon,
-	MagnetIcon,
-	Link04Icon,
-	SearchAddIcon,
-	SearchMinusIcon,
-	Copy01Icon,
-	AlignLeftIcon,
-	AlignRightIcon,
-	Layers01Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { useTranslation } from "react-i18next";
-import { Mic01Icon } from "@hugeicons/core-free-icons";
+	Scissors,
+	AlignLeft,
+	AlignRight,
+	Copy,
+	Trash2,
+	Bookmark,
+	Magnet,
+	Link as LinkIcon,
+	ZoomIn,
+	ZoomOut,
+	Layers,
+	Mic,
+	Snowflake,
+} from "lucide-react";
 import { useState } from "react";
 import { RecordingDialog } from "@/components/editor/dialogs/recording-dialog";
 import { useSoundsStore } from "@/stores/sounds-store";
@@ -100,19 +98,19 @@ function ToolbarLeftSection() {
 		<div className="flex items-center gap-1">
 			<TooltipProvider delayDuration={500}>
 				<ToolbarButton
-					icon={<HugeiconsIcon icon={ScissorIcon} />}
+					icon={<Scissors size={18} />}
 					tooltip="Split element"
 					onClick={({ event }) => handleAction({ action: "split", event })}
 				/>
 
 				<ToolbarButton
-					icon={<HugeiconsIcon icon={AlignLeftIcon} />}
+					icon={<AlignLeft size={18} />}
 					tooltip="Split left"
 					onClick={({ event }) => handleAction({ action: "split-left", event })}
 				/>
 
 				<ToolbarButton
-					icon={<HugeiconsIcon icon={AlignRightIcon} />}
+					icon={<AlignRight size={18} />}
 					tooltip="Split right"
 					onClick={({ event }) =>
 						handleAction({ action: "split-right", event })
@@ -127,7 +125,7 @@ function ToolbarLeftSection() {
 				/>
 
 				<ToolbarButton
-					icon={<HugeiconsIcon icon={Copy01Icon} />}
+					icon={<Copy size={18} />}
 					tooltip="Duplicate element"
 					onClick={({ event }) =>
 						handleAction({ action: "duplicate-selected", event })
@@ -135,14 +133,14 @@ function ToolbarLeftSection() {
 				/>
 
 				<ToolbarButton
-					icon={<HugeiconsIcon icon={SnowIcon} />}
+					icon={<Snowflake size={18} />}
 					tooltip="Coming soon" /* freeze frame */
 					disabled={true}
 					onClick={({ event: _event }) => { }}
 				/>
 
 				<ToolbarButton
-					icon={<HugeiconsIcon icon={Delete02Icon} />}
+					icon={<Trash2 size={18} />}
 					tooltip="Delete element"
 					onClick={({ event }) =>
 						handleAction({ action: "delete-selected", event })
@@ -153,7 +151,7 @@ function ToolbarLeftSection() {
 
 				<Tooltip>
 					<ToolbarButton
-						icon={<HugeiconsIcon icon={Bookmark02Icon} />}
+						icon={<Bookmark size={18} />}
 						isActive={currentBookmarked}
 						tooltip={currentBookmarked ? "Remove bookmark" : "Add bookmark"}
 						onClick={({ event }) =>
@@ -210,7 +208,7 @@ function RecordingTrigger() {
 	return (
 		<>
 			<ToolbarButton
-				icon={<HugeiconsIcon icon={Mic01Icon} />}
+				icon={<Mic size={18} />}
 				tooltip="Record Voiceover"
 				onClick={({ event }) => {
 					event.stopPropagation();
@@ -238,7 +236,7 @@ function SceneSelector() {
 				<SplitButtonSeparator />
 				<ScenesView>
 					<SplitButtonRight onClick={() => { }} type="button">
-						<HugeiconsIcon icon={Layers01Icon} className="size-4" />
+						<Layers className="size-4" />
 					</SplitButtonRight>
 				</ScenesView>
 			</SplitButton>
@@ -268,14 +266,14 @@ function ToolbarRightSection({
 		<div className="flex items-center gap-1">
 			<TooltipProvider delayDuration={500}>
 				<ToolbarButton
-					icon={<HugeiconsIcon icon={MagnetIcon} />}
+					icon={<Magnet size={18} />}
 					isActive={snappingEnabled}
 					tooltip="Auto snapping"
 					onClick={() => toggleSnapping()}
 				/>
 
 				<ToolbarButton
-					icon={<HugeiconsIcon icon={Link04Icon} className="scale-110" />}
+					icon={<LinkIcon className="scale-110" size={18} />}
 					isActive={rippleEditingEnabled}
 					tooltip="Ripple editing"
 					onClick={() => toggleRippleEditing()}
@@ -291,7 +289,7 @@ function ToolbarRightSection({
 					type="button"
 					onClick={() => onZoom({ direction: "out" })}
 				>
-					<HugeiconsIcon icon={SearchMinusIcon} />
+					<ZoomOut size={16} />
 				</Button>
 				<Slider
 					className="w-28"
@@ -309,7 +307,7 @@ function ToolbarRightSection({
 					type="button"
 					onClick={() => onZoom({ direction: "in" })}
 				>
-					<HugeiconsIcon icon={SearchAddIcon} />
+					<ZoomIn size={16} />
 				</Button>
 			</div>
 		</div>

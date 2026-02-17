@@ -2,22 +2,21 @@ import type { ImageElement, VideoElement } from "@/types/timeline";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import {
-    CircleIcon,
-    RectangularIcon,
-    StarIcon,
-    FavouriteIcon,
-    TextIcon,
-    PaintBoardIcon,
-    PencilEdit02Icon,
-    Layout01Icon,
-    Film02Icon,
-    RefreshIcon,
-    ArrowUp01Icon,
-    ArrowDown01Icon,
-    SquareLock02Icon,
-    MaximizeIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+    Circle,
+    RectangleHorizontal,
+    Star,
+    Heart,
+    Type,
+    Brush,
+    PenTool,
+    Layout,
+    Film,
+    RefreshCcw,
+    ChevronUp,
+    ChevronDown,
+    Lock,
+    Maximize2,
+} from "lucide-react";
 import {
     PropertyGroup,
     PropertyItem,
@@ -31,15 +30,15 @@ export function MaskTab({ element }: { element: VideoElement | ImageElement }) {
     const [selectedShape, setSelectedShape] = useState<string>("rectangle");
 
     const shapes = [
-        { id: "split", label: "Split", icon: Layout01Icon },
-        { id: "filmstrip", label: "Filmstrip", icon: Film02Icon },
-        { id: "circle", label: "Circle", icon: CircleIcon },
-        { id: "rectangle", label: "Rectangle", icon: RectangularIcon },
-        { id: "stars", label: "Stars", icon: StarIcon },
-        { id: "heart", label: "Heart", icon: FavouriteIcon },
-        { id: "text", label: "Text", icon: TextIcon },
-        { id: "brush", label: "Brush", icon: PaintBoardIcon },
-        { id: "pen", label: "Pen", icon: PencilEdit02Icon },
+        { id: "split", label: "Split", icon: Layout },
+        { id: "filmstrip", label: "Filmstrip", icon: Film },
+        { id: "circle", label: "Circle", icon: Circle },
+        { id: "rectangle", label: "Rectangle", icon: RectangleHorizontal },
+        { id: "stars", label: "Stars", icon: Star },
+        { id: "heart", label: "Heart", icon: Heart },
+        { id: "text", label: "Text", icon: Type },
+        { id: "brush", label: "Brush", icon: Brush },
+        { id: "pen", label: "Pen", icon: PenTool },
     ];
 
     return (
@@ -78,7 +77,7 @@ export function MaskTab({ element }: { element: VideoElement | ImageElement }) {
                                         : "border-border bg-card text-muted-foreground group-hover:border-primary/50"
                                 )}
                             >
-                                <HugeiconsIcon icon={shape.icon} className="size-5" />
+                                <shape.icon className="size-5" />
                             </div>
                             <span className="text-[10px] text-muted-foreground text-center">
                                 {shape.label}
@@ -98,16 +97,16 @@ export function MaskTab({ element }: { element: VideoElement | ImageElement }) {
                                 <span className="text-muted-foreground text-xs">X</span>
                                 <div className="flex-1 text-center text-xs">0</div>
                                 <div className="flex flex-col -gap-1">
-                                    <HugeiconsIcon icon={ArrowUp01Icon} className="size-2 text-muted-foreground cursor-pointer" />
-                                    <HugeiconsIcon icon={ArrowDown01Icon} className="size-2 text-muted-foreground cursor-pointer" />
+                                    <ChevronUp className="size-2 text-muted-foreground cursor-pointer" />
+                                    <ChevronDown className="size-2 text-muted-foreground cursor-pointer" />
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
                                 <span className="text-muted-foreground text-xs">Y</span>
                                 <div className="flex-1 text-center text-xs">0</div>
                                 <div className="flex flex-col -gap-1">
-                                    <HugeiconsIcon icon={ArrowUp01Icon} className="size-2 text-muted-foreground cursor-pointer" />
-                                    <HugeiconsIcon icon={ArrowDown01Icon} className="size-2 text-muted-foreground cursor-pointer" />
+                                    <ChevronUp className="size-2 text-muted-foreground cursor-pointer" />
+                                    <ChevronDown className="size-2 text-muted-foreground cursor-pointer" />
                                 </div>
                             </div>
                         </div>
@@ -119,8 +118,8 @@ export function MaskTab({ element }: { element: VideoElement | ImageElement }) {
                             <div className="flex items-center gap-1 bg-secondary rounded px-2 py-1 w-20">
                                 <div className="flex-1 text-center text-xs">0.0°</div>
                                 <div className="flex flex-col -gap-1">
-                                    <HugeiconsIcon icon={ArrowUp01Icon} className="size-2 text-muted-foreground cursor-pointer" />
-                                    <HugeiconsIcon icon={ArrowDown01Icon} className="size-2 text-muted-foreground cursor-pointer" />
+                                    <ChevronUp className="size-2 text-muted-foreground cursor-pointer" />
+                                    <ChevronDown className="size-2 text-muted-foreground cursor-pointer" />
                                 </div>
                             </div>
                             <div className="size-6 rounded-full border border-muted-foreground/30 flex items-center justify-center relative cursor-pointer">
@@ -133,20 +132,20 @@ export function MaskTab({ element }: { element: VideoElement | ImageElement }) {
                         <PropertyItemLabel>Size</PropertyItemLabel>
                         <div className="flex gap-2 items-center">
                             <div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
-                                <HugeiconsIcon icon={MaximizeIcon} className="size-3 text-muted-foreground rotate-90" />
+                                <Maximize2 className="size-3 text-muted-foreground rotate-90" />
                                 <div className="flex-1 text-center text-xs">540</div>
                                 <div className="flex flex-col -gap-1">
-                                    <HugeiconsIcon icon={ArrowUp01Icon} className="size-2 text-muted-foreground cursor-pointer" />
-                                    <HugeiconsIcon icon={ArrowDown01Icon} className="size-2 text-muted-foreground cursor-pointer" />
+                                    <ChevronUp className="size-2 text-muted-foreground cursor-pointer" />
+                                    <ChevronDown className="size-2 text-muted-foreground cursor-pointer" />
                                 </div>
                             </div>
-                            <HugeiconsIcon icon={SquareLock02Icon} className="size-3 text-muted-foreground" />
+                            <Lock className="size-3 text-muted-foreground" />
                             <div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
-                                <HugeiconsIcon icon={MaximizeIcon} className="size-3 text-muted-foreground" />
+                                <Maximize2 className="size-3 text-muted-foreground" />
                                 <div className="flex-1 text-center text-xs">540</div>
                                 <div className="flex flex-col -gap-1">
-                                    <HugeiconsIcon icon={ArrowUp01Icon} className="size-2 text-muted-foreground cursor-pointer" />
-                                    <HugeiconsIcon icon={ArrowDown01Icon} className="size-2 text-muted-foreground cursor-pointer" />
+                                    <ChevronUp className="size-2 text-muted-foreground cursor-pointer" />
+                                    <ChevronDown className="size-2 text-muted-foreground cursor-pointer" />
                                 </div>
                             </div>
                         </div>
@@ -177,7 +176,7 @@ export function MaskTab({ element }: { element: VideoElement | ImageElement }) {
                         <PropertyItemLabel>Direction</PropertyItemLabel>
                         <div className="bg-secondary rounded px-3 py-1.5 text-xs w-full max-w-[200px] flex justify-between items-center cursor-pointer">
                             Both
-                            <HugeiconsIcon icon={ArrowDown01Icon} className="size-3 opacity-50" />
+                            <ChevronDown className="size-3 opacity-50" />
                         </div>
                     </PropertyItem>
                     <div className="flex justify-end">

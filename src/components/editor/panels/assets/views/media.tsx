@@ -40,15 +40,14 @@ import type { MediaAsset } from "@/types/assets";
 import type { CreateTimelineElement } from "@/types/timeline";
 import { cn } from "@/utils/ui";
 import {
-	CloudUploadIcon,
-	GridViewIcon,
-	LeftToRightListDashIcon,
-	SortingOneNineIcon,
-	Image02Icon,
-	MusicNote03Icon,
-	Video01Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+	CloudUpload,
+	Grid3X3,
+	List,
+	ArrowUpDown,
+	Image as ImageIcon,
+	Music,
+	Video,
+} from "lucide-react";
 
 export function MediaView() {
 	const editor = useEditor();
@@ -256,7 +255,7 @@ export function MediaView() {
 							disabled={isProcessing}
 							className="items-center justify-center gap-1.5 hover:bg-accent px-3 mr-1"
 						>
-							<HugeiconsIcon icon={Video01Icon} />
+							<Video className="size-4" />
 							Record
 						</Button>
 						<TooltipProvider>
@@ -274,9 +273,9 @@ export function MediaView() {
 										className="items-center justify-center"
 									>
 										{mediaViewMode === "grid" ? (
-											<HugeiconsIcon icon={LeftToRightListDashIcon} />
+											<List className="size-4" />
 										) : (
-											<HugeiconsIcon icon={GridViewIcon} />
+											<Grid3X3 className="size-4" />
 										)}
 									</Button>
 								</TooltipTrigger>
@@ -297,7 +296,7 @@ export function MediaView() {
 													disabled={isProcessing}
 													className="items-center justify-center"
 												>
-													<HugeiconsIcon icon={SortingOneNineIcon} />
+													<ArrowUpDown className="size-4" />
 												</Button>
 											</DropdownMenuTrigger>
 										</TooltipTrigger>
@@ -376,7 +375,7 @@ export function MediaView() {
 							size="sm"
 							className="items-center justify-center gap-1.5 ml-1.5 hover:bg-accent px-3"
 						>
-							<HugeiconsIcon icon={CloudUploadIcon} />
+							<CloudUpload className="size-4" />
 							Import
 						</Button>
 					</div>
@@ -594,12 +593,12 @@ function MediaDurationLabel({ duration }: { duration?: number }) {
 }
 
 function MediaTypePlaceholder({
-	icon,
+	icon: Icon,
 	label,
 	duration,
 	variant,
 }: {
-	icon: IconSvgElement;
+	icon: any;
 	label: string;
 	duration?: number;
 	variant: "muted" | "bordered";
@@ -613,7 +612,7 @@ function MediaTypePlaceholder({
 				variant === "muted" ? "bg-muted/30" : "border",
 			)}
 		>
-			<HugeiconsIcon icon={icon} className={iconClassName} />
+			<Icon className={iconClassName} />
 			<span className="text-xs">{label}</span>
 			<MediaDurationLabel duration={duration} />
 		</div>
@@ -667,7 +666,7 @@ function MediaPreview({
 
 		return (
 			<MediaTypePlaceholder
-				icon={Video01Icon}
+				icon={Video}
 				label="Video"
 				duration={item.duration}
 				variant="muted"
@@ -678,7 +677,7 @@ function MediaPreview({
 	if (item.type === "audio") {
 		return (
 			<MediaTypePlaceholder
-				icon={MusicNote03Icon}
+				icon={Music}
 				label="Audio"
 				duration={item.duration}
 				variant="bordered"
@@ -687,7 +686,7 @@ function MediaPreview({
 	}
 
 	return (
-		<MediaTypePlaceholder icon={Image02Icon} label="Unknown" variant="muted" />
+		<MediaTypePlaceholder icon={ImageIcon} label="Unknown" variant="muted" />
 	);
 }
 

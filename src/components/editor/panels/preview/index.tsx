@@ -15,12 +15,16 @@ import { EditableTimecode } from "@/components/editable-timecode";
 import { invokeAction } from "@/lib/actions";
 import { Button } from "@/components/ui/button";
 import {
-	FullScreenIcon,
-	PauseIcon,
-	PlayIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+	Maximize2,
+	Pause,
+	Play,
+	Disc,
+} from "lucide-react";
 import { cn } from "@/utils/ui";
+import { RecordingDialog } from "@/components/editor/dialogs/recording-dialog";
+import { processMediaAssets } from "@/lib/media/processing";
+import { useState } from "react";
+import { toast } from "sonner";
 
 function usePreviewSize() {
 	const editor = useEditor();
@@ -94,6 +98,31 @@ function PreviewToolbar({
 	const currentTime = editor.playback.getCurrentTime();
 	const totalDuration = editor.timeline.getTotalDuration();
 	const fps = editor.project.getActive().settings.fps;
+	const activeProject = editor.project.getActive();
+	const [isRecordingOpen, setIsRecordingOpen] = useState(false);
+
+	const handleSaveRecording = async (file: File) => {
+		if (!activeProject) return;
+		try {
+			const dt = new DataTransfer();
+			dt.items.add(file);
+			const assets = await processMediaAssets({
+				files: dt.files,
+				onProgress: () => { },
+			});
+
+			for (const asset of assets) {
+				await editor.media.addMediaAsset({
+					projectId: activeProject.metadata.id,
+					asset,
+				});
+			}
+			toast.success("Recording saved to project assets");
+		} catch (error) {
+			console.error("Failed to save recording", error);
+			toast.error("Failed to save recording");
+		}
+	};
 
 	return (
 		<div className="grid grid-cols-[1fr_auto_1fr] items-center pb-3 pt-5 px-5">
@@ -116,14 +145,27 @@ function PreviewToolbar({
 				</span>
 			</div>
 
-			<Button
-				variant="text"
-				size="icon"
-				type="button"
-				onClick={() => invokeAction("toggle-play")}
-			>
-				<HugeiconsIcon icon={isPlaying ? PauseIcon : PlayIcon} />
-			</Button>
+			<div className="flex items-center gap-2">
+				<Button
+					variant="text"
+					size="icon"
+					type="button"
+					onClick={() => invokeAction("toggle-play")}
+				>
+					{isPlaying ? <Pause className="size-5" /> : <Play className="size-5" />}
+				</Button>
+
+				<Button
+					variant="text"
+					size="icon"
+					type="button"
+					onClick={() => setIsRecordingOpen(true)}
+					title="Record Video"
+					className="text-red-500 hover:text-red-600"
+				>
+					<Disc fill="currentColor" className="size-5" />
+				</Button>
+			</div>
 
 			<div className="justify-self-end">
 				<Button
@@ -133,9 +175,16 @@ function PreviewToolbar({
 					onClick={onToggleFullscreen}
 					title={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
 				>
-					<HugeiconsIcon icon={FullScreenIcon} />
+					<Maximize2 className="size-5" />
 				</Button>
 			</div>
+
+			<RecordingDialog
+				isOpen={isRecordingOpen}
+				onClose={() => setIsRecordingOpen(false)}
+				mode="video"
+				onSave={handleSaveRecording}
+			/>
 		</div>
 	);
 }

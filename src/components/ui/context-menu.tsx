@@ -4,8 +4,7 @@ import * as React from "react";
 import { ContextMenu as ContextMenuPrimitive } from "radix-ui";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/utils/ui";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Tick02Icon, ArrowRightIcon, CircleIcon } from "@hugeicons/core-free-icons"
+import { ChevronRight, Check, Circle } from "lucide-react";
 
 const ContextMenu = ContextMenuPrimitive.Root;
 
@@ -54,7 +53,7 @@ const ContextMenuSubTrigger = React.forwardRef<
 	>
 		{icon && <span className="size-4 shrink-0 text-muted-foreground">{icon}</span>}
 		{children}
-		<HugeiconsIcon icon={ArrowRightIcon} className="ml-auto text-muted-foreground/80" />
+		<ChevronRight className="ml-auto text-muted-foreground/80" />
 	</ContextMenuPrimitive.SubTrigger>
 ));
 ContextMenuSubTrigger.displayName = ContextMenuPrimitive.SubTrigger.displayName;
@@ -135,7 +134,7 @@ const ContextMenuCheckboxItem = React.forwardRef<
 	>
 		<span className="absolute left-2 flex size-3.5 items-center justify-center">
 			<ContextMenuPrimitive.ItemIndicator>
-				<HugeiconsIcon icon={Tick02Icon} className="size-4" />
+				<Check className="size-4" />
 			</ContextMenuPrimitive.ItemIndicator>
 		</span>
 		{icon && <span className="size-4 shrink-0 text-muted-foreground">{icon}</span>}
@@ -159,7 +158,7 @@ const ContextMenuRadioItem = React.forwardRef<
 	>
 		<span className="absolute left-2 flex size-3.5 items-center justify-center">
 			<ContextMenuPrimitive.ItemIndicator>
-				<HugeiconsIcon icon={CircleIcon} className="size-2 fill-current" />
+				<Circle className="size-2 fill-current" />
 			</ContextMenuPrimitive.ItemIndicator>
 		</span>
 		{icon && <span className="size-4 shrink-0 text-muted-foreground">{icon}</span>}

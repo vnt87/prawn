@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { TransitionTopIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+
 import {
 	Popover,
 	PopoverContent,

@@ -4,11 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { Button } from "./ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Github, Menu } from "lucide-react";
 import Image from "next/image";
 import { ThemeToggle } from "./theme-toggle";
-import { GithubIcon, Menu02Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { cn } from "@/utils/ui";
 import { DEFAULT_LOGO_URL, SOCIAL_LINKS } from "@/constants/site-constants";
 
@@ -63,13 +61,13 @@ export function Header() {
 							className="flex items-center justify-center p-0"
 							onClick={() => setIsMenuOpen(!isMenuOpen)}
 						>
-							<HugeiconsIcon icon={Menu02Icon} size={30} />
+							<Menu size={30} />
 						</Button>
 					</div>
 					<div className="hidden items-center gap-3 md:flex">
 						<Link href={SOCIAL_LINKS.github}>
 							<Button className="bg-background text-sm" variant="outline">
-								<HugeiconsIcon icon={GithubIcon} className="size-4" />
+								<Github className="size-4" />
 								40k+
 							</Button>
 						</Link>

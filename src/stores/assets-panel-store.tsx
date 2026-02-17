@@ -1,18 +1,17 @@
 import type { ElementType } from "react";
 import { create } from "zustand";
 import {
-	ArrowRightDoubleIcon,
-	ClosedCaptionIcon,
-	Folder03Icon,
-	Happy01Icon,
-	HeadphonesIcon,
-	MagicWand05Icon,
-	TextIcon,
-	Settings01Icon,
-	SlidersHorizontalIcon,
-	ColorsIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
+	ChevronsRight,
+	Captions,
+	Folder,
+	Smile,
+	Headphones,
+	Wand2,
+	Type,
+	Settings,
+	Sliders,
+	Palette,
+} from "lucide-react";
 
 export const TAB_KEYS = [
 	"media",
@@ -29,51 +28,51 @@ export const TAB_KEYS = [
 
 export type Tab = (typeof TAB_KEYS)[number];
 
-const createHugeiconsIcon =
-	({ icon }: { icon: IconSvgElement }) =>
+const createIcon =
+	(Icon: any) =>
 		({ className }: { className?: string }) => (
-			<HugeiconsIcon icon={icon} className={className} />
+			<Icon className={className} />
 		);
 
 export const tabs = {
 	media: {
-		icon: createHugeiconsIcon({ icon: Folder03Icon }),
+		icon: createIcon(Folder),
 		label: "Media",
 	},
 	sounds: {
-		icon: createHugeiconsIcon({ icon: HeadphonesIcon }),
+		icon: createIcon(Headphones),
 		label: "Sounds",
 	},
 	text: {
-		icon: createHugeiconsIcon({ icon: TextIcon }),
+		icon: createIcon(Type),
 		label: "Text",
 	},
 	stickers: {
-		icon: createHugeiconsIcon({ icon: Happy01Icon }),
+		icon: createIcon(Smile),
 		label: "Stickers",
 	},
 	effects: {
-		icon: createHugeiconsIcon({ icon: MagicWand05Icon }),
+		icon: createIcon(Wand2),
 		label: "Effects",
 	},
 	transitions: {
-		icon: createHugeiconsIcon({ icon: ArrowRightDoubleIcon }),
+		icon: createIcon(ChevronsRight),
 		label: "Transitions",
 	},
 	captions: {
-		icon: createHugeiconsIcon({ icon: ClosedCaptionIcon }),
+		icon: createIcon(Captions),
 		label: "Captions",
 	},
 	filters: {
-		icon: createHugeiconsIcon({ icon: ColorsIcon }),
+		icon: createIcon(Palette),
 		label: "Filters",
 	},
 	adjustment: {
-		icon: createHugeiconsIcon({ icon: SlidersHorizontalIcon }),
+		icon: createIcon(Sliders),
 		label: "Adjustment",
 	},
 	settings: {
-		icon: createHugeiconsIcon({ icon: Settings01Icon }),
+		icon: createIcon(Settings),
 		label: "Settings",
 	},
 } satisfies Record<

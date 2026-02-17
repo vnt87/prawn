@@ -3,12 +3,11 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import {
-    RefreshIcon,
-    MinusSignIcon,
-    ArrowUp01Icon,
-    ArrowDown01Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+    RefreshCcw,
+    Minus,
+    ChevronUp,
+    ChevronDown,
+} from "lucide-react";
 import {
     PropertyGroup,
     PropertyItem,
@@ -29,17 +28,14 @@ export function BasicVideoTab({ element }: { element: VideoElement | ImageElemen
                                     100%
                                 </div>
                                 <div className="flex flex-col -gap-1">
-                                    <HugeiconsIcon
-                                        icon={ArrowUp01Icon}
+                                    <ChevronUp
                                         className="size-2 text-muted-foreground cursor-pointer hover:text-foreground"
                                     />
-                                    <HugeiconsIcon
-                                        icon={ArrowDown01Icon}
+                                    <ChevronDown
                                         className="size-2 text-muted-foreground cursor-pointer hover:text-foreground"
                                     />
                                 </div>
-                                <HugeiconsIcon
-                                    icon={RefreshIcon}
+                                <RefreshCcw
                                     className="size-3.5 text-muted-foreground cursor-pointer hover:text-foreground ml-1"
                                 />
                             </div>
@@ -81,7 +77,7 @@ export function BasicVideoTab({ element }: { element: VideoElement | ImageElemen
                                 0.00°
                             </div>
                             <Button size="icon" variant="ghost" className="size-6 rounded-full">
-                                <HugeiconsIcon icon={MinusSignIcon} className="size-3" />
+                                <Minus className="size-3" />
                             </Button>
                         </div>
                     </PropertyItem>

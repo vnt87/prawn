@@ -4,8 +4,7 @@ import Link from "next/link";
 import { BasePage } from "@/app/base-page";
 import { Card, CardContent } from "@/components/ui/card";
 import { SPONSORS, type Sponsor } from "@/constants/site-constants";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { LinkSquare02Icon } from "@hugeicons/core-free-icons";
+import { ExternalLink } from "lucide-react";
 
 export const metadata: Metadata = {
 	title: "Sponsors - OpenCut",
@@ -68,8 +67,7 @@ function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
 							<h3 className="text-xl font-semibold group-hover:underline">
 								{sponsor.name}
 							</h3>
-							<HugeiconsIcon
-								icon={LinkSquare02Icon}
+							<ExternalLink
 								className="text-muted-foreground size-4"
 							/>
 						</div>

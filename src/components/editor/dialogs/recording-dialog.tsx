@@ -22,15 +22,14 @@ import {
     enumerateDevices,
     getMediaStream,
 } from "@/lib/recording/utils";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
-    Mic01Icon,
-    VideoReplayIcon,
-    StopCircleIcon,
-    PlayIcon,
-    PauseIcon,
-    RecordIcon,
-} from "@hugeicons/core-free-icons";
+    Mic,
+    RotateCcw,
+    CircleStop,
+    Play,
+    Pause,
+    Disc,
+} from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/utils/ui";
 
@@ -274,8 +273,7 @@ export function RecordingDialog({
                         {/* Audio Visualization */}
                         {mode === "audio" && !recordedUrl && (
                             <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-8">
-                                <HugeiconsIcon
-                                    icon={Mic01Icon}
+                                <Mic
                                     className={cn("size-16 transition-colors", status === 'recording' ? "text-red-500 animate-pulse" : "text-muted-foreground")}
                                 />
                                 <AudioMeter stream={stream} className="h-12 w-full rounded" />
@@ -312,7 +310,7 @@ export function RecordingDialog({
                         <>
                             <Button variant="ghost" onClick={onClose}>Cancel</Button>
                             <Button onClick={handleStartRecording} className="gap-2 bg-red-500 hover:bg-red-600 text-white">
-                                <HugeiconsIcon icon={RecordIcon} className="size-4" /> Start Recording
+                                <Disc className="size-4" /> Start Recording
                             </Button>
                         </>
                     )}
@@ -320,10 +318,10 @@ export function RecordingDialog({
                     {status === 'recording' && (
                         <div className="flex w-full items-center justify-center gap-4">
                             <Button variant="outline" size="icon" onClick={pauseRecording}>
-                                <HugeiconsIcon icon={PauseIcon} />
+                                <Pause />
                             </Button>
                             <Button variant="destructive" size="icon" onClick={stopRecording}>
-                                <HugeiconsIcon icon={StopCircleIcon} />
+                                <CircleStop />
                             </Button>
                         </div>
                     )}
@@ -331,10 +329,10 @@ export function RecordingDialog({
                     {status === 'paused' && (
                         <div className="flex w-full items-center justify-center gap-4">
                             <Button variant="outline" size="icon" onClick={resumeRecording}>
-                                <HugeiconsIcon icon={PlayIcon} />
+                                <Play />
                             </Button>
                             <Button variant="destructive" size="icon" onClick={stopRecording}>
-                                <HugeiconsIcon icon={StopCircleIcon} />
+                                <CircleStop />
                             </Button>
                         </div>
                     )}
@@ -342,7 +340,7 @@ export function RecordingDialog({
                     {recordedUrl && (
                         <>
                             <Button variant="ghost" onClick={handleRetake} className="gap-2">
-                                <HugeiconsIcon icon={VideoReplayIcon} className="size-4" /> Retake
+                                <RotateCcw className="size-4" /> Retake
                             </Button>
                             <Button onClick={handleSave}>Save Recording</Button>
                         </>

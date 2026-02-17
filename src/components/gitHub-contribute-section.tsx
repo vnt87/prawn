@@ -1,11 +1,7 @@
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { SOCIAL_LINKS } from "@/constants/site-constants";
-import {
-	GithubIcon,
-	Link04Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Github, Bug } from "lucide-react";
 
 export function GitHubContributeSection({
 	title,
@@ -27,7 +23,7 @@ export function GitHubContributeSection({
 					rel="noopener noreferrer"
 				>
 					<Button className="w-full" size="lg">
-						<HugeiconsIcon icon={GithubIcon} />
+						<Github className="mr-2" />
 						Start contributing
 					</Button>
 				</Link>
@@ -37,7 +33,7 @@ export function GitHubContributeSection({
 					rel="noopener noreferrer"
 				>
 					<Button variant="outline" className="w-full" size="lg">
-						<HugeiconsIcon icon={Link04Icon} />
+						<Bug className="mr-2" />
 						Report issues
 					</Button>
 				</Link>

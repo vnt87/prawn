@@ -1,5 +1,4 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Settings05Icon } from "@hugeicons/core-free-icons";
+import { Settings } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function EmptyView() {
@@ -7,8 +6,7 @@ export function EmptyView() {
 
 	return (
 		<div className="bg-background flex h-full flex-col items-center justify-center gap-3 p-4">
-			<HugeiconsIcon
-				icon={Settings05Icon}
+			<Settings
 				className="text-muted-foreground/75 size-10"
 				strokeWidth={1}
 			/>

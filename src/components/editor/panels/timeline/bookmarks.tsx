@@ -1,8 +1,7 @@
 import { useEditor } from "@/hooks/use-editor";
 import { TIMELINE_CONSTANTS } from "@/constants/timeline-constants";
 import { getSnappedSeekTime } from "@/lib/time";
-import { Bookmark02Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Bookmark } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 interface TimelineBookmarksRowProps {
@@ -103,8 +102,7 @@ export function TimelineBookmark({
 			}}
 		>
 			<div className="text-primary absolute top-[-1px] left-[-5px]">
-				<HugeiconsIcon
-					icon={Bookmark02Icon}
+				<Bookmark
 					aria-hidden="true"
 					className="fill-primary size-3"
 				/>

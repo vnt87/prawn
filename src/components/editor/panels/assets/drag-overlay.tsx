@@ -1,5 +1,4 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import { UploadIcon } from "@hugeicons/core-free-icons";
+import { Upload } from "lucide-react";
 
 interface MediaDragOverlayProps {
 	isVisible: boolean;
@@ -35,7 +34,7 @@ export function MediaDragOverlay({
 			onClick={(event) => handleClick({ event })}
 		>
 			<div className="flex items-center justify-center">
-				<HugeiconsIcon icon={UploadIcon} className="text-foreground size-10" />
+				<Upload className="text-foreground size-10" />
 			</div>
 
 			<div className="space-y-2">

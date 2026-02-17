@@ -32,14 +32,13 @@ import { ShortcutsDialog } from "./dialogs/shortcuts-dialog";
 import { IntegrationsDialog } from "./dialogs/integrations-dialog";
 import { toast } from "sonner";
 import { SOCIAL_LINKS } from "@/constants/site-constants";
-import { IconType } from "react-icons";
 import { useTranslation } from "react-i18next";
 import { useEditorStore } from "@/stores/editor-store";
 import { Globe } from "lucide-react";
 
 interface MenuItem {
 	label: string;
-	icon?: LucideIcon | IconType;
+	icon?: LucideIcon;
 	action: () => void;
 	shortcut?: string;
 }

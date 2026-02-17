@@ -4,11 +4,10 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-    RefreshIcon,
-    ArrowDown01Icon,
-    Cancel01Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+    RefreshCcw,
+    ChevronDown,
+    X,
+} from "lucide-react";
 import {
     PropertyGroup,
     PropertyItem,
@@ -36,7 +35,7 @@ export function RetouchTab({ element }: { element: VideoElement | ImageElement }
             <div className="px-4 py-2">
                 <div className="bg-secondary/30 rounded px-3 py-1.5 text-xs flex justify-between items-center cursor-pointer">
                     Single face
-                    <HugeiconsIcon icon={ArrowDown01Icon} className="size-3 opacity-50" />
+                    <ChevronDown className="size-3 opacity-50" />
                 </div>
             </div>
 
@@ -45,12 +44,12 @@ export function RetouchTab({ element }: { element: VideoElement | ImageElement }
                 <PropertyGroup title="Auto styles" defaultExpanded={true}
                     extraHeaderContent={
                         <div className="flex items-center gap-2 ml-auto">
-                            <HugeiconsIcon icon={RefreshIcon} className="size-3.5 text-muted-foreground" />
+                            <RefreshCcw className="size-3.5 text-muted-foreground" />
                         </div>
                     }
                 >
                     <div className="grid grid-cols-4 gap-2 mb-4">
-                        <StyleItem label="None" icon={Cancel01Icon} active />
+                        <StyleItem label="None" icon={X} active />
                         <StyleItem label="Dolly Classic" image="/placeholder-face.png" />
                         <StyleItem label="Cherry Snow" image="/placeholder-face.png" />
                         <StyleItem label="Soda blue" image="/placeholder-face.png" />
@@ -62,7 +61,7 @@ export function RetouchTab({ element }: { element: VideoElement | ImageElement }
                 {/* Skin */}
                 <PropertyGroup title="Skin" defaultExpanded={false}
                     extraHeaderContent={
-                        <HugeiconsIcon icon={RefreshIcon} className="size-3.5 text-muted-foreground ml-auto" />
+                        <RefreshCcw className="size-3.5 text-muted-foreground ml-auto" />
                     }
                 >
                     <div className="h-4" />
@@ -72,7 +71,7 @@ export function RetouchTab({ element }: { element: VideoElement | ImageElement }
                 {/* Face */}
                 <PropertyGroup title="Face" defaultExpanded={false}
                     extraHeaderContent={
-                        <HugeiconsIcon icon={RefreshIcon} className="size-3.5 text-muted-foreground ml-auto" />
+                        <RefreshCcw className="size-3.5 text-muted-foreground ml-auto" />
                     }
                 >
                     <div className="h-4" />
@@ -82,7 +81,7 @@ export function RetouchTab({ element }: { element: VideoElement | ImageElement }
                 {/* Makeup */}
                 <PropertyGroup title="Makeup" defaultExpanded={false}
                     extraHeaderContent={
-                        <HugeiconsIcon icon={RefreshIcon} className="size-3.5 text-muted-foreground ml-auto" />
+                        <RefreshCcw className="size-3.5 text-muted-foreground ml-auto" />
                     }
                 >
                     <div className="h-4" />
@@ -108,7 +107,8 @@ function StyleItem({ label, icon, image, active }: { label: string, icon?: any, 
                 )}
             >
                 {icon ? (
-                    <HugeiconsIcon icon={icon} className="size-6 text-muted-foreground" />
+                    // @ts-ignore
+                    <icon className="size-6 text-muted-foreground" />
                 ) : (
                     <div className="w-full h-full bg-muted" /> // Placeholder for image
                 )}

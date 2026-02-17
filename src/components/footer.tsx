@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { RiDiscordFill, RiTwitterXLine } from "react-icons/ri";
-import { FaGithub } from "react-icons/fa6";
+import { Github, Twitter } from "lucide-react";
 import Image from "next/image";
 import { DEFAULT_LOGO_URL, SOCIAL_LINKS } from "@/constants/site-constants";
 import { capitalizeFirstLetter } from "@/utils/string";
@@ -56,7 +55,7 @@ export function Footer() {
 								target="_blank"
 								rel="noopener noreferrer"
 							>
-								<FaGithub className="size-5" />
+								<Github className="size-5" />
 							</Link>
 							<Link
 								href={SOCIAL_LINKS.x}
@@ -64,15 +63,7 @@ export function Footer() {
 								target="_blank"
 								rel="noopener noreferrer"
 							>
-								<RiTwitterXLine className="size-5" />
-							</Link>
-							<Link
-								href={SOCIAL_LINKS.discord}
-								className="text-muted-foreground hover:text-foreground transition-colors"
-								target="_blank"
-								rel="noopener noreferrer"
-							>
-								<RiDiscordFill className="size-5" />
+								<Twitter className="size-5" />
 							</Link>
 						</div>
 					</div>

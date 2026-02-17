@@ -3,13 +3,12 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import {
-    PaintBoardIcon,
-    EraserIcon,
-    RefreshIcon,
-    ArrowDown01Icon,
-    AiMagicIcon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+    Palette,
+    Eraser,
+    RefreshCcw,
+    ChevronDown,
+    Wand2,
+} from "lucide-react";
 import {
     PropertyGroup,
     PropertyItem,
@@ -37,29 +36,29 @@ export function RemoveBgTab({ element }: { element: VideoElement | ImageElement 
             {/* Custom Removal */}
             <PropertyGroup title="Custom removal" defaultExpanded={true} collapsible={true}
                 extraHeaderContent={
-                    <HugeiconsIcon icon={RefreshIcon} className="size-3.5 text-muted-foreground ml-auto" />
+                    <RefreshCcw className="size-3.5 text-muted-foreground ml-auto" />
                 }
             >
                 <div className="space-y-4">
                     <div className="flex gap-4">
                         <ToolButton
-                            icon={AiMagicIcon}
+                            icon={Wand2}
                             active={customTool === "brush_plus"}
                             onClick={() => setCustomTool("brush_plus")}
                         />
                         <ToolButton
-                            icon={EraserIcon}
+                            icon={Eraser}
                             active={customTool === "eraser_plus"}
                             onClick={() => setCustomTool("eraser_plus")}
                         />
                         <div className="w-px h-8 bg-border mx-1" />
                         <ToolButton
-                            icon={PaintBoardIcon}
+                            icon={Palette}
                             active={customTool === "brush"}
                             onClick={() => setCustomTool("brush")}
                         />
                         <ToolButton
-                            icon={EraserIcon}
+                            icon={Eraser}
                             active={customTool === "eraser"}
                             onClick={() => setCustomTool("eraser")}
                         />
@@ -71,8 +70,8 @@ export function RemoveBgTab({ element }: { element: VideoElement | ImageElement 
                             <div className="flex items-center gap-2">
                                 <div className="bg-secondary px-2 py-0.5 rounded text-[10px] min-w-[30px] text-center">20</div>
                                 <div className="flex flex-col -gap-1">
-                                    <HugeiconsIcon icon={ArrowDown01Icon} className="size-2 text-muted-foreground rotate-180" />
-                                    <HugeiconsIcon icon={ArrowDown01Icon} className="size-2 text-muted-foreground" />
+                                    <ChevronDown className="size-2 text-muted-foreground rotate-180" />
+                                    <ChevronDown className="size-2 text-muted-foreground" />
                                 </div>
                             </div>
                         </div>
@@ -95,7 +94,7 @@ export function RemoveBgTab({ element }: { element: VideoElement | ImageElement 
     );
 }
 
-function ToolButton({ icon, active, onClick }: { icon: any, active: boolean, onClick: () => void }) {
+function ToolButton({ icon: Icon, active, onClick }: { icon: any, active: boolean, onClick: () => void }) {
     return (
         <button
             className={cn(
@@ -104,7 +103,7 @@ function ToolButton({ icon, active, onClick }: { icon: any, active: boolean, onC
             )}
             onClick={onClick}
         >
-            <HugeiconsIcon icon={icon} className="size-4" />
+            <Icon className="size-4" />
         </button>
     )
 }

@@ -21,7 +21,7 @@ import type {
 } from "@/types/project";
 import { formatTimeCode } from "@/lib/time";
 import { formatDate } from "@/utils/date";
-import { HugeiconsIcon } from "@hugeicons/react";
+
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -31,19 +31,19 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import {
-	Calendar04Icon,
-	GridViewIcon,
-	LeftToRightListDashIcon,
-	PlusSignIcon,
-	Search01Icon,
-	Video01Icon,
-	MoreHorizontalIcon,
-	Delete02Icon,
-	Copy01Icon,
-	Edit03Icon,
-	ArrowDown02Icon,
-	InformationCircleIcon,
-} from "@hugeicons/core-free-icons";
+	Calendar,
+	Grid3X3,
+	List,
+	Plus,
+	Search,
+	Video,
+	MoreHorizontal,
+	Trash2,
+	Copy,
+	Edit,
+	ArrowDown,
+	Info,
+} from "lucide-react";
 import { OcVideoIcon } from "@opencut/ui/icons";
 import { Label } from "@/components/ui/label";
 import {
@@ -72,8 +72,8 @@ const formatProjectDuration = ({
 };
 
 const VIEW_MODE_OPTIONS = [
-	{ mode: "grid" as const, icon: GridViewIcon, label: "Grid view" },
-	{ mode: "list" as const, icon: LeftToRightListDashIcon, label: "List view" },
+	{ mode: "grid" as const, icon: Grid3X3, label: "Grid view" },
+	{ mode: "list" as const, icon: List, label: "List view" },
 ];
 
 export default function ProjectsPage() {
@@ -153,7 +153,7 @@ function ProjectsHeader() {
 					</Breadcrumb>
 
 					<div className="hidden md:flex items-center rounded-md border p-1 px-1.5 h-10">
-						{VIEW_MODE_OPTIONS.map(({ mode, icon, label }) => (
+						{VIEW_MODE_OPTIONS.map(({ mode, icon: Icon, label }) => (
 							<Button
 								key={mode}
 								variant="ghost"
@@ -166,7 +166,7 @@ function ProjectsHeader() {
 								aria-label={label}
 								aria-pressed={isHydrated && viewMode === mode}
 							>
-								<HugeiconsIcon icon={icon} className="size-4" />
+								<Icon className="size-4" />
 							</Button>
 						))}
 					</div>
@@ -262,25 +262,24 @@ function ProjectsToolbar({ projectIds }: { projectIds: string[] }) {
 					}}
 					aria-label={`Sort ${sortOrder === "asc" ? "ascending" : "descending"}`}
 				>
-					<HugeiconsIcon
-						icon={ArrowDown02Icon}
-						className={sortOrder === "asc" ? "rotate-180" : ""}
+					<ArrowDown
+						className={cn("size-4", sortOrder === "asc" ? "rotate-180" : "")}
 					/>
 				</Button>
 
 				<div className="h-4 w-px bg-border/50 block md:hidden" />
 
 				<div className="flex md:hidden items-center gap-4">
-					{VIEW_MODE_OPTIONS.map(({ mode, icon, label }) => (
+					{VIEW_MODE_OPTIONS.map(({ mode, icon: Icon, label }) => (
 						<Button
 							key={mode}
 							variant="text"
 							onClick={() => setViewMode({ viewMode: mode })}
 							aria-label={label}
 						>
-							<HugeiconsIcon
-								icon={icon}
+							<Icon
 								className={cn(
+									"size-4",
 									viewMode === mode ? "text-primary" : "text-muted-foreground",
 								)}
 							/>
@@ -311,13 +310,12 @@ function SearchBar({
 						variant="outline"
 						className="size-10.5 rounded-full"
 					>
-						<HugeiconsIcon icon={Search01Icon} />
+						<Search className="size-4" />
 					</Button>
 				</div>
 			) : (
 				<div className={cn("relative", className)}>
-					<HugeiconsIcon
-						icon={Search01Icon}
+					<Search
 						className="text-muted-foreground pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2"
 						aria-hidden="true"
 					/>
@@ -338,13 +336,13 @@ const PROJECT_ACTIONS = [
 	{
 		id: "duplicate",
 		label: "Duplicate",
-		icon: Copy01Icon,
+		icon: Copy,
 		variant: "outline" as const,
 	},
 	{
 		id: "delete",
 		label: "Delete",
-		icon: Delete02Icon,
+		icon: Trash2,
 		variant: "destructive-foreground" as const,
 	},
 ] as const;
@@ -423,7 +421,7 @@ function ProjectActions() {
 							className="size-9"
 							onClick={actionHandlers[action.id]}
 						>
-							<HugeiconsIcon icon={action.icon} />
+							<action.icon className="size-4" />
 						</Button>
 					))}
 				</div>
@@ -431,7 +429,7 @@ function ProjectActions() {
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild className="sm:hidden">
 						<Button size="icon" variant="outline" className="size-9">
-							<HugeiconsIcon icon={MoreHorizontalIcon} />
+							<MoreHorizontal className="size-4" />
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
@@ -441,7 +439,7 @@ function ProjectActions() {
 								variant={action.id === "delete" ? "destructive" : undefined}
 								onClick={actionHandlers[action.id]}
 							>
-								<HugeiconsIcon icon={action.icon} />
+								<action.icon className="size-4" />
 								{action.label}
 							</DropdownMenuItem>
 						))}
@@ -583,7 +581,7 @@ function ProjectItem({
 					{project.name}
 				</h3>
 				<div className="text-muted-foreground flex items-center gap-1.5 text-sm">
-					<HugeiconsIcon icon={Calendar04Icon} className="size-4" />
+					<Calendar className="size-4" />
 					<span>Created {formatDate({ date: project.createdAt })}</span>
 				</div>
 			</CardContent>
@@ -623,9 +621,8 @@ function ProjectItem({
 
 	const listContent = (
 		<div
-			className={`flex items-center gap-4 py-2 px-4 border-b border-border/50 ${
-				isSelected ? "bg-primary/5" : ""
-			}`}
+			className={`flex items-center gap-4 py-2 px-4 border-b border-border/50 ${isSelected ? "bg-primary/5" : ""
+				}`}
 		>
 			<Checkbox
 				checked={isSelected}
@@ -636,7 +633,7 @@ function ProjectItem({
 						shiftKey: event.shiftKey,
 					});
 				}}
-				onCheckedChange={() => {}}
+				onCheckedChange={() => { }}
 				className="size-5 shrink-0"
 			/>
 
@@ -678,12 +675,11 @@ function ProjectItem({
 								shiftKey: event.shiftKey,
 							});
 						}}
-						onCheckedChange={() => {}}
-						className={`absolute z-10 size-5 top-3 left-3 ${
-							isSelected || isDropdownOpen
-								? "opacity-100"
-								: "opacity-0 group-hover:opacity-100"
-						}`}
+						onCheckedChange={() => { }}
+						className={`absolute z-10 size-5 top-3 left-3 ${isSelected || isDropdownOpen
+							? "opacity-100"
+							: "opacity-0 group-hover:opacity-100"
+							}`}
 					/>
 
 					{!isMultiSelect && (
@@ -789,28 +785,27 @@ function ProjectMenu({
 							})
 						}
 					>
-						<HugeiconsIcon
-							icon={MoreHorizontalIcon}
-							className="text-foreground"
+						<MoreHorizontal
+							className="text-foreground size-4"
 							aria-hidden="true"
 						/>
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent className="w-48" align="end">
 					<DropdownMenuItem onClick={handleRename}>
-						<HugeiconsIcon icon={Edit03Icon} />
+						<Edit className="size-4 mr-2" />
 						Rename
 					</DropdownMenuItem>
 					<DropdownMenuItem onClick={handleDuplicate}>
-						<HugeiconsIcon icon={Copy01Icon} />
+						<Copy className="size-4 mr-2" />
 						Duplicate
 					</DropdownMenuItem>
 					<DropdownMenuItem onClick={handleInfoClick}>
-						<HugeiconsIcon icon={InformationCircleIcon} />
+						<Info className="size-4 mr-2" />
 						Info
 					</DropdownMenuItem>
 					<DropdownMenuItem variant="destructive" onClick={handleDeleteClick}>
-						<HugeiconsIcon icon={Delete02Icon} />
+						<Trash2 className="size-4 mr-2" />
 						Delete
 					</DropdownMenuItem>
 				</DropdownMenuContent>
@@ -897,8 +892,7 @@ function EmptyState() {
 		return (
 			<div className="flex flex-col items-center justify-center gap-5 py-16 text-center">
 				<div className="flex flex-col items-center gap-8">
-					<HugeiconsIcon
-						icon={Search01Icon}
+					<Search
 						className="text-muted-foreground size-16 bg-accent/35 border rounded-md p-4"
 					/>
 					<div className="flex flex-col items-center gap-3">
@@ -923,8 +917,7 @@ function EmptyState() {
 		<div className="flex flex-col items-center justify-center gap-6 py-16 text-center">
 			<div className="flex flex-col items-center gap-2">
 				<div className="bg-muted/30 flex size-16 items-center justify-center rounded-full">
-					<HugeiconsIcon
-						icon={Video01Icon}
+					<Video
 						className="text-muted-foreground size-8"
 					/>
 				</div>
@@ -935,7 +928,7 @@ function EmptyState() {
 				</p>
 			</div>
 			<Button size="lg" className="gap-2" onClick={handleCreateProject}>
-				<HugeiconsIcon icon={PlusSignIcon} />
+				<Plus className="size-4" />
 				Create your first project
 			</Button>
 		</div>
