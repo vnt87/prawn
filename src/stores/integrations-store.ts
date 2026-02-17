@@ -5,7 +5,6 @@ interface IntegrationsState {
     // Database
     upstashRedisUrl: string;
     upstashRedisToken: string;
-    marbleWorkspaceKey: string;
 
     // Assets
     freesoundClientId: string;
@@ -29,7 +28,6 @@ export const useIntegrationsStore = create<IntegrationsState>()(
         (set) => ({
             upstashRedisUrl: "",
             upstashRedisToken: "",
-            marbleWorkspaceKey: "",
             freesoundClientId: "",
             freesoundApiKey: "",
             cloudflareAccountId: "",

@@ -7,9 +7,6 @@ const webEnvSchema = z.object({
 
 	// Public
 	NEXT_PUBLIC_SITE_URL: z.string().url().default("http://localhost:3000"),
-
-	// Optional external APIs (can differ or be removed if not used)
-	NEXT_PUBLIC_MARBLE_API_URL: z.string().url().optional().default("https://api.marble.com"),
 });
 
 export type WebEnv = z.infer<typeof webEnvSchema>;

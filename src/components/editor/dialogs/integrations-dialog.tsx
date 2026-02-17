@@ -56,10 +56,6 @@ export function IntegrationsDialog({
                                 <Database size={16} />
                                 Database
                             </TabsTrigger>
-                            <TabsTrigger value="cms" className="w-full justify-start gap-2 px-3">
-                                <Image size={16} />
-                                CMS
-                            </TabsTrigger>
                             <TabsTrigger value="assets" className="w-full justify-start gap-2 px-3">
                                 <Music size={16} />
                                 Assets
@@ -105,25 +101,7 @@ export function IntegrationsDialog({
                                 </div>
                             </TabsContent>
 
-                            <TabsContent value="cms" className="mt-0 space-y-6">
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2 pb-2 border-b">
-                                        <Image className="text-muted-foreground" />
-                                        <h3 className="text-lg font-medium">Marble CMS</h3>
-                                    </div>
-                                    <div className="grid gap-4">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="marbleWorkspaceKey">Workspace Key</Label>
-                                            <Input
-                                                id="marbleWorkspaceKey"
-                                                value={values.marbleWorkspaceKey}
-                                                onChange={(e) => handleChange("marbleWorkspaceKey", e.target.value)}
-                                                placeholder="wk_123456789"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </TabsContent>
+
 
                             <TabsContent value="assets" className="mt-0 space-y-6">
                                 <div className="space-y-4">
