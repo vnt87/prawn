@@ -30,6 +30,7 @@ import { ExportButton } from "./export-button";
 import { DeleteProjectDialog } from "./dialogs/delete-project-dialog";
 import { ShortcutsDialog } from "./dialogs/shortcuts-dialog";
 import { IntegrationsDialog } from "./dialogs/integrations-dialog";
+import { AboutDialog } from "./dialogs/about-dialog";
 import { toast } from "sonner";
 import { SOCIAL_LINKS } from "@/constants/site-constants";
 import { useTranslation } from "react-i18next";
@@ -38,7 +39,7 @@ import { Globe } from "lucide-react";
 
 interface MenuItem {
 	label: string;
-	icon?: LucideIcon;
+	icon?: LucideIcon | React.ElementType;
 	action: () => void;
 	shortcut?: string;
 }
@@ -47,7 +48,7 @@ type MenuSection = (MenuItem | "---")[];
 
 export function EditorHeader() {
 	const [activeMenu, setActiveMenu] = useState<string | null>(null);
-	const [openDialog, setOpenDialog] = useState<"delete" | "shortcuts" | "integrations" | null>(null);
+	const [openDialog, setOpenDialog] = useState<"delete" | "shortcuts" | "integrations" | "about" | null>(null);
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [titleEditValue, setTitleEditValue] = useState("");
 	const editor = useEditor();
@@ -157,6 +158,7 @@ export function EditorHeader() {
 		[t("header.help")]: [
 			{ label: t("common.shortcuts"), icon: Keyboard, action: () => setOpenDialog("shortcuts"), shortcut: "?" },
 			{ label: t("common.github"), icon: Github, action: () => window.open("https://github.com/vnt87/prawn", "_blank") },
+			{ label: "About", icon: ShrimpIcon, action: () => setOpenDialog("about") }, // Using "About" explicitly as key might not exist yet
 		]
 	};
 
@@ -352,6 +354,11 @@ export function EditorHeader() {
 			<IntegrationsDialog
 				open={openDialog === "integrations"}
 				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "integrations" : null)}
+			/>
+
+			<AboutDialog
+				isOpen={openDialog === "about"}
+				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "about" : null)}
 			/>
 		</>
 	);
