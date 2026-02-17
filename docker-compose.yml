@@ -1,0 +1,21 @@
+services:
+  app:
+    image: ghcr.io/vnt87/prawn:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "1338:1338"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_SITE_URL=http://localhost:1338
+      # Add other environment variables as needed
+    restart: always
+
+  stt-service:
+    build:
+      context: ./stt-service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    restart: always

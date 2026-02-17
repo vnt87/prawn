@@ -49,6 +49,46 @@ src/
 └── ...
 ```
 
+## 🐳 Docker Deployment
+
+You can run Prawn using Docker and Docker Compose. This is the easiest way to get the editor and its auxiliary services (like STT) running locally.
+
+### Prerequisites
+
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Running with Docker Compose
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/vnt87/prawn.git
+    cd prawn
+    ```
+
+2.  **Set up environment variables:**
+    Copy `.env.example` to `.env.local` and fill in the required values.
+    ```bash
+    cp .env.example .env.local
+    ```
+
+3.  **Start the services:**
+    ```bash
+    docker compose up -d
+    ```
+
+4.  **Access the application:**
+    Open [http://localhost:1338](http://localhost:1338) in your browser.
+
+### Building the Docker Image Manually
+
+If you want to build the image locally without using Docker Compose:
+
+```bash
+docker build -t prawn .
+docker run -p 1338:1338 prawn
+```
+
 ## CREDITS
 
 **Author:** [Nam Vu](https://namvu.net)
