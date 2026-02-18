@@ -34,7 +34,8 @@ export function PropertiesPanel() {
 						if (element.type === "video" || element.type === "image") {
 							return (
 								<div key={element.id}>
-									<VideoProperties _element={element} />
+									{/* Pass trackId so child tabs can call editor.timeline.updateElements */}
+									<VideoProperties _element={element} trackId={track.id} />
 								</div>
 							);
 						}

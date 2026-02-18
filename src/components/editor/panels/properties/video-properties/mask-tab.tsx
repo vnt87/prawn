@@ -26,7 +26,14 @@ import { cn } from "@/utils/ui";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-export function MaskTab({ element }: { element: VideoElement | ImageElement }) {
+export function MaskTab({
+	element,
+	trackId: _trackId,
+}: {
+	element: VideoElement | ImageElement;
+	/** Reserved for future mask persistence via updateElements */
+	trackId: string;
+}) {
     const [selectedShape, setSelectedShape] = useState<string>("rectangle");
 
     const shapes = [

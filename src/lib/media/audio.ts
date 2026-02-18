@@ -153,6 +153,12 @@ export interface AudioClipSource {
 	trimStart: number;
 	trimEnd: number;
 	muted: boolean;
+	/** Per-clip linear gain multiplier (0.0–2.0). Default 1.0. */
+	volume: number;
+	/** Audio fade-in duration in seconds. Default 0. */
+	fadeIn: number;
+	/** Audio fade-out duration in seconds. Default 0. */
+	fadeOut: number;
 }
 
 async function fetchLibraryAudioSource({
@@ -211,6 +217,10 @@ async function fetchLibraryAudioClip({
 			trimStart: element.trimStart,
 			trimEnd: element.trimEnd,
 			muted,
+			// Library audio elements share the AudioElement volume field
+			volume: element.volume ?? 1,
+			fadeIn: 0,
+			fadeOut: 0,
 		};
 	} catch (error) {
 		console.warn("Failed to fetch library audio:", error);
@@ -243,6 +253,12 @@ function collectMediaAudioClip({
 	mediaAsset: MediaAsset;
 	muted: boolean;
 }): AudioClipSource {
+	// Extract per-element audio properties — present on VideoElement and AudioElement
+	// but not on ImageElement, TextElement or StickerElement.
+	const volume = "volume" in element ? (element.volume ?? 1) : 1;
+	const fadeIn = "fadeIn" in element ? (element.fadeIn ?? 0) : 0;
+	const fadeOut = "fadeOut" in element ? (element.fadeOut ?? 0) : 0;
+
 	return {
 		id: element.id,
 		sourceKey: mediaAsset.id,
@@ -252,6 +268,9 @@ function collectMediaAudioClip({
 		trimStart: element.trimStart,
 		trimEnd: element.trimEnd,
 		muted,
+		volume,
+		fadeIn,
+		fadeOut,
 	};
 }
 

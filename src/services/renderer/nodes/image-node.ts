@@ -38,6 +38,9 @@ export class ImageNode extends VisualNode<ImageNodeParams> {
 			return;
 		}
 
+		// Store local time so renderVisual can sample animation overrides.
+		this._currentLocalTime = this.getLocalTime(time);
+
 		const mediaW = this.image.naturalWidth || renderer.width;
 		const mediaH = this.image.naturalHeight || renderer.height;
 

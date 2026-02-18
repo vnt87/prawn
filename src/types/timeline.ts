@@ -1,3 +1,5 @@
+// ---- Scene ----
+
 export interface TScene {
 	id: string;
 	name: string;
@@ -7,6 +9,8 @@ export interface TScene {
 	createdAt: Date;
 	updatedAt: Date;
 }
+
+// ---- Track Types ----
 
 export type TrackType = "video" | "text" | "audio" | "sticker";
 
@@ -43,6 +47,8 @@ export interface StickerTrack extends BaseTrack {
 
 export type TimelineTrack = VideoTrack | TextTrack | AudioTrack | StickerTrack;
 
+// ---- Shared: Transform ----
+
 export interface Transform {
 	scale: number;
 	position: {
@@ -51,6 +57,101 @@ export interface Transform {
 	};
 	rotate: number;
 }
+
+// ---- Shared: Video/Image Filters ----
+
+/** Color and light adjustment filters applied during canvas rendering. */
+export interface VideoFilters {
+	/** Brightness adjustment, -100 to 100. Maps to CSS brightness(). Default 0. */
+	brightness: number;
+	/** Contrast adjustment, -100 to 100. Maps to CSS contrast(). Default 0. */
+	contrast: number;
+	/** Saturation adjustment, -100 to 100. Maps to CSS saturate(). Default 0. */
+	saturation: number;
+	/** White overlay fade strength, 0 to 100. Drawn as a semi-transparent overlay. Default 0. */
+	fade: number;
+	/** Radial darkening around edges, 0 to 100. Drawn as a radial gradient overlay. Default 0. */
+	vignette: number;
+	/**
+	 * Color temperature shift, -100 (cool/blue) to +100 (warm/yellow).
+	 * Applied via per-pixel R/B channel shift. Default 0.
+	 */
+	temperature?: number;
+	/**
+	 * Color tint shift, -100 (green) to +100 (magenta).
+	 * Applied via per-pixel G channel shift. Default 0.
+	 */
+	tint?: number;
+	/**
+	 * Highlight recovery/boost, -100 to +100.
+	 * Affects pixels in the 192–255 luminance range. Default 0.
+	 */
+	highlights?: number;
+	/**
+	 * Shadow lift/crush, -100 to +100.
+	 * Affects pixels in the 0–64 luminance range. Default 0.
+	 */
+	shadows?: number;
+	/**
+	 * White point clipping, -100 to +100.
+	 * Shifts the upper end of the tone curve. Default 0.
+	 */
+	whites?: number;
+	/**
+	 * Black point clipping, -100 to +100.
+	 * Shifts the lower end of the tone curve. Default 0.
+	 */
+	blacks?: number;
+	/**
+	 * Sharpening strength, 0 to 100.
+	 * Applied via 3×3 unsharp mask convolution kernel. Default 0.
+	 */
+	sharpen?: number;
+	/**
+	 * Clarity (local contrast), 0 to 100.
+	 * Applied as a high-radius, low-amount unsharp mask targeting midtones. Default 0.
+	 */
+	clarity?: number;
+}
+
+/** Default VideoFilters with all values at neutral. */
+export const DEFAULT_VIDEO_FILTERS: VideoFilters = {
+	brightness: 0,
+	contrast: 0,
+	saturation: 0,
+	fade: 0,
+	vignette: 0,
+	temperature: 0,
+	tint: 0,
+	highlights: 0,
+	shadows: 0,
+	whites: 0,
+	blacks: 0,
+	sharpen: 0,
+	clarity: 0,
+};
+
+// ---- Shared: Animations ----
+
+/** Available clip entry/exit animation types. */
+export type AnimationType =
+	| "fade"
+	| "slide-left"
+	| "slide-right"
+	| "slide-up"
+	| "slide-down"
+	| "zoom-in"
+	| "zoom-out"
+	| "spin";
+
+/** A single clip animation (in or out). */
+export interface ClipAnimation {
+	type: AnimationType;
+	/** Duration of the animation in seconds. */
+	duration: number;
+}
+
+// ---- Audio Elements ----
 
 interface BaseAudioElement extends BaseTimelineElement {
 	type: "audio";
@@ -71,6 +172,8 @@ export interface LibraryAudioElement extends BaseAudioElement {
 
 export type AudioElement = UploadAudioElement | LibraryAudioElement;
 
+// ---- Base Timeline Element ----
+
 interface BaseTimelineElement {
 	id: string;
 	name: string;
@@ -80,6 +183,8 @@ interface BaseTimelineElement {
 	trimEnd: number;
 }
 
+// ---- Video Element ----
+
 export interface VideoElement extends BaseTimelineElement {
 	type: "video";
 	mediaId: string;
@@ -87,7 +192,25 @@ export interface VideoElement extends BaseTimelineElement {
 	hidden?: boolean;
 	transform: Transform;
 	opacity: number;
+	/** Playback speed multiplier. Default 1.0. Values > 1 speed up, < 1 slow down. */
+	speed?: number;
+	/** Per-clip audio volume as a linear multiplier (0.0–2.0). Default 1.0. */
+	volume?: number;
+	/** Audio fade-in duration in seconds. Default 0. */
+	fadeIn?: number;
+	/** Audio fade-out duration in seconds. Default 0. */
+	fadeOut?: number;
+	/** Color/light filter adjustments applied in the renderer. */
+	filters?: VideoFilters;
+	/** Canvas 2D composite operation for layer blending. Default 'source-over'. */
+	blendMode?: GlobalCompositeOperation;
+	/** Entry animation applied at clip start. */
+	animationIn?: ClipAnimation;
+	/** Exit animation applied at clip end. */
+	animationOut?: ClipAnimation;
 }
+
+// ---- Image Element ----
 
 export interface ImageElement extends BaseTimelineElement {
 	type: "image";
@@ -95,7 +218,19 @@ export interface ImageElement extends BaseTimelineElement {
 	hidden?: boolean;
 	transform: Transform;
 	opacity: number;
+	/** Speed field kept for interface consistency (affects duration calculation only). */
+	speed?: number;
+	/** Color/light filter adjustments applied in the renderer. */
+	filters?: VideoFilters;
+	/** Canvas 2D composite operation for layer blending. Default 'source-over'. */
+	blendMode?: GlobalCompositeOperation;
+	/** Entry animation applied at clip start. */
+	animationIn?: ClipAnimation;
+	/** Exit animation applied at clip end. */
+	animationOut?: ClipAnimation;
 }
+
+// ---- Text Element ----
 
 export interface TextElement extends BaseTimelineElement {
 	type: "text";
@@ -113,6 +248,8 @@ export interface TextElement extends BaseTimelineElement {
 	opacity: number;
 }
 
+// ---- Sticker Element ----
+
 export interface StickerElement extends BaseTimelineElement {
 	type: "sticker";
 	iconName: string;
@@ -122,6 +259,8 @@ export interface StickerElement extends BaseTimelineElement {
 	color?: string;
 }
 
+// ---- Union Types ----
+
 export type TimelineElement =
 	| AudioElement
 	| VideoElement
@@ -130,6 +269,8 @@ export type TimelineElement =
 	| StickerElement;
 
 export type ElementType = TimelineElement["type"];
+
+// ---- Create helpers (Omit id) ----
 
 export type CreateUploadAudioElement = Omit<UploadAudioElement, "id">;
 export type CreateLibraryAudioElement = Omit<LibraryAudioElement, "id">;

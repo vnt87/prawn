@@ -17,7 +17,14 @@ import {
 import { useState } from "react";
 import { cn } from "@/utils/ui";
 
-export function RemoveBgTab({ element }: { element: VideoElement | ImageElement }) {
+export function RemoveBgTab({
+	element,
+	trackId: _trackId,
+}: {
+	element: VideoElement | ImageElement;
+	/** Reserved for future bg-removal state persistence via updateElements */
+	trackId: string;
+}) {
     const [removalType, setRemovalType] = useState<"auto" | "custom" | "chroma" | null>("auto");
     const [customTool, setCustomTool] = useState<"brush_plus" | "eraser_plus" | "brush" | "eraser">("brush_plus");
 

@@ -16,7 +16,11 @@ export class VideoNode extends VisualNode<VideoNodeParams> {
 			return;
 		}
 
+		// Compute the local media time (accounting for speed) and store it
+		// so renderVisual can sample animation overrides at the correct position.
 		const videoTime = this.getLocalTime(time);
+		this._currentLocalTime = videoTime;
+
 		const frame = await videoCache.getFrameAt({
 			mediaId: this.params.mediaId,
 			file: this.params.file,

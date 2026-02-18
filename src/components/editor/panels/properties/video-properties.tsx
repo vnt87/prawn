@@ -10,8 +10,11 @@ import { AdjustTab } from "./video-properties/adjust-tab";
 
 export function VideoProperties({
 	_element: element,
+	trackId,
 }: {
 	_element: VideoElement | ImageElement;
+	/** Track id needed to call editor.timeline.updateElements */
+	trackId: string;
 }) {
 	const editor = useEditor();
 	const asset = editor.media.getAssets().find((a) => a.id === element.mediaId);
@@ -66,19 +69,20 @@ export function VideoProperties({
 
 				<div className="flex-1 overflow-y-auto">
 					<TabsContent value="video" className="m-0 h-full">
-						<VideoTab element={element} />
+						{/* trackId threaded to all sub-tabs for updateElements calls */}
+						<VideoTab element={element} trackId={trackId} />
 					</TabsContent>
 					<TabsContent value="audio" className="m-0 h-full">
-						<AudioTab element={element} />
+						<AudioTab element={element} trackId={trackId} />
 					</TabsContent>
 					<TabsContent value="speed" className="m-0 h-full">
-						<SpeedTab element={element} />
+						<SpeedTab element={element} trackId={trackId} />
 					</TabsContent>
 					<TabsContent value="animation" className="m-0 h-full">
-						<AnimationTab element={element} />
+						<AnimationTab element={element} trackId={trackId} />
 					</TabsContent>
 					<TabsContent value="adjust" className="m-0 h-full">
-						<AdjustTab element={element} />
+						<AdjustTab element={element} trackId={trackId} />
 					</TabsContent>
 					<TabsContent value="info" className="m-0 h-full">
 						<InfoTab element={element} />

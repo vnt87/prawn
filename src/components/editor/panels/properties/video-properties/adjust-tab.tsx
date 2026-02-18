@@ -1,128 +1,338 @@
-import type { ImageElement, VideoElement } from "@/types/timeline";
+"use client";
+
+import type { ImageElement, VideoElement, VideoFilters } from "@/types/timeline";
+import { DEFAULT_VIDEO_FILTERS } from "@/types/timeline";
 import { cn } from "@/utils/ui";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { RefreshCcw } from "lucide-react";
 import {
-    PropertyGroup,
-    PropertyItem,
-    PropertyItemLabel,
+	PropertyGroup,
+	PropertyItem,
+	PropertyItemLabel,
 } from "../property-item";
+import { useEditor } from "@/hooks/use-editor";
 
-export function AdjustTab({ element }: { element: VideoElement | ImageElement }) {
-    return (
-        <div className="flex flex-col pb-20">
-            <PropertyGroup title="Basic" defaultExpanded={true}>
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm">Auto adjust</span>
-                        <Switch />
-                    </div>
+export function AdjustTab({
+	element,
+	trackId,
+}: {
+	element: VideoElement | ImageElement;
+	/** Track id for updateElements calls */
+	trackId: string;
+}) {
+	const editor = useEditor();
 
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm">Color match</span>
-                        <Switch />
-                    </div>
+	// Read current filters, falling back to neutral defaults
+	const filters: VideoFilters = element.filters ?? DEFAULT_VIDEO_FILTERS;
 
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm">Color correction</span>
-                        <Switch />
-                    </div>
-                </div>
-            </PropertyGroup>
+	// ---- Helpers ----
 
-            <PropertyGroup title="Color" defaultExpanded={true} hasBorderTop>
-                <div className="space-y-6">
-                    <AdjustSlider label="Temp" defaultValue={0} min={-100} max={100} trackGradient="linear-gradient(to right, #3b82f6, #f3f4f6, #eab308)" />
-                    <AdjustSlider label="Tint" defaultValue={0} min={-100} max={100} trackGradient="linear-gradient(to right, #22c55e, #f3f4f6, #d946ef)" />
-                    <AdjustSlider label="Saturation" defaultValue={0} min={-100} max={100} trackGradient="linear-gradient(to right, #6b7280, #ef4444)" />
-                </div>
-            </PropertyGroup>
+	/** Update a single filter field without recording history (live drag). */
+	function updateFilterLive(patch: Partial<VideoFilters>) {
+		editor.timeline.updateElements({
+			updates: [
+				{
+					trackId,
+					elementId: element.id,
+					updates: { filters: { ...filters, ...patch } },
+				},
+			],
+			pushHistory: false,
+		});
+	}
 
-            <PropertyGroup title="Lightness" defaultExpanded={true} hasBorderTop>
-                <div className="space-y-6">
-                    <AdjustSlider label="Exposure" defaultValue={0} min={-100} max={100} />
-                    <AdjustSlider label="Contrast" defaultValue={0} min={-100} max={100} />
-                    <AdjustSlider label="Highlight" defaultValue={0} min={-100} max={100} />
-                    <AdjustSlider label="Shadow" defaultValue={0} min={-100} max={100} />
-                    <AdjustSlider label="Whites" defaultValue={0} min={-100} max={100} />
-                    <AdjustSlider label="Blacks" defaultValue={0} min={-100} max={100} />
-                    <AdjustSlider label="Brilliance" defaultValue={0} min={-100} max={100} />
-                </div>
-            </PropertyGroup>
+	/** Commit the current filters object to history (on pointer-up). */
+	function commitFilters(patch: Partial<VideoFilters>) {
+		editor.timeline.updateElements({
+			updates: [
+				{
+					trackId,
+					elementId: element.id,
+					updates: { filters: { ...filters, ...patch } },
+				},
+			],
+			pushHistory: true,
+		});
+	}
 
-            <PropertyGroup title="Effects" defaultExpanded={true} hasBorderTop>
-                <div className="space-y-6">
-                    <AdjustSlider label="Sharpen" defaultValue={0} min={0} max={100} />
-                    <AdjustSlider label="Clarity" defaultValue={0} min={0} max={100} />
-                    <AdjustSlider label="Particles" defaultValue={0} min={0} max={100} />
-                    <AdjustSlider label="Fade" defaultValue={0} min={0} max={100} />
-                    <AdjustSlider label="Vignette" defaultValue={0} min={0} max={100} />
-                </div>
-            </PropertyGroup>
+	/** Reset all filters to neutral defaults. */
+	function resetFilters() {
+		editor.timeline.updateElements({
+			updates: [
+				{
+					trackId,
+					elementId: element.id,
+					updates: { filters: DEFAULT_VIDEO_FILTERS },
+				},
+			],
+			pushHistory: true,
+		});
+	}
 
-            <PropertyGroup title="LUT" defaultExpanded={true} hasBorderTop>
-                <div className="space-y-4">
-                    <PropertyItem direction="column" className="items-stretch gap-2">
-                        <PropertyItemLabel>Name</PropertyItemLabel>
-                        <div className="bg-secondary px-3 py-2 rounded text-xs">None</div>
-                    </PropertyItem>
+	return (
+		<div className="flex flex-col pb-20">
+			{/* ── Color ── */}
+			<PropertyGroup title="Color" defaultExpanded={true} hasBorderTop>
+				<div className="space-y-6">
+					{/* Temperature — pixel-level R/B channel shift */}
+					<AdjustSlider
+						label="Temp"
+						value={filters.temperature ?? 0}
+						defaultValue={0}
+						min={-100}
+						max={100}
+						trackGradient="linear-gradient(to right, #3b82f6, #f3f4f6, #eab308)"
+						onChange={(v) => updateFilterLive({ temperature: v })}
+						onCommit={(v) => commitFilters({ temperature: v })}
+					/>
+					{/* Tint — pixel-level G channel shift */}
+					<AdjustSlider
+						label="Tint"
+						value={filters.tint ?? 0}
+						defaultValue={0}
+						min={-100}
+						max={100}
+						trackGradient="linear-gradient(to right, #22c55e, #f3f4f6, #d946ef)"
+						onChange={(v) => updateFilterLive({ tint: v })}
+						onCommit={(v) => commitFilters({ tint: v })}
+					/>
+					{/* Saturation — CSS filter: saturate() */}
+					<AdjustSlider
+						label="Saturation"
+						value={filters.saturation}
+						defaultValue={0}
+						min={-100}
+						max={100}
+						trackGradient="linear-gradient(to right, #6b7280, #ef4444)"
+						onChange={(v) => updateFilterLive({ saturation: v })}
+						onCommit={(v) => commitFilters({ saturation: v })}
+					/>
+				</div>
+			</PropertyGroup>
 
-                    <PropertyItem direction="column" className="items-stretch gap-2">
-                        <div className="flex justify-between">
-                            <PropertyItemLabel>Intensity</PropertyItemLabel>
-                            <span className="text-xs">100</span>
-                        </div>
-                        <Slider defaultValue={[100]} max={100} step={1} />
-                    </PropertyItem>
+			{/* ── Lightness ── */}
+			<PropertyGroup title="Lightness" defaultExpanded={true} hasBorderTop>
+				<div className="space-y-6">
+					{/* Exposure → brightness */}
+					<AdjustSlider
+						label="Exposure"
+						value={filters.brightness}
+						defaultValue={0}
+						min={-100}
+						max={100}
+						onChange={(v) => updateFilterLive({ brightness: v })}
+						onCommit={(v) => commitFilters({ brightness: v })}
+					/>
+					{/* Contrast */}
+					<AdjustSlider
+						label="Contrast"
+						value={filters.contrast}
+						defaultValue={0}
+						min={-100}
+						max={100}
+						onChange={(v) => updateFilterLive({ contrast: v })}
+						onCommit={(v) => commitFilters({ contrast: v })}
+					/>
+					{/* Highlight — pixel-level tone curve */}
+					<AdjustSlider
+						label="Highlight"
+						value={filters.highlights ?? 0}
+						defaultValue={0}
+						min={-100}
+						max={100}
+						onChange={(v) => updateFilterLive({ highlights: v })}
+						onCommit={(v) => commitFilters({ highlights: v })}
+					/>
+					{/* Shadow — pixel-level tone curve */}
+					<AdjustSlider
+						label="Shadow"
+						value={filters.shadows ?? 0}
+						defaultValue={0}
+						min={-100}
+						max={100}
+						onChange={(v) => updateFilterLive({ shadows: v })}
+						onCommit={(v) => commitFilters({ shadows: v })}
+					/>
+					{/* Whites — pixel-level white point */}
+					<AdjustSlider
+						label="Whites"
+						value={filters.whites ?? 0}
+						defaultValue={0}
+						min={-100}
+						max={100}
+						onChange={(v) => updateFilterLive({ whites: v })}
+						onCommit={(v) => commitFilters({ whites: v })}
+					/>
+					{/* Blacks — pixel-level black point */}
+					<AdjustSlider
+						label="Blacks"
+						value={filters.blacks ?? 0}
+						defaultValue={0}
+						min={-100}
+						max={100}
+						onChange={(v) => updateFilterLive({ blacks: v })}
+						onCommit={(v) => commitFilters({ blacks: v })}
+					/>
+					{/* Brilliance — P4+ (not yet in VideoFilters type) */}
+					<AdjustSlider
+						label="Brilliance"
+						value={0}
+						defaultValue={0}
+						min={-100}
+						max={100}
+						disabled
+						badge="Soon"
+						onChange={() => {}}
+						onCommit={() => {}}
+					/>
+				</div>
+			</PropertyGroup>
 
-                    <div className="flex items-center justify-between pt-2">
-                        <div className="flex flex-col gap-0.5">
-                            <span className="text-sm">Protect skin tone</span>
-                        </div>
-                        <Switch />
-                    </div>
-                </div>
-            </PropertyGroup>
-        </div>
-    );
+			{/* ── Effects ── */}
+			<PropertyGroup title="Effects" defaultExpanded={true} hasBorderTop>
+				<div className="space-y-6">
+					{/* Sharpen — convolution kernel */}
+					<AdjustSlider
+						label="Sharpen"
+						value={filters.sharpen ?? 0}
+						defaultValue={0}
+						min={0}
+						max={100}
+						onChange={(v) => updateFilterLive({ sharpen: v })}
+						onCommit={(v) => commitFilters({ sharpen: v })}
+					/>
+					{/* Clarity — large-radius unsharp mask */}
+					<AdjustSlider
+						label="Clarity"
+						value={filters.clarity ?? 0}
+						defaultValue={0}
+						min={0}
+						max={100}
+						onChange={(v) => updateFilterLive({ clarity: v })}
+						onCommit={(v) => commitFilters({ clarity: v })}
+					/>
+					{/* Fade — white overlay */}
+					<AdjustSlider
+						label="Fade"
+						value={filters.fade}
+						defaultValue={0}
+						min={0}
+						max={100}
+						onChange={(v) => updateFilterLive({ fade: v })}
+						onCommit={(v) => commitFilters({ fade: v })}
+					/>
+					{/* Vignette — radial gradient overlay */}
+					<AdjustSlider
+						label="Vignette"
+						value={filters.vignette}
+						defaultValue={0}
+						min={0}
+						max={100}
+						onChange={(v) => updateFilterLive({ vignette: v })}
+						onCommit={(v) => commitFilters({ vignette: v })}
+					/>
+				</div>
+			</PropertyGroup>
+
+			{/* ── LUT (P4+) ── */}
+			<PropertyGroup title="LUT" defaultExpanded={true} hasBorderTop>
+				<div className="space-y-4">
+					<PropertyItem direction="column" className="items-stretch gap-2">
+						<PropertyItemLabel>Name</PropertyItemLabel>
+						<div className="bg-secondary px-3 py-2 rounded text-xs text-muted-foreground">
+							None — coming soon
+						</div>
+					</PropertyItem>
+
+					<PropertyItem direction="column" className="items-stretch gap-2">
+						<div className="flex justify-between">
+							<PropertyItemLabel className="text-muted-foreground">Intensity</PropertyItemLabel>
+							<span className="text-xs text-muted-foreground">100</span>
+						</div>
+						<Slider defaultValue={[100]} max={100} step={1} disabled />
+					</PropertyItem>
+
+					</div>
+			</PropertyGroup>
+
+			{/* Reset all filters button */}
+			<div className="px-4 pb-4 pt-2 flex justify-end">
+				<Button
+					size="sm"
+					variant="ghost"
+					className="h-7 text-xs text-muted-foreground"
+					onClick={resetFilters}
+				>
+					<RefreshCcw className="size-3 mr-1" /> Reset all
+				</Button>
+			</div>
+		</div>
+	);
 }
 
+// ---- Shared slider sub-component ----
+
 function AdjustSlider({
-    label,
-    defaultValue,
-    min,
-    max,
-    trackGradient,
+	label,
+	value,
+	defaultValue,
+	min,
+	max,
+	trackGradient,
+	disabled = false,
+	badge,
+	onChange,
+	onCommit,
 }: {
-    label: string;
-    defaultValue: number;
-    min: number;
-    max: number;
-    trackGradient?: string;
+	label: string;
+	value: number;
+	defaultValue: number;
+	min: number;
+	max: number;
+	trackGradient?: string;
+	disabled?: boolean;
+	/** Optional badge text to show alongside the label when disabled */
+	badge?: string;
+	onChange: (v: number) => void;
+	onCommit: (v: number) => void;
 }) {
-    return (
-        <div className="space-y-2">
-            <div className="flex justify-between items-center">
-                <span className="text-xs text-muted-foreground">{label}</span>
-                <div className="bg-secondary/50 rounded px-2 py-0.5 text-[10px] w-12 text-center">
-                    {defaultValue}
-                </div>
-            </div>
-            <div className="relative flex items-center h-4">
-                {trackGradient && (
-                    <div
-                        className="absolute h-1 w-full rounded-full opacity-50"
-                        style={{ background: trackGradient }}
-                    />
-                )}
-                <Slider
-                    defaultValue={[defaultValue]}
-                    min={min}
-                    max={max}
-                    step={1}
-                    className={cn("w-full", trackGradient && "z-10")}
-                />
-            </div>
-        </div>
-    );
+	return (
+		<div className="space-y-2">
+			<div className="flex justify-between items-center">
+				<span className={cn("text-xs", disabled ? "text-muted-foreground/60" : "text-muted-foreground")}>
+					{label}
+				</span>
+				<div className="flex items-center gap-1.5">
+					{badge && (
+						<span className="text-[9px] bg-secondary px-1.5 py-0.5 rounded text-muted-foreground">
+							{badge}
+						</span>
+					)}
+					<div className="bg-secondary/50 rounded px-2 py-0.5 text-[10px] w-12 text-center">
+						{disabled ? defaultValue : value}
+					</div>
+				</div>
+			</div>
+			<div className="relative flex items-center h-4">
+				{trackGradient && (
+					<div
+						className="absolute h-1 w-full rounded-full opacity-40"
+						style={{ background: trackGradient }}
+					/>
+				)}
+				<Slider
+					value={[disabled ? defaultValue : value]}
+					min={min}
+					max={max}
+					step={1}
+					disabled={disabled}
+					className={cn("w-full", trackGradient && "z-10")}
+					onValueChange={([v]) => onChange(v)}
+					onPointerUp={() => onCommit(disabled ? defaultValue : value)}
+				/>
+			</div>
+		</div>
+	);
 }

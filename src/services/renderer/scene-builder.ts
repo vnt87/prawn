@@ -54,31 +54,37 @@ export function buildScene(params: BuildSceneParams) {
 					continue;
 				}
 
+				// Common properties shared by both VideoNode and ImageNode
+				const sharedVisualParams = {
+					duration: element.duration,
+					timeOffset: element.startTime,
+					trimStart: element.trimStart,
+					trimEnd: element.trimEnd,
+					transform: element.transform,
+					opacity: element.opacity,
+					// New properties — fall back to safe defaults if not set
+					speed: element.speed ?? 1,
+					filters: element.filters,
+					blendMode: element.blendMode,
+					animationIn: element.animationIn,
+					animationOut: element.animationOut,
+				};
+
 				if (mediaAsset.type === "video") {
 					contentNodes.push(
 						new VideoNode({
+							...sharedVisualParams,
 							mediaId: mediaAsset.id,
 							url: mediaAsset.url,
 							file: mediaAsset.file,
-							duration: element.duration,
-							timeOffset: element.startTime,
-							trimStart: element.trimStart,
-							trimEnd: element.trimEnd,
-							transform: element.transform,
-							opacity: element.opacity,
 						}),
 					);
 				}
 				if (mediaAsset.type === "image") {
 					contentNodes.push(
 						new ImageNode({
+							...sharedVisualParams,
 							url: mediaAsset.url,
-							duration: element.duration,
-							timeOffset: element.startTime,
-							trimStart: element.trimStart,
-							trimEnd: element.trimEnd,
-							transform: element.transform,
-							opacity: element.opacity,
 						}),
 					);
 				}

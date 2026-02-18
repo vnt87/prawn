@@ -224,6 +224,38 @@ export class AudioManager {
 		const sourceStartTime =
 			clip.trimStart + (iteratorStartTime - clip.startTime);
 
+		// ---- Per-clip GainNode for volume and fade automation ----
+		const clipGain = audioContext.createGain();
+		clipGain.gain.value = clip.volume ?? 1;
+		clipGain.connect(this.masterGain ?? audioContext.destination);
+
+		// Schedule fade-in: ramp from 0 → volume over fadeIn seconds from clip start
+		if (clip.fadeIn > 0) {
+			const clipStartCtx =
+				this.playbackStartContextTime + (clipStart - this.playbackStartTime);
+			const fadeEndCtx = clipStartCtx + clip.fadeIn;
+			// Set gain to 0 at clip start (may be in the past if we seeked mid-clip)
+			clipGain.gain.setValueAtTime(0, Math.max(audioContext.currentTime, clipStartCtx));
+			// Ramp to target volume by end of fade-in
+			if (fadeEndCtx > audioContext.currentTime) {
+				clipGain.gain.linearRampToValueAtTime(clip.volume, fadeEndCtx);
+			} else {
+				// We're already past the fade-in; set volume immediately
+				clipGain.gain.setValueAtTime(clip.volume, audioContext.currentTime);
+			}
+		}
+
+		// Schedule fade-out: ramp from volume → 0 over fadeOut seconds before clip end
+		if (clip.fadeOut > 0) {
+			const clipEndCtx =
+				this.playbackStartContextTime + (clipEnd - this.playbackStartTime);
+			const fadeOutStartCtx = clipEndCtx - clip.fadeOut;
+			if (fadeOutStartCtx > audioContext.currentTime) {
+				clipGain.gain.setValueAtTime(clip.volume, fadeOutStartCtx);
+				clipGain.gain.linearRampToValueAtTime(0, clipEndCtx);
+			}
+		}
+
 		const iterator = sink.buffers(sourceStartTime);
 		this.clipIterators.set(clip.id, iterator);
 
@@ -236,7 +268,8 @@ export class AudioManager {
 
 			const node = audioContext.createBufferSource();
 			node.buffer = buffer;
-			node.connect(this.masterGain ?? audioContext.destination);
+			// Route through per-clip gain (which applies volume + fades)
+			node.connect(clipGain);
 
 			const startTimestamp =
 				this.playbackStartContextTime +
