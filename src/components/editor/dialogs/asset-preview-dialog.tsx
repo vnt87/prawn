@@ -4,7 +4,10 @@ import { useAssetPreviewStore } from "@/stores/asset-preview-store";
 import {
 	Dialog,
 	DialogContent,
+	DialogHeader,
+	DialogTitle,
 } from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
 import { ImageLightbox } from "./image-lightbox";
 import { VideoPlayerDialog } from "./video-player-dialog";
 import { AudioPlayerDialog } from "./audio-player-dialog";
@@ -20,6 +23,7 @@ import { AudioPlayerDialog } from "./audio-player-dialog";
  */
 export function AssetPreviewDialog() {
 	const { asset, isOpen, closePreview } = useAssetPreviewStore();
+	const { t } = useTranslation();
 
 	// Determine which viewer to show based on asset type
 	const renderContent = () => {
@@ -39,13 +43,16 @@ export function AssetPreviewDialog() {
 
 	return (
 		<Dialog open={isOpen} onOpenChange={(open) => !open && closePreview()}>
-			<DialogContent 
+			<DialogContent
 				className="h-[70vh] max-w-[80vw] p-0 overflow-hidden border-0 bg-transparent shadow-none"
 				onCloseAutoFocus={(e) => {
 					e.preventDefault();
 					e.stopPropagation();
 				}}
 			>
+				<DialogHeader className="sr-only">
+					<DialogTitle>{asset?.name || t("common.preview")}</DialogTitle>
+				</DialogHeader>
 				{renderContent()}
 			</DialogContent>
 		</Dialog>
