@@ -174,7 +174,7 @@ export async function generateFilmstripThumbnails({
  */
 export async function extractAudioWaveformPeaks({
 	file,
-	peakCount = 256,
+	peakCount = 1024,
 }: {
 	file: File;
 	peakCount?: number;
@@ -359,7 +359,7 @@ export async function processMediaAssets({
 			} else if (fileType === "audio") {
 				// For audio, we don't set width/height/fps (they'll be undefined)
 				duration = await getMediaDuration({ file });
-				
+
 				// Extract audio waveform peaks for visualization
 				const audioResult = await extractAudioWaveformPeaks({ file });
 				if (audioResult.hasAudio) {

@@ -417,9 +417,9 @@ function ElementContent({
 	}
 
 	// Check if this video has audio waveform peaks for docked waveform
-	const hasAudioWaveform = 
-		mediaAsset.type === "video" && 
-		mediaAsset.audioWaveformPeaks && 
+	const hasAudioWaveform =
+		mediaAsset.type === "video" &&
+		mediaAsset.audioWaveformPeaks &&
 		mediaAsset.audioWaveformPeaks.length > 0;
 
 	// Get the muted state for video elements
@@ -436,14 +436,14 @@ function ElementContent({
 
 		// Calculate thumbnail section height - leave room for waveform if video has audio
 		const waveformHeight = hasAudioWaveform ? 20 : 0;
-		const thumbnailHeight = hasAudioWaveform 
-			? `calc(100% - ${waveformHeight}px)` 
+		const thumbnailHeight = hasAudioWaveform
+			? `calc(100% - ${waveformHeight}px)`
 			: "100%";
 
 		return (
 			<div className="flex size-full flex-col overflow-hidden">
 				{/* Thumbnails section */}
-				<div 
+				<div
 					className="relative overflow-hidden"
 					style={{ height: thumbnailHeight }}
 				>
@@ -461,84 +461,84 @@ function ElementContent({
 								}}
 							>
 								{(() => {
-										const interval = mediaAsset.filmstripInterval ?? 1;
-										
-										// Calculate available height for thumbnails (subtracting waveform if present)
-										const availableHeight = hasAudioWaveform 
-											? trackHeight - 20 - (isSelected ? 8 : 0)
-											: trackHeight - (isSelected ? 8 : 0);
-										
-										// Video aspect ratio for thumbnail sizing
-										const videoAspectRatio = mediaAsset.width && mediaAsset.height 
-											? mediaAsset.width / mediaAsset.height 
-											: 16 / 9;
-										
-										// Fixed thumbnail size based on track height (never stretches with zoom)
-										const thumbnailWidth = availableHeight * videoAspectRatio;
-										
-										// Pixels per second at current zoom level
-										const pixelsPerSecond = TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
-										
-										// Calculate visible time range for this element
-										const trimStartOffset = element.trimStart;
-										const elementDuration = element.duration;
-										
-										// Calculate which thumbnails we need to render
-										// Start from the first thumbnail that could be visible
-										const firstThumbnailIndex = Math.max(0, Math.floor(trimStartOffset / interval));
-										
-										// End at the last thumbnail that could be visible
-										const lastThumbnailIndex = Math.min(
-											mediaAsset.filmstripThumbnails.length - 1,
-											Math.ceil((trimStartOffset + elementDuration) / interval)
-										);
+									const interval = mediaAsset.filmstripInterval ?? 1;
 
-										// Build visible thumbnails array
-										const visibleThumbnails: React.ReactElement[] = [];
-										
-										for (let index = firstThumbnailIndex; index <= lastThumbnailIndex; index++) {
-											const thumbnail = mediaAsset.filmstripThumbnails[index];
-											if (!thumbnail) continue;
-											
-											// Position thumbnail at its time offset
-											const thumbnailTime = index * interval;
-											const leftPosition = (thumbnailTime - trimStartOffset) * pixelsPerSecond;
-											
-											// If zoomed in, we may need to repeat the thumbnail to fill gaps
-											// Calculate how many times this thumbnail should repeat
-											const intervalWidth = interval * pixelsPerSecond;
-											const repeatCount = Math.max(1, Math.ceil(intervalWidth / thumbnailWidth));
-											
-											// Render thumbnail(s) for this interval
-											for (let repeat = 0; repeat < repeatCount; repeat++) {
-												const repeatLeftPosition = leftPosition + (repeat * thumbnailWidth);
-												
-												// Skip if outside visible bounds
-												if (repeatLeftPosition > elementDuration * pixelsPerSecond + thumbnailWidth) continue;
-												if (repeatLeftPosition + thumbnailWidth < -thumbnailWidth) continue;
+									// Calculate available height for thumbnails (subtracting waveform if present)
+									const availableHeight = hasAudioWaveform
+										? trackHeight - 20 - (isSelected ? 8 : 0)
+										: trackHeight - (isSelected ? 8 : 0);
 
-												visibleThumbnails.push(
-													<img
-														key={`${index}-${repeat}`}
-														src={thumbnail}
-														alt={`Thumbnail ${index}`}
-														className="absolute pointer-events-none select-none"
-														style={{
-															position: "absolute",
-															left: `${repeatLeftPosition}px`,
-															width: `${thumbnailWidth}px`,
-															height: `${availableHeight}px`,
-															objectFit: "cover",
-															objectPosition: "center",
-														}}
-														draggable={false}
-													/>
-												);
-											}
+									// Video aspect ratio for thumbnail sizing
+									const videoAspectRatio = mediaAsset.width && mediaAsset.height
+										? mediaAsset.width / mediaAsset.height
+										: 16 / 9;
+
+									// Fixed thumbnail size based on track height (never stretches with zoom)
+									const thumbnailWidth = availableHeight * videoAspectRatio;
+
+									// Pixels per second at current zoom level
+									const pixelsPerSecond = TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
+
+									// Calculate visible time range for this element
+									const trimStartOffset = element.trimStart;
+									const elementDuration = element.duration;
+
+									// Calculate which thumbnails we need to render
+									// Start from the first thumbnail that could be visible
+									const firstThumbnailIndex = Math.max(0, Math.floor(trimStartOffset / interval));
+
+									// End at the last thumbnail that could be visible
+									const lastThumbnailIndex = Math.min(
+										mediaAsset.filmstripThumbnails.length - 1,
+										Math.ceil((trimStartOffset + elementDuration) / interval)
+									);
+
+									// Build visible thumbnails array
+									const visibleThumbnails: React.ReactElement[] = [];
+
+									for (let index = firstThumbnailIndex; index <= lastThumbnailIndex; index++) {
+										const thumbnail = mediaAsset.filmstripThumbnails[index];
+										if (!thumbnail) continue;
+
+										// Position thumbnail at its time offset
+										const thumbnailTime = index * interval;
+										const leftPosition = (thumbnailTime - trimStartOffset) * pixelsPerSecond;
+
+										// If zoomed in, we may need to repeat the thumbnail to fill gaps
+										// Calculate how many times this thumbnail should repeat
+										const intervalWidth = interval * pixelsPerSecond;
+										const repeatCount = Math.max(1, Math.ceil(intervalWidth / thumbnailWidth));
+
+										// Render thumbnail(s) for this interval
+										for (let repeat = 0; repeat < repeatCount; repeat++) {
+											const repeatLeftPosition = leftPosition + (repeat * thumbnailWidth);
+
+											// Skip if outside visible bounds
+											if (repeatLeftPosition > elementDuration * pixelsPerSecond + thumbnailWidth) continue;
+											if (repeatLeftPosition + thumbnailWidth < -thumbnailWidth) continue;
+
+											visibleThumbnails.push(
+												<img
+													key={`${index}-${repeat}`}
+													src={thumbnail}
+													alt={`Thumbnail ${index}`}
+													className="absolute pointer-events-none select-none"
+													style={{
+														position: "absolute",
+														left: `${repeatLeftPosition}px`,
+														width: `${thumbnailWidth}px`,
+														height: `${availableHeight}px`,
+														objectFit: "cover",
+														objectPosition: "center",
+													}}
+													draggable={false}
+												/>
+											);
 										}
-										
-										return visibleThumbnails;
-									})()}
+									}
+
+									return visibleThumbnails;
+								})()}
 							</div>
 						) : (
 							<div
@@ -559,15 +559,15 @@ function ElementContent({
 
 				{/* Docked audio waveform section - only for videos with audio */}
 				{hasAudioWaveform && (
-					<div 
-						className="absolute bottom-0 left-0 right-0 bg-black/30"
+					<div
+						className="absolute bottom-0 left-0 right-0 bg-black/40 border-t border-white/5"
 						style={{ height: `${waveformHeight}px` }}
 					>
 						<DockedWaveform
 							peaks={mediaAsset.audioWaveformPeaks!}
 							height={waveformHeight}
 							muted={isVideoMuted}
-							className="w-full h-full"
+							className="w-full h-full px-1"
 						/>
 					</div>
 				)}

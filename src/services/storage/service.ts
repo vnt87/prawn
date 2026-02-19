@@ -226,7 +226,12 @@ class StorageService {
 			width: mediaAsset.width,
 			height: mediaAsset.height,
 			duration: mediaAsset.duration,
+			fps: mediaAsset.fps,
 			thumbnailUrl: mediaAsset.thumbnailUrl,
+			filmstripThumbnails: mediaAsset.filmstripThumbnails,
+			filmstripInterval: mediaAsset.filmstripInterval,
+			audioWaveformPeaks: mediaAsset.audioWaveformPeaks,
+			hasAudio: mediaAsset.hasAudio,
 			ephemeral: mediaAsset.ephemeral,
 		};
 
@@ -276,7 +281,12 @@ class StorageService {
 			width: metadata.width,
 			height: metadata.height,
 			duration: metadata.duration,
+			fps: metadata.fps,
 			thumbnailUrl: metadata.thumbnailUrl,
+			filmstripThumbnails: metadata.filmstripThumbnails,
+			filmstripInterval: metadata.filmstripInterval,
+			audioWaveformPeaks: metadata.audioWaveformPeaks,
+			hasAudio: metadata.hasAudio,
 			ephemeral: metadata.ephemeral,
 		};
 	}

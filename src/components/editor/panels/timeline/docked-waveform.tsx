@@ -47,25 +47,31 @@ export function DockedWaveform({
 		const channelPeaks = peaks[0] || [];
 		if (channelPeaks.length === 0) return;
 
-		const barWidth = rect.width / channelPeaks.length;
+		const barWidth = 2;
+		const barGap = 1;
+		const barTotalWidth = barWidth + barGap;
+		const numberOfBars = Math.floor(rect.width / barTotalWidth);
 		const centerY = rect.height / 2;
 
-		// Waveform color - muted shows greyed out
-		const color = muted 
-			? "rgba(255, 255, 255, 0.3)" 
+		// Waveform color - matches AudioWaveform (WaveSurfer) progress color
+		const color = muted
+			? "rgba(255, 255, 255, 0.2)"
 			: "rgba(255, 255, 255, 0.6)";
 
 		ctx.fillStyle = color;
 
-		// Draw bars from peaks
-		for (let i = 0; i < channelPeaks.length; i++) {
-			const peak = channelPeaks[i];
+		// Draw bars matched to the spacing and width of regular audio track
+		for (let i = 0; i < numberOfBars; i++) {
+			// Find the peak corresponding to this bar by sampling the peaks array
+			const peakIndex = Math.floor((i / numberOfBars) * channelPeaks.length);
+			const peak = channelPeaks[peakIndex] || 0;
+
 			const barHeight = peak * (rect.height * 0.8); // 80% of height max
-			const x = i * barWidth;
+			const x = i * barTotalWidth;
 			const y = centerY - barHeight / 2;
 
-			// Draw centered bar
-			ctx.fillRect(x, y, Math.max(barWidth - 1, 1), barHeight);
+			// Draw centered bar (mirrors WaveSurfer's default rectangle look)
+			ctx.fillRect(x, y, barWidth, Math.max(barHeight, 1));
 		}
 	}, [peaks, height, muted]);
 
