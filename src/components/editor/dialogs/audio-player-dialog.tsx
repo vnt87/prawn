@@ -46,7 +46,7 @@ export function AudioPlayerDialog() {
 	const wavesurferRef = useRef<WaveSurfer | null>(null);
 	const regionsRef = useRef<RegionsPlugin | null>(null);
 	const { t } = useTranslation();
-	
+
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
@@ -80,13 +80,18 @@ export function AudioPlayerDialog() {
 		wavesurferRef.current = wavesurfer;
 
 		// Load audio
-		wavesurfer.load(asset.url);
+		wavesurfer.load(asset.url).catch((err) => {
+			// Ignore AbortError as it's expected when the component unmounts
+			if (err.name !== "AbortError") {
+				console.error("WaveSurfer load error:", err);
+			}
+		});
 
 		// Event handlers
 		wavesurfer.on("ready", () => {
 			setDuration(wavesurfer.getDuration());
 			setIsLoaded(true);
-			
+
 			// Create initial region for full clip
 			if (asset.duration) {
 				regions.addRegion({
@@ -124,7 +129,12 @@ export function AudioPlayerDialog() {
 		wavesurfer.setVolume(volume);
 
 		return () => {
-			wavesurfer.destroy();
+			try {
+				wavesurfer.destroy();
+			} catch (e) {
+				// Ignore errors during destruction, especially AbortError
+				// which can happen if destroyed while loading
+			}
 			wavesurferRef.current = null;
 			regionsRef.current = null;
 		};
@@ -167,9 +177,9 @@ export function AudioPlayerDialog() {
 	// Clip marking
 	const handleSetInPoint = useCallback(() => {
 		if (!regionsRef.current || !duration) return;
-		
+
 		setInPoint(currentTime);
-		
+
 		// Update region
 		const existingRegion = regionsRef.current.getRegions().find(r => r.id === "clip-region");
 		if (existingRegion) {
@@ -181,9 +191,9 @@ export function AudioPlayerDialog() {
 
 	const handleSetOutPoint = useCallback(() => {
 		if (!regionsRef.current || !duration) return;
-		
+
 		setOutPoint(currentTime);
-		
+
 		// Update region
 		const existingRegion = regionsRef.current.getRegions().find(r => r.id === "clip-region");
 		if (existingRegion) {
@@ -283,8 +293,8 @@ export function AudioPlayerDialog() {
 
 				{/* Waveform */}
 				<div className="w-full max-w-4xl">
-					<div 
-						ref={containerRef} 
+					<div
+						ref={containerRef}
 						className="min-h-[120px] w-full rounded-lg bg-white/5 p-4"
 					/>
 				</div>
