@@ -6,7 +6,7 @@ import {
 	TooltipContent,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { SplitSquareHorizontal } from "lucide-react";
+
 import {
 	SplitButton,
 	SplitButtonLeft,
@@ -22,7 +22,7 @@ import { cn } from "@/utils/ui";
 import { useTimelineStore } from "@/stores/timeline-store";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-	Scissors,
+	SquareSplitHorizontal,
 	AlignLeft,
 	AlignRight,
 	Copy,
@@ -36,6 +36,7 @@ import {
 	Mic,
 	Snowflake,
 	Rewind,
+	AudioLines,
 } from "lucide-react";
 import { useState } from "react";
 import { RecordingDialog } from "@/components/editor/dialogs/recording-dialog";
@@ -101,7 +102,7 @@ function ToolbarLeftSection() {
 		<div className="flex items-center gap-1">
 			<TooltipProvider delayDuration={500}>
 				<ToolbarButton
-					icon={<Scissors size={18} />}
+					icon={<SquareSplitHorizontal size={18} />}
 					tooltip={t("timeline.toolbar.split")}
 					onClick={({ event }) => handleAction({ action: "split", event })}
 				/>
@@ -121,10 +122,10 @@ function ToolbarLeftSection() {
 				/>
 
 				<ToolbarButton
-					icon={<SplitSquareHorizontal />}
+					icon={<AudioLines size={18} />}
 					tooltip={`${t("timeline.toolbar.separateAudio")} (Coming soon)`}
 					disabled
-					onClick={() => {}}
+					onClick={() => { }}
 				/>
 
 				<ToolbarButton
@@ -135,17 +136,17 @@ function ToolbarLeftSection() {
 					}
 				/>
 
-			<ToolbarButton
-				icon={<Snowflake size={18} />}
-				tooltip={t("timeline.toolbar.freezeFrame")}
-				onClick={({ event }) => handleAction({ action: "freeze-frame", event })}
-			/>
+				<ToolbarButton
+					icon={<Snowflake size={18} />}
+					tooltip={t("timeline.toolbar.freezeFrame")}
+					onClick={({ event }) => handleAction({ action: "freeze-frame", event })}
+				/>
 
 				<ToolbarButton
 					icon={<Rewind size={18} />}
 					tooltip={`${t("timeline.contextMenu.reversePlayback")} (Coming soon)`}
 					disabled
-					onClick={() => {}}
+					onClick={() => { }}
 				/>
 
 				<ToolbarButton

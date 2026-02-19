@@ -13,6 +13,7 @@ import { PreviewPanel } from "@/components/editor/panels/preview";
 import { EditorHeader } from "@/components/editor/editor-header";
 import { EditorProvider } from "@/components/providers/editor-provider";
 import { MigrationDialog } from "@/components/editor/dialogs/migration-dialog";
+import { AssetPreviewDialog } from "@/components/editor/dialogs/asset-preview-dialog";
 import { usePanelStore } from "@/stores/panel-store";
 
 export default function Editor() {
@@ -27,6 +28,7 @@ export default function Editor() {
 					<EditorLayout />
 				</div>
 				<MigrationDialog />
+				<AssetPreviewDialog />
 			</div>
 		</EditorProvider>
 	);

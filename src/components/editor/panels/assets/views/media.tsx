@@ -29,6 +29,7 @@ import { TIMELINE_CONSTANTS } from "@/constants/timeline-constants";
 import { useEditor } from "@/hooks/use-editor";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { useRevealItem } from "@/hooks/use-reveal-item";
+import { useAssetPreviewStore } from "@/stores/asset-preview-store";
 import { processMediaAssets } from "@/lib/media/processing";
 import {
 	buildImageElement,
@@ -476,6 +477,8 @@ function GridView({
 	registerElement: (id: string, element: HTMLElement | null) => void;
 	setSelectedMediaId: (id: string | null) => void;
 }) {
+	const { openPreview } = useAssetPreviewStore();
+
 	return (
 		<div
 			className="grid gap-2"
@@ -499,6 +502,10 @@ function GridView({
 							onAddToTimeline={({ currentTime }) =>
 								onAddToTimeline({ asset: item, startTime: currentTime })
 							}
+							onDoubleClick={(e) => {
+								e.stopPropagation();
+								openPreview(item);
+							}}
 							isRounded={false}
 							variant="card"
 							isHighlighted={highlightedId === item.id}
@@ -537,6 +544,8 @@ function ListView({
 	registerElement: (id: string, element: HTMLElement | null) => void;
 	setSelectedMediaId: (id: string | null) => void;
 }) {
+	const { openPreview } = useAssetPreviewStore();
+
 	return (
 		<div className="space-y-1">
 			{items.map((item) => (
@@ -555,6 +564,10 @@ function ListView({
 							onAddToTimeline={({ currentTime }) =>
 								onAddToTimeline({ asset: item, startTime: currentTime })
 							}
+							onDoubleClick={(e) => {
+								e.stopPropagation();
+								openPreview(item);
+							}}
 							variant="compact"
 							isHighlighted={highlightedId === item.id}
 							onClick={(e) => {

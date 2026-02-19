@@ -281,16 +281,13 @@ function PreviewToolbar({
 				{/* Quality Selector */}
 				<Popover>
 					<PopoverTrigger asChild>
-						<Button variant="text" size="sm" className="h-8 gap-1 px-2 font-normal text-muted-foreground hover:text-foreground">
+						<Button variant="text" size="sm" className="h-8 px-2 font-medium text-muted-foreground hover:text-foreground">
 							{(() => {
-								const Option = QUALITY_OPTIONS.find(q => q.value === quality);
-								const Icon = Option?.Icon || QualityIconFull;
-								return (
-									<>
-										<Icon className="size-4" />
-										<span className="sr-only">{Option?.label || "Quality"}</span>
-									</>
-								);
+								if (quality === 1) return "Full";
+								if (quality === 0.5) return "HQ";
+								if (quality === 0.25) return "MQ";
+								if (quality === 0.125) return "LQ";
+								return "Full";
 							})()}
 						</Button>
 					</PopoverTrigger>
@@ -324,8 +321,15 @@ function PreviewToolbar({
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<PopoverTrigger asChild>
-								<Button variant="text" size="sm" className="h-8 w-8 px-0 font-normal text-muted-foreground hover:text-foreground">
-									<Proportions className="size-4" />
+								<Button variant="text" size="sm" className="h-8 px-2 font-medium text-muted-foreground hover:text-foreground">
+									{(() => {
+										const currentSize = activeProject?.settings.canvasSize;
+										if (!currentSize) return "16:9";
+										const option = RATIO_OPTIONS.find(
+											(o) => o.width === currentSize.width && o.height === currentSize.height
+										);
+										return option?.label || "16:9";
+									})()}
 								</Button>
 							</PopoverTrigger>
 						</TooltipTrigger>
