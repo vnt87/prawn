@@ -9,7 +9,6 @@ import {
 	Wand2,
 	Type,
 	Settings,
-	Sliders,
 	Palette,
 } from "lucide-react";
 
@@ -22,7 +21,6 @@ export const TAB_KEYS = [
 	"transitions",
 	"captions",
 	"filters",
-	"adjustment",
 	"settings",
 ] as const;
 
@@ -66,10 +64,6 @@ export const tabs = {
 	filters: {
 		icon: createIcon(Palette),
 		label: "Filters",
-	},
-	adjustment: {
-		icon: createIcon(Sliders),
-		label: "Adjustment",
 	},
 	settings: {
 		icon: createIcon(Settings),

@@ -45,9 +45,32 @@
         "transitions": "Transitions",
         "captions": "Captions",
         "filters": "Filters",
-        "adjustment": "Adjustment",
         "settings": "Settings",
         "comingSoon": "{{name}} view coming soon..."
+    },
+    "effects": {
+        "all": "All",
+        "blur": "Blur",
+        "motion": "Motion",
+        "style": "Style",
+        "ken-burns": "Ken Burns",
+        "selectElement": "Select a clip to apply effects"
+    },
+    "transitions": {
+        "all": "All",
+        "fade": "Fade",
+        "slide": "Slide",
+        "zoom": "Zoom",
+        "special": "Special",
+        "selectElement": "Select a clip to apply transitions"
+    },
+    "filters": {
+        "all": "All",
+        "cinematic": "Cinematic",
+        "vintage": "Vintage",
+        "color": "Color",
+        "dramatic": "Dramatic",
+        "selectElement": "Select a clip to apply filters"
     },
     "timeline": {
         "toolbar": {

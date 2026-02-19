@@ -27,11 +27,6 @@ export function AssetsPanel() {
 		transitions: <TransitionsView />,
 		captions: <Captions />,
 		filters: <FiltersView />,
-		adjustment: (
-			<div className="text-muted-foreground p-4">
-				{t("assets.comingSoon", { name: t("assets.adjustment") })}
-			</div>
-		),
 		settings: <SettingsView />,
 	};
 

@@ -45,9 +45,32 @@
         "transitions": "Chuyển cảnh",
         "captions": "Phụ đề",
         "filters": "Bộ lọc",
-        "adjustment": "Điều chỉnh",
         "settings": "Cài đặt",
         "comingSoon": "Giao diện {{name}} sắp ra mắt..."
+    },
+    "effects": {
+        "all": "Tất cả",
+        "blur": "Làm mờ",
+        "motion": "Chuyển động",
+        "style": "Phong cách",
+        "ken-burns": "Ken Burns",
+        "selectElement": "Chọn một clip để áp dụng hiệu ứng"
+    },
+    "transitions": {
+        "all": "Tất cả",
+        "fade": "Mờ dần",
+        "slide": "Trượt",
+        "zoom": "Phóng to",
+        "special": "Đặc biệt",
+        "selectElement": "Chọn một clip để áp dụng chuyển cảnh"
+    },
+    "filters": {
+        "all": "Tất cả",
+        "cinematic": "Điện ảnh",
+        "vintage": "Cổ điển",
+        "color": "Màu sắc",
+        "dramatic": "Kịch tính",
+        "selectElement": "Chọn một clip để áp dụng bộ lọc"
     },
     "timeline": {
         "toolbar": {
