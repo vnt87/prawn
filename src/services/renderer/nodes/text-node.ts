@@ -27,7 +27,7 @@ function splitIntoChars(text: string): string[] {
  * Split text into words for word-level effects.
  */
 function splitIntoWords(text: string): string[] {
-	return text.split(" ").map((word, i, arr) => 
+	return text.split(" ").map((word, i, arr) =>
 		i < arr.length - 1 ? word + " " : word
 	);
 }
@@ -94,14 +94,14 @@ function computeFadeCharEffect(
 	const chars = splitIntoChars(text);
 	const totalChars = chars.length;
 	const charOpacities: number[] = [];
-	
+
 	for (let i = 0; i < totalChars; i++) {
 		const charStart = i / totalChars;
 		const charEnd = (i + 1) / totalChars;
 		const charProgress = Math.max(0, Math.min(1, (progress - charStart) / (charEnd - charStart)));
 		charOpacities.push(charProgress);
 	}
-	
+
 	return { charOpacities };
 }
 
@@ -116,14 +116,14 @@ function computeFadeWordEffect(
 	const words = splitIntoWords(text);
 	const totalWords = words.length;
 	const wordOpacities: number[] = [];
-	
+
 	for (let i = 0; i < totalWords; i++) {
 		const wordStart = i / totalWords;
 		const wordEnd = (i + 1) / totalWords;
 		const wordProgress = Math.max(0, Math.min(1, (progress - wordStart) / (wordEnd - wordStart)));
 		wordOpacities.push(wordProgress);
 	}
-	
+
 	return { wordOpacities };
 }
 
@@ -167,13 +167,13 @@ function computeWaveEffect(
 	const charOffsets: number[] = [];
 	const waveSpeed = 2;
 	const waveAmplitude = (intensity / 100) * 20;
-	
+
 	for (let i = 0; i < chars.length; i++) {
 		const phase = i * 0.3;
 		const offset = Math.sin(time * waveSpeed + phase) * waveAmplitude;
 		charOffsets.push(offset);
 	}
-	
+
 	return { charOffsets };
 }
 
@@ -388,7 +388,7 @@ export class TextNode extends BaseNode<TextNodeParams> {
 		opacities: number[]
 	) {
 		let currentX = startX;
-		
+
 		for (let i = 0; i < chars.length; i++) {
 			ctx.save();
 			ctx.globalAlpha = opacities[i];
@@ -409,7 +409,7 @@ export class TextNode extends BaseNode<TextNodeParams> {
 		opacities: number[]
 	) {
 		let currentX = startX;
-		
+
 		for (let i = 0; i < words.length; i++) {
 			ctx.save();
 			ctx.globalAlpha = opacities[i];
@@ -496,7 +496,7 @@ export class TextNode extends BaseNode<TextNodeParams> {
 				this.params.textAnimation.intensity ?? 30,
 				this.params.textAnimation.loop ?? true
 			);
-			
+
 			const chars = splitIntoChars(this.params.content);
 			this.renderWaveText(renderer.context, chars, textX, 0, charOffsets);
 		}
@@ -525,7 +525,7 @@ export class TextNode extends BaseNode<TextNodeParams> {
 	 * Render text with wave effect (character-level vertical offset).
 	 */
 	private renderWaveText(
-		ctx: CanvasRenderingContext2D,
+		ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
 		chars: string[],
 		startX: number,
 		y: number,
@@ -533,7 +533,7 @@ export class TextNode extends BaseNode<TextNodeParams> {
 	) {
 		let currentX = startX;
 		const textAlign = ctx.textAlign;
-		
+
 		// Calculate total width for centering
 		if (textAlign === "center") {
 			const totalWidth = chars.reduce((sum, char) => sum + ctx.measureText(char).width, 0);

@@ -289,7 +289,7 @@ export function TextProperties({
 							<PropertyItemLabel>{t("properties.text.font")}</PropertyItemLabel>
 							<PropertyItemValue>
 								<FontPicker
-									defaultValue={element.fontFamily}
+									value={element.fontFamily}
 									onValueChange={(value: FontFamily) =>
 										editor.timeline.updateElements({
 											updates: [
