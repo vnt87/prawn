@@ -4,11 +4,14 @@ import { Separator } from "@/components/ui/separator";
 import { type Tab, useAssetsPanelStore } from "@/stores/assets-panel-store";
 import { TabBar } from "./tabbar";
 import { Captions } from "./views/captions";
+import { EffectsView } from "./views/effects";
+import { FiltersView } from "./views/filters";
 import { MediaView } from "./views/media";
 import { SettingsView } from "./views/settings";
 import { SoundsView } from "./views/sounds";
 import { StickersView } from "./views/stickers";
 import { TextView } from "./views/text";
+import { TransitionsView } from "./views/transitions";
 import { useTranslation } from "react-i18next";
 
 export function AssetsPanel() {
@@ -20,22 +23,10 @@ export function AssetsPanel() {
 		sounds: <SoundsView />,
 		text: <TextView />,
 		stickers: <StickersView />,
-		effects: (
-			<div className="text-muted-foreground p-4">
-				{t("assets.comingSoon", { name: t("assets.effects") })}
-			</div>
-		),
-		transitions: (
-			<div className="text-muted-foreground p-4">
-				{t("assets.comingSoon", { name: t("assets.transitions") })}
-			</div>
-		),
+		effects: <EffectsView />,
+		transitions: <TransitionsView />,
 		captions: <Captions />,
-		filters: (
-			<div className="text-muted-foreground p-4">
-				{t("assets.comingSoon", { name: t("assets.filters") })}
-			</div>
-		),
+		filters: <FiltersView />,
 		adjustment: (
 			<div className="text-muted-foreground p-4">
 				{t("assets.comingSoon", { name: t("assets.adjustment") })}

@@ -31,6 +31,8 @@ interface AnimOverride {
 	translateY: number;
 	scaleMultiplier: number;
 	rotateExtra: number;
+	/** Blur amount in pixels for blur animation. */
+	blurAmount: number;
 }
 
 const ANIM_NEUTRAL: AnimOverride = {
@@ -39,6 +41,7 @@ const ANIM_NEUTRAL: AnimOverride = {
 	translateY: 0,
 	scaleMultiplier: 1,
 	rotateExtra: 0,
+	blurAmount: 0,
 };
 
 /**
@@ -171,6 +174,60 @@ export abstract class VisualNode<
 			case "spin":
 				// Spins in from -180° to 0° while fading
 				return { ...ANIM_NEUTRAL, rotateExtra: (1 - eased) * -180, opacityMultiplier: eased };
+
+			// ---- New animations ported from Twick ----
+
+			case "blur":
+				// Blurs in/out: starts blurred, becomes clear (or vice versa for exit)
+				// Default intensity: 20px blur
+				return {
+					...ANIM_NEUTRAL,
+					opacityMultiplier: eased,
+					blurAmount: (1 - eased) * 20,
+				};
+
+			case "rise":
+				// Rises up from below while fading in
+				// Default intensity: 200px vertical offset
+				return {
+					...ANIM_NEUTRAL,
+					translateY: (1 - eased) * 200,
+					opacityMultiplier: eased,
+				};
+
+			case "fall":
+				// Falls down from above while fading in
+				// Default intensity: 200px vertical offset
+				return {
+					...ANIM_NEUTRAL,
+					translateY: (1 - eased) * -200,
+					opacityMultiplier: eased,
+				};
+
+			case "breathe":
+				// Pulsing scale effect - oscillates between 0.95 and 1.05
+				// Uses sine wave for smooth oscillation
+				const breatheScale = 1 + Math.sin(t * Math.PI * 2) * 0.05;
+				return {
+					...ANIM_NEUTRAL,
+					scaleMultiplier: breatheScale,
+				};
+
+			case "ken-burns-in":
+				// Ken Burns zoom in effect: slowly zooms from 1.0 to 1.15
+				// No opacity change - continuous effect
+				return {
+					...ANIM_NEUTRAL,
+					scaleMultiplier: 1 + eased * 0.15,
+				};
+
+			case "ken-burns-out":
+				// Ken Burns zoom out effect: slowly zooms from 1.15 to 1.0
+				// No opacity change - continuous effect
+				return {
+					...ANIM_NEUTRAL,
+					scaleMultiplier: 1.15 - eased * 0.15,
+				};
 
 			default:
 				return ANIM_NEUTRAL;
@@ -326,12 +383,18 @@ export abstract class VisualNode<
 		// ---- Apply blend mode ----
 		renderer.context.globalCompositeOperation = blendMode ?? "source-over";
 
-		// ---- Apply CSS filters (brightness, contrast, saturation) ----
+		// ---- Apply CSS filters (brightness, contrast, saturation, blur) ----
+		let cssFilter = "none";
 		if (filters) {
-			const cssFilter = this.buildCssFilter(filters);
-			if (cssFilter !== "none") {
-				renderer.context.filter = cssFilter;
-			}
+			cssFilter = this.buildCssFilter(filters);
+		}
+		// Add blur from animation if present
+		if (anim.blurAmount > 0) {
+			const blurPart = `blur(${anim.blurAmount}px)`;
+			cssFilter = cssFilter === "none" ? blurPart : `${cssFilter} ${blurPart}`;
+		}
+		if (cssFilter !== "none") {
+			renderer.context.filter = cssFilter;
 		}
 
 		// ---- Apply global opacity (element opacity × animation opacity) ----

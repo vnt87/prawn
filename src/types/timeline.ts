@@ -142,13 +142,23 @@ export type AnimationType =
 	| "slide-down"
 	| "zoom-in"
 	| "zoom-out"
-	| "spin";
+	| "spin"
+	| "blur"           // Blur in/out effect
+	| "rise"           // Rise up with fade
+	| "fall"           // Fall down with fade
+	| "breathe"        // Pulsing scale effect
+	| "ken-burns-in"   // Ken Burns zoom in
+	| "ken-burns-out"; // Ken Burns zoom out
 
 /** A single clip animation (in or out). */
 export interface ClipAnimation {
 	type: AnimationType;
 	/** Duration of the animation in seconds. */
 	duration: number;
+	/** Intensity of the animation effect (used by blur, rise, fall). Default varies by type. */
+	intensity?: number;
+	/** Direction for directional animations. */
+	direction?: "up" | "down" | "left" | "right";
 }
 
 // ---- Audio Elements ----

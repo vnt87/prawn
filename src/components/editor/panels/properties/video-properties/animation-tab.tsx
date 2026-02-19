@@ -19,6 +19,10 @@ import {
 	RefreshCw,
 	Eye,
 	X,
+	Droplet,
+	Heart,
+	Maximize,
+	Minimize,
 } from "lucide-react";
 
 /** Preset animation options shown as a grid of cards. */
@@ -35,6 +39,13 @@ const ANIMATION_PRESETS: {
 	{ type: "zoom-in", label: "Zoom In", icon: ZoomIn },
 	{ type: "zoom-out", label: "Zoom Out", icon: ZoomOut },
 	{ type: "spin", label: "Spin", icon: RefreshCw },
+	// New animations ported from Twick
+	{ type: "blur", label: "Blur", icon: Droplet },
+	{ type: "rise", label: "Rise", icon: ArrowUp },
+	{ type: "fall", label: "Fall", icon: ArrowDown },
+	{ type: "breathe", label: "Breathe", icon: Heart },
+	{ type: "ken-burns-in", label: "Ken Burns In", icon: Maximize },
+	{ type: "ken-burns-out", label: "Ken Burns Out", icon: Minimize },
 ];
 
 /** Default animation duration in seconds when a preset is selected. */
