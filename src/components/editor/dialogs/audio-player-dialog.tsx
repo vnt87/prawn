@@ -14,6 +14,7 @@ import {
 	buildUploadAudioElement,
 } from "@/lib/timeline/element-utils";
 import { formatTimeCode } from "@/lib/time";
+import { useTranslation } from "react-i18next";
 import WaveSurfer from "wavesurfer.js";
 import RegionsPlugin from "wavesurfer.js/dist/plugins/regions.esm.js";
 import {
@@ -23,9 +24,9 @@ import {
 	VolumeX,
 	SkipBack,
 	SkipForward,
-	ArrowDownToLine,
-	ArrowUpFromLine,
-	ChevronRight,
+	ArrowRightFromLine,
+	ArrowRightToLine,
+	BetweenVerticalStart,
 	Music,
 } from "lucide-react";
 
@@ -44,6 +45,7 @@ export function AudioPlayerDialog() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const wavesurferRef = useRef<WaveSurfer | null>(null);
 	const regionsRef = useRef<RegionsPlugin | null>(null);
+	const { t } = useTranslation();
 	
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [currentTime, setCurrentTime] = useState(0);
@@ -220,6 +222,9 @@ export function AudioPlayerDialog() {
 	// Keyboard shortcuts
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
+			// Stop the event from propagating to the main app
+			e.stopImmediatePropagation();
+
 			if (!asset || asset.type !== "audio") return;
 
 			switch (e.key) {
@@ -235,12 +240,10 @@ export function AudioPlayerDialog() {
 					e.preventDefault();
 					skipForward();
 					break;
-				case "i":
-				case "I":
+				case "[":
 					handleSetInPoint();
 					break;
-				case "o":
-				case "O":
+				case "]":
 					handleSetOutPoint();
 					break;
 				case "m":
@@ -253,8 +256,8 @@ export function AudioPlayerDialog() {
 			}
 		};
 
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
+		window.addEventListener("keydown", handleKeyDown, true);
+		return () => window.removeEventListener("keydown", handleKeyDown, true);
 	}, [asset, togglePlay, skipBackward, skipForward, handleSetInPoint, handleSetOutPoint, toggleMute, closePreview]);
 
 	if (!asset || asset.type !== "audio") return null;
@@ -272,17 +275,17 @@ export function AudioPlayerDialog() {
 			</div>
 
 			{/* Audio visualization container */}
-			<div className="flex flex-1 flex-col items-center justify-center p-8">
+			<div className="flex flex-1 min-h-0 flex-col items-center justify-center p-8">
 				{/* Audio icon */}
-				<div className="mb-8 flex size-24 items-center justify-center rounded-full bg-gradient-to-br from-purple-500/30 to-blue-500/30">
-					<Music className="size-12 text-white/80" />
+				<div className="mb-6 flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-purple-500/30 to-blue-500/30">
+					<Music className="size-10 text-white/80" />
 				</div>
 
 				{/* Waveform */}
 				<div className="w-full max-w-4xl">
 					<div 
 						ref={containerRef} 
-						className="min-h-[150px] w-full rounded-lg bg-white/5 p-4"
+						className="min-h-[120px] w-full rounded-lg bg-white/5 p-4"
 					/>
 				</div>
 			</div>
@@ -318,7 +321,7 @@ export function AudioPlayerDialog() {
 									)}
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent side="top">{isMuted ? "Unmute" : "Mute"} (M)</TooltipContent>
+							<TooltipContent side="top">{isMuted ? t("assetPreview.unmute") : t("assetPreview.mute")} (M)</TooltipContent>
 						</Tooltip>
 
 						<Slider
@@ -344,7 +347,7 @@ export function AudioPlayerDialog() {
 									<SkipBack className="size-5" />
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent side="top">Back 5s (←)</TooltipContent>
+							<TooltipContent side="top">{t("assetPreview.back5s")} (←)</TooltipContent>
 						</Tooltip>
 
 						<Tooltip>
@@ -363,7 +366,7 @@ export function AudioPlayerDialog() {
 									)}
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent side="top">{isPlaying ? "Pause" : "Play"} (Space)</TooltipContent>
+							<TooltipContent side="top">{isPlaying ? t("assetPreview.pause") : t("assetPreview.play")} (Space)</TooltipContent>
 						</Tooltip>
 
 						<Tooltip>
@@ -377,7 +380,7 @@ export function AudioPlayerDialog() {
 									<SkipForward className="size-5" />
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent side="top">Forward 5s (→)</TooltipContent>
+							<TooltipContent side="top">{t("assetPreview.forward5s")} (→)</TooltipContent>
 						</Tooltip>
 
 						{/* Divider */}
@@ -392,10 +395,10 @@ export function AudioPlayerDialog() {
 									className="size-9 text-white hover:bg-white/20"
 									onClick={handleSetInPoint}
 								>
-									<ArrowDownToLine className="size-5" />
+									<ArrowRightFromLine className="size-5" />
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent side="top">Mark In (I)</TooltipContent>
+							<TooltipContent side="top">{t("assetPreview.markIn")} ([)</TooltipContent>
 						</Tooltip>
 
 						{/* Mark Out */}
@@ -407,16 +410,16 @@ export function AudioPlayerDialog() {
 									className="size-9 text-white hover:bg-white/20"
 									onClick={handleSetOutPoint}
 								>
-									<ArrowUpFromLine className="size-5" />
+									<ArrowRightToLine className="size-5" />
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent side="top">Mark Out (O)</TooltipContent>
+							<TooltipContent side="top">{t("assetPreview.markOut")} (])</TooltipContent>
 						</Tooltip>
 
 						{/* Clip duration indicator */}
 						{clipRegion && (
 							<span className="text-xs text-white/60 ml-2 font-mono">
-								{formatTimeCode({ timeInSeconds: clipRegion.outPoint - clipRegion.inPoint, format: "HH:MM:SS:CS" })}
+								{t("assetPreview.clipDuration")}: {formatTimeCode({ timeInSeconds: clipRegion.outPoint - clipRegion.inPoint, format: "HH:MM:SS:CS" })}
 							</span>
 						)}
 					</div>
@@ -432,12 +435,12 @@ export function AudioPlayerDialog() {
 									onClick={handleAddToTimeline}
 									disabled={!clipRegion}
 								>
-									<ChevronRight className="size-4" />
-									Add to Timeline
+									<BetweenVerticalStart className="size-4" />
+									{t("assetPreview.addToTimeline")}
 								</Button>
 							</TooltipTrigger>
 							<TooltipContent side="top">
-								{clipRegion ? `Add clip to timeline` : "Mark In and Out points first"}
+								{clipRegion ? t("assetPreview.addToTimelineTooltip") : t("assetPreview.markInAndOutFirst")}
 							</TooltipContent>
 						</Tooltip>
 					</div>
@@ -445,7 +448,7 @@ export function AudioPlayerDialog() {
 
 				{/* Instructions */}
 				<div className="text-center text-xs text-white/40">
-					Drag the colored region on the waveform to select a clip, or use In/Out buttons
+					{t("assetPreview.dragRegionToSelect")}
 				</div>
 			</div>
 		</div>

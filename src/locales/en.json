@@ -326,5 +326,27 @@
         "failed": "Export failed",
         "copy": "Copy",
         "retry": "Retry"
+    },
+    "assetPreview": {
+        "play": "Play",
+        "pause": "Pause",
+        "back5s": "Back 5s",
+        "forward5s": "Forward 5s",
+        "mute": "Mute",
+        "unmute": "Unmute",
+        "markIn": "Mark In",
+        "markOut": "Mark Out",
+        "inPoint": "In",
+        "outPoint": "Out",
+        "addToTimeline": "Insert into Timeline",
+        "clipDuration": "Clip",
+        "markInAndOutFirst": "Mark In and Out points first",
+        "addToTimelineTooltip": "Insert clip into timeline",
+        "zoomIn": "Zoom In",
+        "zoomOut": "Zoom Out",
+        "fitToView": "Fit to View",
+        "resetView": "Reset View",
+        "close": "Close",
+        "dragRegionToSelect": "Drag the colored region on the waveform to select a clip, or use In/Out buttons"
     }
 }

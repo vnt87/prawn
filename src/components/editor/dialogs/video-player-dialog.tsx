@@ -14,6 +14,7 @@ import {
 	buildVideoElement,
 } from "@/lib/timeline/element-utils";
 import { formatTimeCode } from "@/lib/time";
+import { useTranslation } from "react-i18next";
 import {
 	Play,
 	Pause,
@@ -21,9 +22,10 @@ import {
 	VolumeX,
 	SkipBack,
 	SkipForward,
-	ArrowDownToLine,
-	ArrowUpFromLine,
-	ChevronRight,
+	ArrowRightFromLine,
+	ArrowRightToLine,
+	BetweenVerticalStart,
+	ArrowDownToDot,
 } from "lucide-react";
 
 /**
@@ -39,6 +41,7 @@ export function VideoPlayerDialog() {
 	const { asset, clipRegion, closePreview, setInPoint, setOutPoint } = useAssetPreviewStore();
 	const editor = useEditor();
 	const videoRef = useRef<HTMLVideoElement>(null);
+	const { t } = useTranslation();
 	
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [currentTime, setCurrentTime] = useState(0);
@@ -181,6 +184,9 @@ export function VideoPlayerDialog() {
 	// Keyboard shortcuts
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
+			// Stop the event from propagating to the main app
+			e.stopImmediatePropagation();
+
 			if (!asset || asset.type !== "video") return;
 
 			switch (e.key) {
@@ -196,12 +202,10 @@ export function VideoPlayerDialog() {
 					e.preventDefault();
 					skipForward();
 					break;
-				case "i":
-				case "I":
+				case "[":
 					handleSetInPoint();
 					break;
-				case "o":
-				case "O":
+				case "]":
 					handleSetOutPoint();
 					break;
 				case "m":
@@ -214,8 +218,8 @@ export function VideoPlayerDialog() {
 			}
 		};
 
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
+		window.addEventListener("keydown", handleKeyDown, true);
+		return () => window.removeEventListener("keydown", handleKeyDown, true);
 	}, [asset, togglePlay, skipBackward, skipForward, handleSetInPoint, handleSetOutPoint, toggleMute, closePreview]);
 
 	if (!asset || asset.type !== "video") return null;
@@ -238,10 +242,10 @@ export function VideoPlayerDialog() {
 			</div>
 
 			{/* Video container */}
-			<div className="relative flex flex-1 items-center justify-center">
+			<div className="relative flex flex-1 min-h-0 items-center justify-center">
 				<video
 					ref={videoRef}
-					className="max-h-[60vh] max-w-[95%]"
+					className="max-h-full max-w-[95%] h-auto"
 					onClick={togglePlay}
 					playsInline
 				/>
@@ -262,40 +266,40 @@ export function VideoPlayerDialog() {
 				<div className="relative h-4 mx-2">
 					{/* In point marker */}
 					{inPointPercent !== null && (
-						<Tooltip>
+						<Tooltip delayDuration={0}>
 							<TooltipTrigger asChild>
 								<div
 									className="absolute bottom-0 flex flex-col items-center cursor-pointer"
 									style={{ left: `${inPointPercent}%`, transform: "translateX(-50%)" }}
 								>
 									<div className="text-[10px] text-white/80 font-mono mb-0.5">
-										In
+										{t("assetPreview.inPoint")}
 									</div>
-									<ArrowDownToLine className="size-3 text-primary" />
+									<ArrowDownToDot className="size-3 text-primary" />
 								</div>
 							</TooltipTrigger>
 							<TooltipContent side="top" className="font-mono">
-								In: {formatTimeCode({ timeInSeconds: clipRegion!.inPoint, format: "HH:MM:SS:CS" })}
+								{t("assetPreview.inPoint")}: {formatTimeCode({ timeInSeconds: clipRegion!.inPoint, format: "HH:MM:SS:CS" })}
 							</TooltipContent>
 						</Tooltip>
 					)}
 
 					{/* Out point marker */}
 					{outPointPercent !== null && (
-						<Tooltip>
+						<Tooltip delayDuration={0}>
 							<TooltipTrigger asChild>
 								<div
 									className="absolute bottom-0 flex flex-col items-center cursor-pointer"
 									style={{ left: `${outPointPercent}%`, transform: "translateX(-50%)" }}
 								>
 									<div className="text-[10px] text-white/80 font-mono mb-0.5">
-										Out
+										{t("assetPreview.outPoint")}
 									</div>
-									<ArrowDownToLine className="size-3 text-destructive" />
+									<ArrowDownToDot className="size-3 text-destructive" />
 								</div>
 							</TooltipTrigger>
 							<TooltipContent side="top" className="font-mono">
-								Out: {formatTimeCode({ timeInSeconds: clipRegion!.outPoint, format: "HH:MM:SS:CS" })}
+								{t("assetPreview.outPoint")}: {formatTimeCode({ timeInSeconds: clipRegion!.outPoint, format: "HH:MM:SS:CS" })}
 							</TooltipContent>
 						</Tooltip>
 					)}
@@ -354,7 +358,7 @@ export function VideoPlayerDialog() {
 									)}
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent side="top">{isMuted ? "Unmute" : "Mute"} (M)</TooltipContent>
+							<TooltipContent side="top">{isMuted ? t("assetPreview.unmute") : t("assetPreview.mute")} (M)</TooltipContent>
 						</Tooltip>
 
 						<Slider
@@ -380,7 +384,7 @@ export function VideoPlayerDialog() {
 									<SkipBack className="size-5" />
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent side="top">Back 5s (←)</TooltipContent>
+							<TooltipContent side="top">{t("assetPreview.back5s")} (←)</TooltipContent>
 						</Tooltip>
 
 						<Tooltip>
@@ -398,7 +402,7 @@ export function VideoPlayerDialog() {
 									)}
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent side="top">{isPlaying ? "Pause" : "Play"} (Space)</TooltipContent>
+							<TooltipContent side="top">{isPlaying ? t("assetPreview.pause") : t("assetPreview.play")} (Space)</TooltipContent>
 						</Tooltip>
 
 						<Tooltip>
@@ -412,7 +416,7 @@ export function VideoPlayerDialog() {
 									<SkipForward className="size-5" />
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent side="top">Forward 5s (→)</TooltipContent>
+							<TooltipContent side="top">{t("assetPreview.forward5s")} (→)</TooltipContent>
 						</Tooltip>
 
 						{/* Divider */}
@@ -427,10 +431,10 @@ export function VideoPlayerDialog() {
 									className="size-9 text-white hover:bg-white/20"
 									onClick={handleSetInPoint}
 								>
-									<ArrowDownToLine className="size-5" />
+									<ArrowRightFromLine className="size-5" />
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent side="top">Mark In (I)</TooltipContent>
+							<TooltipContent side="top">{t("assetPreview.markIn")} ([)</TooltipContent>
 						</Tooltip>
 
 						{/* Mark Out */}
@@ -442,16 +446,16 @@ export function VideoPlayerDialog() {
 									className="size-9 text-white hover:bg-white/20"
 									onClick={handleSetOutPoint}
 								>
-									<ArrowUpFromLine className="size-5" />
+									<ArrowRightToLine className="size-5" />
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent side="top">Mark Out (O)</TooltipContent>
+							<TooltipContent side="top">{t("assetPreview.markOut")} (])</TooltipContent>
 						</Tooltip>
 
 						{/* Clip duration indicator */}
 						{clipRegion && (
 							<span className="text-xs text-white/60 ml-2 font-mono">
-								{formatTimeCode({ timeInSeconds: clipRegion.outPoint - clipRegion.inPoint, format: "HH:MM:SS:CS" })}
+								{t("assetPreview.clipDuration")}: {formatTimeCode({ timeInSeconds: clipRegion.outPoint - clipRegion.inPoint, format: "HH:MM:SS:CS" })}
 							</span>
 						)}
 					</div>
@@ -467,12 +471,12 @@ export function VideoPlayerDialog() {
 									onClick={handleAddToTimeline}
 									disabled={!clipRegion}
 								>
-									<ChevronRight className="size-4" />
-									Add to Timeline
+									<BetweenVerticalStart className="size-4" />
+									{t("assetPreview.addToTimeline")}
 								</Button>
 							</TooltipTrigger>
 							<TooltipContent side="top">
-								{clipRegion ? `Add clip to timeline` : "Mark In and Out points first"}
+								{clipRegion ? t("assetPreview.addToTimelineTooltip") : t("assetPreview.markInAndOutFirst")}
 							</TooltipContent>
 						</Tooltip>
 					</div>

@@ -326,5 +326,27 @@
         "failed": "Xuất thất bại",
         "copy": "Sao chép",
         "retry": "Thử lại"
+    },
+    "assetPreview": {
+        "play": "Phát",
+        "pause": "Tạm dừng",
+        "back5s": "Lùi 5s",
+        "forward5s": "Tiến 5s",
+        "mute": "Tắt tiếng",
+        "unmute": "Bật tiếng",
+        "markIn": "Đánh dấu đầu",
+        "markOut": "Đánh dấu cuối",
+        "inPoint": "Đầu",
+        "outPoint": "Cuối",
+        "addToTimeline": "Chèn vào dòng thời gian",
+        "clipDuration": "Đoạn",
+        "markInAndOutFirst": "Đánh dấu điểm đầu và cuối trước",
+        "addToTimelineTooltip": "Chèn đoạn vào dòng thời gian",
+        "zoomIn": "Phóng to",
+        "zoomOut": "Thu nhỏ",
+        "fitToView": "Vừa khít",
+        "resetView": "Đặt lại",
+        "close": "Đóng",
+        "dragRegionToSelect": "Kéo vùng màu trên sóng âm để chọn đoạn, hoặc dùng nút Đánh dấu"
     }
 }
