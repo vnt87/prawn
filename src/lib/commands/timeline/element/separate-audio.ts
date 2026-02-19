@@ -62,10 +62,15 @@ export class SeparateAudioCommand extends Command {
 		}
 
 		// Calculate trim values - trimEnd is the end position in source media
-		// If not set, it should be trimStart + duration
+		// If not set, it should be trimStart + (duration * speed) because
+		// timeline duration = (trimEnd - trimStart) / speed
+		const speed = this.videoElement.speed ?? 1;
 		const trimStart = this.videoElement.trimStart;
-		const trimEnd = this.videoElement.trimEnd ?? (trimStart + this.videoElement.duration);
+		const trimEnd = this.videoElement.trimEnd ?? (trimStart + this.videoElement.duration * speed);
 		const duration = this.videoElement.duration;
+		
+		console.log("[SeparateAudio] Trim values:", { trimStart, trimEnd, duration, speed });
+		console.log("[SeparateAudio] Video element:", this.videoElement);
 
 		// Extract audio from video
 		const audioBlob = await this.extractAudioFromVideo({
@@ -229,9 +234,28 @@ export class SeparateAudioCommand extends Command {
 				new Float32Array(totalSamples),
 				new Float32Array(totalSamples),
 			];
+			
+			console.log("[SeparateAudio] Audio extraction params:", {
+				totalSamples,
+				sampleRate: SAMPLE_RATE,
+				trimStart,
+				trimEnd,
+				bufferRange: trimEnd - trimStart
+			});
 
 			// Iterate through audio buffers within the trim range
+			let bufferCount = 0;
+			let totalAudioSamples = 0;
 			for await (const { buffer, timestamp } of sink.buffers(trimStart, trimEnd)) {
+				bufferCount++;
+				totalAudioSamples += buffer.length;
+				console.log("[SeparateAudio] Buffer:", {
+					bufferCount,
+					timestamp,
+					bufferLength: buffer.length,
+					sampleRate: buffer.sampleRate,
+					numberOfChannels: buffer.numberOfChannels
+				});
 				// Calculate the output position based on timestamp relative to trimStart
 				const relativeTime = timestamp - trimStart;
 				const outputStartSample = Math.floor(relativeTime * SAMPLE_RATE);

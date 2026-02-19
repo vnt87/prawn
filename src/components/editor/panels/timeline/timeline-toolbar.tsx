@@ -122,8 +122,9 @@ function ToolbarLeftSection() {
 
 				<ToolbarButton
 					icon={<SplitSquareHorizontal />}
-					tooltip={t("timeline.toolbar.separateAudio")}
-					onClick={({ event }) => handleAction({ action: "separate-audio", event })}
+					tooltip={`${t("timeline.toolbar.separateAudio")} (Coming soon)`}
+					disabled
+					onClick={() => {}}
 				/>
 
 				<ToolbarButton
@@ -142,8 +143,9 @@ function ToolbarLeftSection() {
 
 				<ToolbarButton
 					icon={<Rewind size={18} />}
-					tooltip={t("timeline.contextMenu.reversePlayback")}
-					onClick={({ event }) => handleAction({ action: "toggle-reverse-selected", event })}
+					tooltip={`${t("timeline.contextMenu.reversePlayback")} (Coming soon)`}
+					disabled
+					onClick={() => {}}
 				/>
 
 				<ToolbarButton

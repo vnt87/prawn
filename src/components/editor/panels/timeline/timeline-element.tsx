@@ -31,7 +31,7 @@ import { mediaSupportsAudio } from "@/lib/media/media-utils";
 import { getActionDefinition, type TAction, invokeAction } from "@/lib/actions";
 import { useElementSelection } from "@/hooks/timeline/element/use-element-selection";
 import Image from "next/image";
-import { Snowflake, Rewind, Copy, Trash2, Scissors, Eye, EyeOff, Volume2, VolumeX, SplitSquareHorizontal, FastForward } from "lucide-react";
+import { Snowflake, Rewind, Copy, Trash2, Scissors, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
 import { uppercase } from "@/utils/string";
 import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
@@ -186,30 +186,14 @@ export function TimelineElement({
 						{t("timeline.contextMenu.duplicate")}
 					</ActionMenuItem>
 				)}
-				{/* Video-specific options: Reverse, Freeze Frame, and Separate Audio */}
-				{element.type === "video" && hasAudio && (
-					<ActionMenuItem
-						action="separate-audio"
-						icon={<SplitSquareHorizontal className="size-4" />}
-					>
-						{t("timeline.contextMenu.separateAudio")}
-					</ActionMenuItem>
-				)}
+				{/* Video-specific options: Freeze Frame only - Separate Audio and Reverse coming soon */}
 				{element.type === "video" && (
-					<>
-						<ActionMenuItem
-							action="toggle-reverse-selected"
-							icon={<Rewind className="size-4" />}
-						>
-							{(element as any).reversed ? t("timeline.contextMenu.removeReverse") : t("timeline.contextMenu.reversePlayback")}
-						</ActionMenuItem>
-						<ActionMenuItem
-							action="freeze-frame"
-							icon={<Snowflake className="size-4" />}
-						>
-							{t("timeline.contextMenu.freezeFrame")}
-						</ActionMenuItem>
-					</>
+					<ActionMenuItem
+						action="freeze-frame"
+						icon={<Snowflake className="size-4" />}
+					>
+						{t("timeline.contextMenu.freezeFrame")}
+					</ActionMenuItem>
 				)}
 				<ContextMenuSeparator />
 				<DeleteMenuItem

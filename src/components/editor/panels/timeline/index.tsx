@@ -316,7 +316,7 @@ export function Timeline() {
 							headerHeight={timelineHeaderHeight}
 						/>
 						<ScrollArea
-							className="size-full overflow-y-hidden"
+							className="size-full overflow-y-auto"
 							ref={tracksScrollRef}
 							onMouseDown={(event) => {
 								const isDirectTarget = event.target === event.currentTarget;

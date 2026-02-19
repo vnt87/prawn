@@ -12,30 +12,12 @@ export interface VideoNodeParams extends VisualNodeParams {
 
 export class VideoNode extends VisualNode<VideoNodeParams> {
 	/**
-	 * Override getLocalTime to handle reverse playback.
-	 * When reversed is true, we play the video backwards from trimEnd to trimStart.
+	 * Get the local media time for the given timeline time.
+	 * Accounts for trim settings and playback speed.
 	 */
 	protected getLocalTime(time: number): number {
 		const speed = this.params.speed ?? 1;
-		const { trimStart, trimEnd, timeOffset, duration, reversed } = this.params;
-
-		// Calculate the trim duration in source media
-		const trimDuration = trimEnd - trimStart;
-
-		if (reversed) {
-			// For reversed playback:
-			// 1. Calculate progress through the clip on timeline (0 to 1)
-			// 2. Account for speed - faster speed means we traverse the clip faster
-			const clipProgress = ((time - timeOffset) * speed) / duration;
-			// Clamp progress to [0, 1] to handle edge cases
-			const clampedProgress = Math.max(0, Math.min(1, clipProgress));
-			// Reverse the progress: play from end to start
-			// At progress 0, we should be at trimEnd
-			// At progress 1, we should be at trimStart
-			return trimEnd - clampedProgress * trimDuration;
-		}
-
-		// Normal (forward) playback
+		const { trimStart, timeOffset } = this.params;
 		return (time - timeOffset) * speed + trimStart;
 	}
 
@@ -46,7 +28,7 @@ export class VideoNode extends VisualNode<VideoNodeParams> {
 			return;
 		}
 
-		// Compute the local media time (accounting for speed and reverse) and store it
+		// Compute the local media time (accounting for speed) and store it
 		// so renderVisual can sample animation overrides at the correct position.
 		const videoTime = this.getLocalTime(time);
 		this._currentLocalTime = videoTime;
