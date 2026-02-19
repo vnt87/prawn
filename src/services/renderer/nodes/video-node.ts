@@ -17,21 +17,26 @@ export class VideoNode extends VisualNode<VideoNodeParams> {
 	 */
 	protected getLocalTime(time: number): number {
 		const speed = this.params.speed ?? 1;
-		const { trimStart, trimEnd, timeOffset, duration } = this.params;
+		const { trimStart, trimEnd, timeOffset, duration, reversed } = this.params;
 
-		// Calculate the normal local time
-		let localTime = (time - timeOffset) * speed + trimStart;
+		// Calculate the trim duration in source media
+		const trimDuration = trimEnd - trimStart;
 
-		// If reversed, mirror the time within the clip's trim range
-		if (this.params.reversed) {
-			const trimDuration = trimEnd - trimStart;
-			// Calculate progress through the clip (0 to 1)
-			const clipProgress = (time - timeOffset) / duration;
+		if (reversed) {
+			// For reversed playback:
+			// 1. Calculate progress through the clip on timeline (0 to 1)
+			// 2. Account for speed - faster speed means we traverse the clip faster
+			const clipProgress = ((time - timeOffset) * speed) / duration;
+			// Clamp progress to [0, 1] to handle edge cases
+			const clampedProgress = Math.max(0, Math.min(1, clipProgress));
 			// Reverse the progress: play from end to start
-			localTime = trimStart + (1 - clipProgress) * trimDuration;
+			// At progress 0, we should be at trimEnd
+			// At progress 1, we should be at trimStart
+			return trimEnd - clampedProgress * trimDuration;
 		}
 
-		return localTime;
+		// Normal (forward) playback
+		return (time - timeOffset) * speed + trimStart;
 	}
 
 	async render({ renderer, time }: { renderer: CanvasRenderer; time: number }) {

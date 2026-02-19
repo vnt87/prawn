@@ -31,20 +31,10 @@ import { mediaSupportsAudio } from "@/lib/media/media-utils";
 import { getActionDefinition, type TAction, invokeAction } from "@/lib/actions";
 import { useElementSelection } from "@/hooks/timeline/element/use-element-selection";
 import Image from "next/image";
-import {
-	Scissors,
-	Trash2,
-	Copy,
-	Eye,
-	EyeOff,
-	Volume2,
-	VolumeX,
-	ArrowLeftRight,
-	Rewind,
-	Snowflake,
-} from "lucide-react";
+import { Snowflake, Rewind, Copy, Trash2, Scissors, Eye, EyeOff, Volume2, VolumeX, SplitSquareHorizontal, FastForward } from "lucide-react";
 import { uppercase } from "@/utils/string";
 import type { ComponentProps } from "react";
+import { useTranslation } from "react-i18next";
 
 function getDisplayShortcut(action: TAction) {
 	const { defaultShortcuts } = getActionDefinition(action);
@@ -83,6 +73,7 @@ export function TimelineElement({
 	onElementClick,
 	dragState,
 }: TimelineElementProps) {
+	const { t } = useTranslation();
 	const editor = useEditor();
 	const { selectedElements } = useElementSelection();
 	const { requestRevealMedia } = useAssetsPanelStore();
@@ -170,7 +161,7 @@ export function TimelineElement({
 					action="split"
 					icon={<Scissors className="size-4" />}
 				>
-					Split
+					{t("timeline.contextMenu.split")}
 				</ActionMenuItem>
 				<CopyMenuItem />
 				{canElementHaveAudio(element) && hasAudio && (
@@ -192,23 +183,31 @@ export function TimelineElement({
 						action="duplicate-selected"
 						icon={<Copy className="size-4" />}
 					>
-						Duplicate
+						{t("timeline.contextMenu.duplicate")}
 					</ActionMenuItem>
 				)}
-				{/* Video-specific options: Reverse and Freeze Frame */}
+				{/* Video-specific options: Reverse, Freeze Frame, and Separate Audio */}
+				{element.type === "video" && hasAudio && (
+					<ActionMenuItem
+						action="separate-audio"
+						icon={<SplitSquareHorizontal className="size-4" />}
+					>
+						{t("timeline.contextMenu.separateAudio")}
+					</ActionMenuItem>
+				)}
 				{element.type === "video" && (
 					<>
 						<ActionMenuItem
 							action="toggle-reverse-selected"
 							icon={<Rewind className="size-4" />}
 						>
-							{(element as any).reversed ? "Remove reverse" : "Reverse playback"}
+							{(element as any).reversed ? t("timeline.contextMenu.removeReverse") : t("timeline.contextMenu.reversePlayback")}
 						</ActionMenuItem>
 						<ActionMenuItem
 							action="freeze-frame"
 							icon={<Snowflake className="size-4" />}
 						>
-							Freeze frame
+							{t("timeline.contextMenu.freezeFrame")}
 						</ActionMenuItem>
 					</>
 				)}
@@ -573,6 +572,14 @@ function ElementContent({
 						/>
 					</div>
 				)}
+
+				{/* Reverse indicator for video elements */}
+				{element.type === "video" && (element as any).reversed && (
+					<div className="absolute top-1 right-1 bg-orange-500/80 rounded px-1 py-0.5 flex items-center gap-0.5 pointer-events-none">
+						<Rewind className="size-3 text-white" />
+						<span className="text-[10px] text-white font-medium">R</span>
+					</div>
+				)}
 			</div>
 		);
 	}
@@ -583,12 +590,13 @@ function ElementContent({
 }
 
 function CopyMenuItem() {
+	const { t } = useTranslation();
 	return (
 		<ActionMenuItem
 			action="copy-selected"
 			icon={<Copy className="size-4" />}
 		>
-			Copy
+			{t("timeline.contextMenu.copy")}
 		</ActionMenuItem>
 	);
 }
@@ -602,6 +610,7 @@ function MuteMenuItem({
 	isCurrentElementSelected: boolean;
 	isMuted: boolean;
 }) {
+	const { t } = useTranslation();
 	const getIcon = () => {
 		if (isMultipleSelected && isCurrentElementSelected) {
 			return <VolumeX className="size-4" />;
@@ -615,7 +624,7 @@ function MuteMenuItem({
 
 	return (
 		<ActionMenuItem action="toggle-elements-muted-selected" icon={getIcon()}>
-			{isMuted ? "Unmute" : "Mute"}
+			{isMuted ? t("timeline.contextMenu.unmute") : t("timeline.contextMenu.mute")}
 		</ActionMenuItem>
 	);
 }
@@ -629,6 +638,7 @@ function VisibilityMenuItem({
 	isMultipleSelected: boolean;
 	isCurrentElementSelected: boolean;
 }) {
+	const { t } = useTranslation();
 	const isHidden = canElementBeHidden(element) && element.hidden;
 
 	const getIcon = () => {
@@ -647,7 +657,7 @@ function VisibilityMenuItem({
 			action="toggle-elements-visibility-selected"
 			icon={getIcon()}
 		>
-			{isHidden ? "Show" : "Hide"}
+			{isHidden ? t("timeline.contextMenu.show") : t("timeline.contextMenu.hide")}
 		</ActionMenuItem>
 	);
 }
@@ -663,6 +673,7 @@ function DeleteMenuItem({
 	elementType: TimelineElementType["type"];
 	selectedCount: number;
 }) {
+	const { t } = useTranslation();
 	return (
 		<ActionMenuItem
 			action="delete-selected"
@@ -670,8 +681,8 @@ function DeleteMenuItem({
 			icon={<Trash2 className="size-4" />}
 		>
 			{isMultipleSelected && isCurrentElementSelected
-				? `Delete ${selectedCount} elements`
-				: `Delete ${elementType === "text" ? "text" : "clip"}`}
+				? t("timeline.contextMenu.deleteMultiple", { count: selectedCount })
+				: t(elementType === "text" ? "timeline.contextMenu.deleteText" : "timeline.contextMenu.deleteClip")}
 		</ActionMenuItem>
 	);
 }

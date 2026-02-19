@@ -131,6 +131,10 @@ export const ACTIONS = {
 		description: "Insert freeze frame at playhead",
 		category: "editing",
 	},
+	"separate-audio": {
+		description: "Separate audio from selected video",
+		category: "editing",
+	},
 	"toggle-bookmark": {
 		description: "Toggle bookmark at playhead",
 		category: "timeline",

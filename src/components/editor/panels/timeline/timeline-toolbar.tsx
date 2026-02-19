@@ -35,10 +35,12 @@ import {
 	Layers,
 	Mic,
 	Snowflake,
+	Rewind,
 } from "lucide-react";
 import { useState } from "react";
 import { RecordingDialog } from "@/components/editor/dialogs/recording-dialog";
 import { useSoundsStore } from "@/stores/sounds-store";
+import { useTranslation } from "react-i18next";
 
 export function TimelineToolbar({
 	zoomLevel,
@@ -79,6 +81,7 @@ export function TimelineToolbar({
 }
 
 function ToolbarLeftSection() {
+	const { t } = useTranslation();
 	const editor = useEditor();
 	const currentTime = editor.playback.getCurrentTime();
 	const currentBookmarked = editor.scenes.isBookmarked({ time: currentTime });
@@ -99,19 +102,19 @@ function ToolbarLeftSection() {
 			<TooltipProvider delayDuration={500}>
 				<ToolbarButton
 					icon={<Scissors size={18} />}
-					tooltip="Split element"
+					tooltip={t("timeline.toolbar.split")}
 					onClick={({ event }) => handleAction({ action: "split", event })}
 				/>
 
 				<ToolbarButton
 					icon={<AlignLeft size={18} />}
-					tooltip="Split left"
+					tooltip={t("timeline.toolbar.splitLeft")}
 					onClick={({ event }) => handleAction({ action: "split-left", event })}
 				/>
 
 				<ToolbarButton
 					icon={<AlignRight size={18} />}
-					tooltip="Split right"
+					tooltip={t("timeline.toolbar.splitRight")}
 					onClick={({ event }) =>
 						handleAction({ action: "split-right", event })
 					}
@@ -119,29 +122,33 @@ function ToolbarLeftSection() {
 
 				<ToolbarButton
 					icon={<SplitSquareHorizontal />}
-					tooltip="Coming soon" /* separate audio */
-					disabled={true}
-					onClick={({ event: _event }) => { }}
+					tooltip={t("timeline.toolbar.separateAudio")}
+					onClick={({ event }) => handleAction({ action: "separate-audio", event })}
 				/>
 
 				<ToolbarButton
 					icon={<Copy size={18} />}
-					tooltip="Duplicate element"
+					tooltip={t("timeline.toolbar.duplicate")}
 					onClick={({ event }) =>
 						handleAction({ action: "duplicate-selected", event })
 					}
 				/>
 
+			<ToolbarButton
+				icon={<Snowflake size={18} />}
+				tooltip={t("timeline.toolbar.freezeFrame")}
+				onClick={({ event }) => handleAction({ action: "freeze-frame", event })}
+			/>
+
 				<ToolbarButton
-					icon={<Snowflake size={18} />}
-					tooltip="Coming soon" /* freeze frame */
-					disabled={true}
-					onClick={({ event: _event }) => { }}
+					icon={<Rewind size={18} />}
+					tooltip={t("timeline.contextMenu.reversePlayback")}
+					onClick={({ event }) => handleAction({ action: "toggle-reverse-selected", event })}
 				/>
 
 				<ToolbarButton
 					icon={<Trash2 size={18} />}
-					tooltip="Delete element"
+					tooltip={t("timeline.toolbar.delete")}
 					onClick={({ event }) =>
 						handleAction({ action: "delete-selected", event })
 					}
@@ -153,7 +160,7 @@ function ToolbarLeftSection() {
 					<ToolbarButton
 						icon={<Bookmark size={18} />}
 						isActive={currentBookmarked}
-						tooltip={currentBookmarked ? "Remove bookmark" : "Add bookmark"}
+						tooltip={currentBookmarked ? t("timeline.toolbar.removeBookmark") : t("timeline.toolbar.addBookmark")}
 						onClick={({ event }) =>
 							handleAction({ action: "toggle-bookmark", event })
 						}
@@ -167,6 +174,7 @@ function ToolbarLeftSection() {
 }
 
 function RecordingTrigger() {
+	const { t } = useTranslation();
 	const [isRecordingOpen, setIsRecordingOpen] = useState(false);
 	const { addSoundToTimeline } = useSoundsStore();
 
@@ -209,7 +217,7 @@ function RecordingTrigger() {
 		<>
 			<ToolbarButton
 				icon={<Mic size={18} />}
-				tooltip="Record Voiceover"
+				tooltip={t("timeline.toolbar.recordVoiceover")}
 				onClick={({ event }) => {
 					event.stopPropagation();
 					setIsRecordingOpen(true);
@@ -226,13 +234,14 @@ function RecordingTrigger() {
 }
 
 function SceneSelector() {
+	const { t } = useTranslation();
 	const editor = useEditor();
 	const currentScene = editor.scenes.getActiveScene();
 
 	return (
 		<div>
 			<SplitButton className="border-foreground/10 border">
-				<SplitButtonLeft>{currentScene?.name || "No Scene"}</SplitButtonLeft>
+				<SplitButtonLeft>{currentScene?.name || t("timeline.toolbar.noScene")}</SplitButtonLeft>
 				<SplitButtonSeparator />
 				<ScenesView>
 					<SplitButtonRight onClick={() => { }} type="button">
@@ -255,6 +264,7 @@ function ToolbarRightSection({
 	onZoomChange: (zoom: number) => void;
 	onZoom: (options: { direction: "in" | "out" }) => void;
 }) {
+	const { t } = useTranslation();
 	const {
 		snappingEnabled,
 		rippleEditingEnabled,
@@ -268,14 +278,14 @@ function ToolbarRightSection({
 				<ToolbarButton
 					icon={<Magnet size={18} />}
 					isActive={snappingEnabled}
-					tooltip="Auto snapping"
+					tooltip={t("timeline.toolbar.snapping")}
 					onClick={() => toggleSnapping()}
 				/>
 
 				<ToolbarButton
 					icon={<LinkIcon className="scale-110" size={18} />}
 					isActive={rippleEditingEnabled}
-					tooltip="Ripple editing"
+					tooltip={t("timeline.toolbar.ripple")}
 					onClick={() => toggleRippleEditing()}
 				/>
 			</TooltipProvider>

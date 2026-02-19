@@ -138,7 +138,26 @@
             "removeBookmark": "Xóa dấu mốc",
             "noScene": "Không có cảnh",
             "snapping": "Tự động bắt dính",
-            "ripple": "Chế độ Ripple"
+            "ripple": "Chế độ Ripple",
+            "separateAudio": "Tách âm thanh",
+            "freezeFrame": "Đóng băng khung hình",
+            "recordVoiceover": "Ghi âm lồng tiếng"
+        },
+        "contextMenu": {
+            "split": "Chia cắt",
+            "copy": "Sao chép",
+            "duplicate": "Nhân đôi",
+            "unmute": "Bật tiếng",
+            "mute": "Tắt tiếng",
+            "show": "Hiện",
+            "hide": "Ẩn",
+            "separateAudio": "Tách âm thanh",
+            "reversePlayback": "Phát ngược",
+            "removeReverse": "Bỏ phát ngược",
+            "freezeFrame": "Khung hình đóng băng",
+            "deleteMultiple": "Xóa {{count}} phần tử",
+            "deleteText": "Xóa văn bản",
+            "deleteClip": "Xóa đoạn"
         },
         "track": {
             "mute": "Tắt tiếng nhạc",

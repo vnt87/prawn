@@ -308,6 +308,28 @@ export function useEditorActions() {
 		undefined,
 	);
 
+	// Separate audio from selected video element
+	useActionHandler(
+		"separate-audio",
+		() => {
+			if (selectedElements.length === 0) return;
+
+			// Find the first selected video element
+			const videoElement = selectedElements.find((el) => {
+				const track = editor.timeline.getTracks().find((t) => t.id === el.trackId);
+				const element = track?.elements.find((e) => e.id === el.elementId);
+				return element?.type === "video";
+			});
+
+			if (!videoElement) return;
+
+			editor.timeline.separateAudio({
+				element: videoElement,
+			});
+		},
+		undefined,
+	);
+
 	useActionHandler(
 		"toggle-bookmark",
 		() => {

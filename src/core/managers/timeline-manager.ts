@@ -25,6 +25,7 @@ import {
 	UpdateElementStartTimeCommand,
 	MoveElementCommand,
 	FreezeFrameCommand,
+	SeparateAudioCommand,
 } from "@/lib/commands/timeline";
 import { BatchCommand } from "@/lib/commands";
 import type { InsertElementParams } from "@/lib/commands/timeline/element/insert-element";
@@ -298,6 +299,44 @@ export class TimelineManager {
 		return {
 			imageAssetId: command.getCreatedImageAssetId(),
 			imageElementId: command.getCreatedImageElementId(),
+		};
+	}
+
+	/**
+	 * Separate audio from a video element.
+	 * Extracts the audio track and creates a new audio element on an audio track.
+	 */
+	async separateAudio({
+		element,
+	}: {
+		element: { trackId: string; elementId: string };
+	}): Promise<{ audioAssetId: string | null; audioElementId: string | null }> {
+		const activeProject = this.editor.project.getActive();
+		const projectId = activeProject?.metadata.id;
+
+		if (!projectId) {
+			console.warn("No active project found");
+			return { audioAssetId: null, audioElementId: null };
+		}
+
+		const command = new SeparateAudioCommand(
+			() => this.getTracks(),
+			(tracks) => this.updateTracks(tracks),
+			async (asset) => {
+				const id = await this.addMediaAssetInternal({ projectId, asset });
+				return id;
+			},
+			{ element },
+		);
+
+		// Provide access to media assets
+		command.setGetMediaAssets(() => Promise.resolve(this.editor.media.getAssets()));
+
+		await this.editor.command.execute({ command });
+
+		return {
+			audioAssetId: command.getCreatedAudioAssetId(),
+			audioElementId: command.getCreatedAudioElementId(),
 		};
 	}
 

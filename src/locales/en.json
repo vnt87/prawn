@@ -138,7 +138,26 @@
             "removeBookmark": "Remove bookmark",
             "noScene": "No Scene",
             "snapping": "Auto snapping",
-            "ripple": "Ripple editing"
+            "ripple": "Ripple editing",
+            "separateAudio": "Separate audio",
+            "freezeFrame": "Freeze frame",
+            "recordVoiceover": "Record Voiceover"
+        },
+        "contextMenu": {
+            "split": "Split",
+            "copy": "Copy",
+            "duplicate": "Duplicate",
+            "unmute": "Unmute",
+            "mute": "Mute",
+            "show": "Show",
+            "hide": "Hide",
+            "separateAudio": "Separate audio",
+            "reversePlayback": "Reverse playback",
+            "removeReverse": "Remove reverse",
+            "freezeFrame": "Freeze frame",
+            "deleteMultiple": "Delete {{count}} elements",
+            "deleteText": "Delete text",
+            "deleteClip": "Delete clip"
         },
         "track": {
             "mute": "Mute track",
