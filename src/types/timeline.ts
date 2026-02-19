@@ -56,6 +56,10 @@ export interface Transform {
 		y: number;
 	};
 	rotate: number;
+	/** Flip horizontally (mirror on Y-axis). Default false. */
+	flipX?: boolean;
+	/** Flip vertically (mirror on X-axis). Default false. */
+	flipY?: boolean;
 }
 
 // ---- Shared: Video/Image Filters ----
@@ -232,6 +236,8 @@ export interface VideoElement extends BaseTimelineElement {
 	opacity: number;
 	/** Playback speed multiplier. Default 1.0. Values > 1 speed up, < 1 slow down. */
 	speed?: number;
+	/** Play video in reverse. Default false. */
+	reversed?: boolean;
 	/** Per-clip audio volume as a linear multiplier (0.0–2.0). Default 1.0. */
 	volume?: number;
 	/** Audio fade-in duration in seconds. Default 0. */

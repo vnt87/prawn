@@ -77,6 +77,8 @@ export function buildScene(params: BuildSceneParams) {
 							mediaId: mediaAsset.id,
 							url: mediaAsset.url,
 							file: mediaAsset.file,
+							// Video-specific properties
+							reversed: element.type === "video" ? (element.reversed ?? false) : false,
 						}),
 					);
 				}

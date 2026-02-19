@@ -9,6 +9,8 @@ import {
 	Minus,
 	ChevronUp,
 	ChevronDown,
+	FlipHorizontal,
+	FlipVertical,
 } from "lucide-react";
 import {
 	PropertyGroup,
@@ -241,6 +243,45 @@ export function BasicVideoTab({
 						</div>
 					</PropertyItem>
 
+					{/* Flip controls */}
+					<PropertyItem>
+						<PropertyItemLabel>Flip</PropertyItemLabel>
+						<div className="flex gap-2">
+							<Button
+								variant={element.transform.flipX ? "default" : "outline"}
+								size="sm"
+								className="h-7 px-3"
+								onClick={() =>
+									updateField({
+										transform: {
+											...element.transform,
+											flipX: !element.transform.flipX,
+										},
+									})
+								}
+								title="Flip horizontally"
+							>
+								<FlipHorizontal className="size-4" />
+							</Button>
+							<Button
+								variant={element.transform.flipY ? "default" : "outline"}
+								size="sm"
+								className="h-7 px-3"
+								onClick={() =>
+									updateField({
+										transform: {
+											...element.transform,
+											flipY: !element.transform.flipY,
+										},
+									})
+								}
+								title="Flip vertically"
+							>
+								<FlipVertical className="size-4" />
+							</Button>
+						</div>
+					</PropertyItem>
+
 					{/* Reset all transform */}
 					<div className="flex justify-end pt-1">
 						<Button
@@ -249,7 +290,7 @@ export function BasicVideoTab({
 							className="h-6 text-xs text-muted-foreground"
 							onClick={() =>
 								updateField({
-									transform: { scale: 1, position: { x: 0, y: 0 }, rotate: 0 },
+									transform: { scale: 1, position: { x: 0, y: 0 }, rotate: 0, flipX: false, flipY: false },
 								})
 							}
 						>

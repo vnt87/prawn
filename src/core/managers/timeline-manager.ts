@@ -15,6 +15,7 @@ import {
 	UpdateElementTrimCommand,
 	UpdateElementDurationCommand,
 	DeleteElementsCommand,
+	RippleDeleteCommand,
 	DuplicateElementsCommand,
 	ToggleElementsVisibilityCommand,
 	ToggleElementsMutedCommand,
@@ -196,6 +197,15 @@ export class TimelineManager {
 		elements: { trackId: string; elementId: string }[];
 	}): void {
 		const command = new DeleteElementsCommand(elements);
+		this.editor.command.execute({ command });
+	}
+
+	rippleDeleteElements({
+		elements,
+	}: {
+		elements: { trackId: string; elementId: string }[];
+	}): void {
+		const command = new RippleDeleteCommand(elements);
 		this.editor.command.execute({ command });
 	}
 

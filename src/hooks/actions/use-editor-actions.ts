@@ -195,9 +195,18 @@ export function useEditorActions() {
 		"delete-selected",
 		() => {
 			if (selectedElements.length > 0) {
-				editor.timeline.deleteElements({
-					elements: selectedElements,
-				});
+				// Check if ripple editing is enabled
+				const { rippleEditingEnabled } = useTimelineStore.getState();
+				
+				if (rippleEditingEnabled) {
+					editor.timeline.rippleDeleteElements({
+						elements: selectedElements,
+					});
+				} else {
+					editor.timeline.deleteElements({
+						elements: selectedElements,
+					});
+				}
 				editor.selection.clearSelection();
 				return;
 			}

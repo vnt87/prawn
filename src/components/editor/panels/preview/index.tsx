@@ -19,6 +19,7 @@ import {
 	Pause,
 	Play,
 	Disc,
+	Camera,
 } from "lucide-react";
 import { cn } from "@/utils/ui";
 import { RecordingDialog } from "@/components/editor/dialogs/recording-dialog";
@@ -207,6 +208,28 @@ function PreviewToolbar({
 		}
 	};
 
+	const handleExportFrame = useCallback(() => {
+		const canvas = document.querySelector("canvas[data-preview-canvas]") as HTMLCanvasElement | null;
+		if (!canvas) {
+			toast.error("No preview canvas found");
+			return;
+		}
+
+		// Get current time for filename
+		const currentTime = editor.playback.getCurrentTime();
+		const timeStr = currentTime.toFixed(2).replace(".", "-");
+		const projectName = activeProject?.metadata.name || "prawn";
+		const filename = `${projectName}-frame-${timeStr}s.png`;
+
+		// Create a link to download the image
+		const link = document.createElement("a");
+		link.download = filename;
+		link.href = canvas.toDataURL("image/png");
+		link.click();
+
+		toast.success("Frame exported successfully");
+	}, [activeProject, editor.playback]);
+
 	return (
 		<div className="flex items-center justify-between pb-3 pt-4 px-5 gap-4">
 			{/* Left controls: Timecode */}
@@ -337,6 +360,23 @@ function PreviewToolbar({
 						</div>
 					</PopoverContent>
 				</Popover>
+
+				{/* Export Frame Button */}
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button
+							variant="text"
+							size="sm"
+							type="button"
+							onClick={handleExportFrame}
+							title="Export current frame"
+							className="h-8 w-8"
+						>
+							<Camera className="size-4" />
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent side="top">Export Frame</TooltipContent>
+				</Tooltip>
 
 				{/* Zoom Control */}
 				<Popover>
@@ -510,6 +550,7 @@ function PreviewCanvas({ zoom = 1, quality = 1 }: { zoom?: number; quality?: num
 			className="relative flex min-h-full min-w-full items-center justify-center"
 		>
 			<canvas
+				data-preview-canvas
 				ref={canvasRef}
 				width={nativeWidth}
 				height={nativeHeight}

@@ -15,6 +15,8 @@ export interface VisualNodeParams {
 	opacity: number;
 	/** Playback speed multiplier. Default 1.0. */
 	speed?: number;
+	/** Play video in reverse. Default false. Only applies to video elements. */
+	reversed?: boolean;
 	/** Color / light filters to apply via Canvas 2D CSS filter. */
 	filters?: VideoFilters;
 	/** Canvas 2D compositing operation. Default 'source-over'. */
@@ -90,12 +92,24 @@ export abstract class VisualNode<
 > extends BaseNode<Params> {
 	/**
 	 * Convert global timeline time → local media time, accounting for
-	 * speed multiplier so that e.g. 2× speed sees the media at 2× rate.
+	 * speed multiplier and reverse playback.
+	 * When reversed is true, plays the video backwards from trimEnd to trimStart.
 	 */
 	protected getLocalTime(time: number): number {
 		const speed = this.params.speed ?? 1;
-		// Offset from clip start, multiplied by speed, then offset by trimStart
-		return (time - this.params.timeOffset) * speed + this.params.trimStart;
+		const { trimStart, trimEnd, timeOffset, duration, reversed } = this.params;
+		
+		// Calculate progress through the clip (0 to 1)
+		const clipProgress = (time - timeOffset) / duration;
+		
+		// If reversed, play backwards from end to start
+		if (reversed) {
+			const trimDuration = trimEnd - trimStart;
+			return trimStart + (1 - clipProgress) * trimDuration;
+		}
+		
+		// Normal playback: offset from clip start, multiplied by speed, then offset by trimStart
+		return clipProgress * speed * duration + trimStart;
 	}
 
 	/**
@@ -516,10 +530,21 @@ export abstract class VisualNode<
 		const animTranslateY = anim.translateY;
 		const animScale = anim.scaleMultiplier;
 
-		const finalX = x + animTranslateX + centerX * (1 - animScale);
-		const finalY = y + animTranslateY + centerY * (1 - animScale);
+		// ---- Apply flip transformations ----
+		const flipX = transform.flipX ? -1 : 1;
+		const flipY = transform.flipY ? -1 : 1;
+
+		const finalX = x + animTranslateX + centerX * (1 - animScale * flipX);
+		const finalY = y + animTranslateY + centerY * (1 - animScale * flipY);
 		const finalW = scaledWidth * animScale;
 		const finalH = scaledHeight * animScale;
+
+		// Apply flip by scaling around center
+		if (transform.flipX || transform.flipY) {
+			renderer.context.translate(centerX, centerY);
+			renderer.context.scale(flipX, flipY);
+			renderer.context.translate(-centerX, -centerY);
+		}
 
 		// ---- Draw the media ----
 		renderer.context.drawImage(source, finalX, finalY, finalW, finalH);
