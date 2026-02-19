@@ -148,7 +148,31 @@ export type AnimationType =
 	| "fall"           // Fall down with fade
 	| "breathe"        // Pulsing scale effect
 	| "ken-burns-in"   // Ken Burns zoom in
-	| "ken-burns-out"; // Ken Burns zoom out
+	| "ken-burns-out"  // Ken Burns zoom out
+	| "spring-bounce"  // Spring-based bounce animation
+	| "spring-elastic" // Elastic spring animation
+	| "spring-gentle"; // Gentle spring animation
+
+/** Spring physics configuration for animations. */
+export interface SpringConfig {
+	/** Controls the damping of the spring. Higher = less oscillation. Default: 10 */
+	damping?: number;
+	/** Controls the stiffness of the spring. Higher = snappier. Default: 100 */
+	stiffness?: number;
+	/** The weight of the spring. Higher = slower animation. Default: 1 */
+	mass?: number;
+	/** Whether to clamp the overshoot. Default: false */
+	overshootClamping?: boolean;
+}
+
+/** Easing type for animations. */
+export type EasingType = 
+	| "linear"
+	| "ease"
+	| "ease-in"
+	| "ease-out"
+	| "ease-in-out"
+	| "spring";
 
 /** A single clip animation (in or out). */
 export interface ClipAnimation {
@@ -159,6 +183,10 @@ export interface ClipAnimation {
 	intensity?: number;
 	/** Direction for directional animations. */
 	direction?: "up" | "down" | "left" | "right";
+	/** Spring configuration for spring-based animations. */
+	springConfig?: SpringConfig;
+	/** Easing type for the animation. */
+	easing?: EasingType;
 }
 
 // ---- Audio Elements ----
@@ -240,6 +268,59 @@ export interface ImageElement extends BaseTimelineElement {
 	animationOut?: ClipAnimation;
 }
 
+// ---- Text Effects ----
+
+/** Text-specific animation effect types. */
+export type TextEffectType =
+	// Reveal effects (Priority 1)
+	| "typewriter"      // Character-by-character reveal
+	| "stream-word"     // Word-by-word reveal
+	| "fade-char"       // Fade characters sequentially
+	| "fade-word"       // Fade words sequentially
+	// Motion effects (Priority 2)
+	| "elastic"         // Bouncy scale effect
+	| "bounce"          // Drop bounce effect
+	| "wave"            // Wave motion effect
+	// Style effects (Priority 3)
+	| "glitch"          // Glitch/distort effect
+	| "neon-glow"       // Neon glow pulse
+	| "outline-draw";   // Outline drawing effect
+
+/** A text effect configuration. */
+export interface TextEffect {
+	/** Type of text effect. */
+	type: TextEffectType;
+	/** Duration of the effect in seconds. */
+	duration: number;
+	/** Intensity of the effect (0-100). Default varies by type. */
+	intensity?: number;
+	/** Delay between characters/words in ms. Used by typewriter, stream-word, etc. */
+	delay?: number;
+	/** Whether the effect should loop continuously. For wave, neon-glow, etc. */
+	loop?: boolean;
+}
+
+/** Text shadow configuration. */
+export interface TextShadow {
+	/** Horizontal offset in pixels. */
+	offsetX: number;
+	/** Vertical offset in pixels. */
+	offsetY: number;
+	/** Blur radius in pixels. */
+	blur: number;
+	/** Shadow color. */
+	color: string;
+}
+
+/** Default text effect with neutral values. */
+export const DEFAULT_TEXT_EFFECT: TextEffect = {
+	type: "typewriter",
+	duration: 1,
+	intensity: 50,
+	delay: 50,
+	loop: false,
+};
+
 // ---- Text Element ----
 
 export interface TextElement extends BaseTimelineElement {
@@ -256,6 +337,18 @@ export interface TextElement extends BaseTimelineElement {
 	hidden?: boolean;
 	transform: Transform;
 	opacity: number;
+	/** Text effect applied on entry. */
+	textEffectIn?: TextEffect;
+	/** Text effect applied on exit. */
+	textEffectOut?: TextEffect;
+	/** Continuous text animation (wave, glow). */
+	textAnimation?: TextEffect;
+	/** Letter spacing in pixels. */
+	letterSpacing?: number;
+	/** Line height multiplier. */
+	lineHeight?: number;
+	/** Text shadow configuration. */
+	textShadow?: TextShadow;
 }
 
 // ---- Sticker Element ----

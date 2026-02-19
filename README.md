@@ -95,6 +95,8 @@ docker run -p 1338:1338 prawn
 
 This project is a fork of [OpenCut](https://github.com/OpenCut-app/OpenCut). We acknowledge and appreciate the work of the original authors and the open-source community.
 
+Special thanks to: [OpenCut](https://github.com/OpenCut-app/OpenCut) (original codebase), [Remotion](https://remotion.dev/) (animation system), [FFmpeg.wasm](https://ffmpegwasm.netlify.app/) (video processing), [Radix UI](https://www.radix-ui.com/) (components), [Lucide](https://lucide.dev/) (icons), [WaveSurfer.js](https://wavesurfer.xyz/) (audio visualization), [mediabunny](https://github.com/nicktomlin/remotion-mediabunny) (media handling), [Zustand](https://github.com/pmndrs/zustand) (state management).
+
 ## License
 
 This project is open-source.

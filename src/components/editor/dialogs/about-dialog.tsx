@@ -43,7 +43,7 @@ export function AboutDialog({ isOpen, onOpenChange }: AboutDialogProps) {
                         </div>
                     </div>
 
-                    <div className="px-8 pb-8">
+                    <div className="px-8 pb-6">
                         <Separator className="mb-6 opacity-50" />
 
                         <div className="space-y-4 text-sm">
@@ -59,17 +59,6 @@ export function AboutDialog({ isOpen, onOpenChange }: AboutDialogProps) {
                             </div>
 
                             <div className="flex items-center justify-between">
-                                <span className="text-muted-foreground font-medium">Powered by</span>
-                                <Link
-                                    href="https://ffmpeg.org"
-                                    target="_blank"
-                                    className="text-primary hover:underline inline-flex items-center gap-1.5 font-medium"
-                                >
-                                    FFmpeg (WASM) <ExternalLink size={14} />
-                                </Link>
-                            </div>
-
-                            <div className="flex items-center justify-between">
                                 <span className="text-muted-foreground font-medium">GitHub</span>
                                 <Link
                                     href="https://github.com/vnt87/prawn"
@@ -79,18 +68,18 @@ export function AboutDialog({ isOpen, onOpenChange }: AboutDialogProps) {
                                     <Github size={14} className="mr-0.5" /> vnt87/prawn <ExternalLink size={14} />
                                 </Link>
                             </div>
-
-                            <div className="flex items-center justify-between">
-                                <span className="text-muted-foreground font-medium">Upstream</span>
-                                <Link
-                                    href="https://github.com/OpenCut-app/OpenCut"
-                                    target="_blank"
-                                    className="text-primary hover:underline inline-flex items-center gap-1.5 font-medium"
-                                >
-                                    OpenCut <ExternalLink size={14} />
-                                </Link>
-                            </div>
                         </div>
+
+                        <p className="mt-6 text-xs text-muted-foreground/70 leading-relaxed">
+                            Special thanks to:{" "}
+                            <Link href="https://github.com/OpenCut-app/OpenCut" target="_blank" className="hover:underline">OpenCut</Link> (original codebase),{" "}
+                            <Link href="https://remotion.dev" target="_blank" className="hover:underline">Remotion</Link> (animation system),{" "}
+                            <Link href="https://ffmpegwasm.netlify.app" target="_blank" className="hover:underline">FFmpeg.wasm</Link> (video processing),{" "}
+                            <Link href="https://www.radix-ui.com" target="_blank" className="hover:underline">Radix UI</Link> (components),{" "}
+                            <Link href="https://lucide.dev" target="_blank" className="hover:underline">Lucide</Link> (icons),{" "}
+                            <Link href="https://wavesurfer.xyz" target="_blank" className="hover:underline">WaveSurfer.js</Link> (audio visualization),{" "}
+                            <Link href="https://github.com/nicktomlin/remotion-mediabunny" target="_blank" className="hover:underline">mediabunny</Link> (media handling).
+                        </p>
                     </div>
                 </DialogBody>
 

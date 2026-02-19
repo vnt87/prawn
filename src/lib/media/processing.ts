@@ -3,6 +3,7 @@ import type { MediaAsset } from "@/types/assets";
 import { getMediaTypeFromFile } from "@/lib/media/media-utils";
 import { getVideoInfo } from "./mediabunny";
 import { Input, ALL_FORMATS, BlobSource, VideoSampleSink } from "mediabunny";
+import { createAudioContext } from "@/lib/media/audio";
 
 export interface ProcessedMediaAsset extends Omit<MediaAsset, "id"> { }
 
@@ -167,6 +168,50 @@ export async function generateFilmstripThumbnails({
 	return thumbnails;
 }
 
+/**
+ * Extract audio waveform peaks from a media file (video or audio).
+ * Returns an array of peak values per channel, or null if no audio is present.
+ */
+export async function extractAudioWaveformPeaks({
+	file,
+	peakCount = 256,
+}: {
+	file: File;
+	peakCount?: number;
+}): Promise<{ peaks: number[][]; hasAudio: boolean }> {
+	try {
+		const audioContext = createAudioContext();
+		const arrayBuffer = await file.arrayBuffer();
+		const audioBuffer = await audioContext.decodeAudioData(arrayBuffer.slice(0));
+
+		const channels = audioBuffer.numberOfChannels;
+		const peaks: number[][] = [];
+
+		for (let c = 0; c < channels; c++) {
+			const data = audioBuffer.getChannelData(c);
+			const step = Math.floor(data.length / peakCount);
+			const channelPeaks: number[] = [];
+
+			for (let i = 0; i < peakCount; i++) {
+				const start = i * step;
+				const end = Math.min(start + step, data.length);
+				let max = 0;
+				for (let j = start; j < end; j++) {
+					const abs = Math.abs(data[j]);
+					if (abs > max) max = abs;
+				}
+				channelPeaks.push(max);
+			}
+			peaks.push(channelPeaks);
+		}
+
+		return { peaks, hasAudio: true };
+	} catch (error) {
+		// File has no audio or audio decoding failed
+		return { peaks: [], hasAudio: false };
+	}
+}
+
 export async function generateImageThumbnail({
 	imageFile,
 }: {
@@ -235,6 +280,8 @@ export async function processMediaAssets({
 		let width: number | undefined;
 		let height: number | undefined;
 		let fps: number | undefined;
+		let audioWaveformPeaks: number[][] | undefined;
+		let hasAudio: boolean | undefined;
 
 		try {
 			if (fileType === "image") {
@@ -268,12 +315,28 @@ export async function processMediaAssets({
 							interval: filmstripInterval,
 						});
 					}
+
+					// Extract audio waveform peaks for docked waveform visualization
+					const audioResult = await extractAudioWaveformPeaks({ file });
+					if (audioResult.hasAudio) {
+						audioWaveformPeaks = audioResult.peaks;
+						hasAudio = true;
+					} else {
+						hasAudio = false;
+					}
 				} catch (error) {
 					console.warn("Video processing failed", error);
 				}
 			} else if (fileType === "audio") {
 				// For audio, we don't set width/height/fps (they'll be undefined)
 				duration = await getMediaDuration({ file });
+				
+				// Extract audio waveform peaks for visualization
+				const audioResult = await extractAudioWaveformPeaks({ file });
+				if (audioResult.hasAudio) {
+					audioWaveformPeaks = audioResult.peaks;
+					hasAudio = true;
+				}
 			}
 
 			processedAssets.push({
@@ -288,6 +351,8 @@ export async function processMediaAssets({
 				width,
 				height,
 				fps,
+				audioWaveformPeaks,
+				hasAudio,
 			});
 
 			await new Promise((resolve) => setTimeout(resolve, 0));

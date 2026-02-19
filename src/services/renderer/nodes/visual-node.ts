@@ -1,6 +1,7 @@
 import type { CanvasRenderer } from "../canvas-renderer";
 import { BaseNode } from "./base-node";
-import type { AnimationType, ClipAnimation, Transform, VideoFilters } from "@/types/timeline";
+import type { AnimationType, ClipAnimation, Transform, VideoFilters, SpringConfig } from "@/types/timeline";
+import { spring, interpolate, Easing, SpringPresets } from "@/lib/animation/remotion-animations";
 
 /** Small epsilon to avoid off-by-one frame visibility bugs. */
 const VISUAL_EPSILON = 1 / 1000;
@@ -121,7 +122,7 @@ export abstract class VisualNode<
 		if (animationIn && animationIn.duration > 0 && relTime < animationIn.duration) {
 			// t goes from 0 (at start) to 1 (when in-animation ends)
 			const t = Math.max(0, Math.min(1, relTime / animationIn.duration));
-			return this.computeAnimFrame(animationIn.type, t);
+			return this.computeAnimFrame(animationIn.type, t, animationIn);
 		}
 
 		// ---- Out animation ----
@@ -131,7 +132,7 @@ export abstract class VisualNode<
 				// t goes from 0 (when out starts) to 1 (at clip end)
 				const t = Math.max(0, Math.min(1, (relTime - outStart) / animationOut.duration));
 				// Out = reverse of in (t=1 means fully gone)
-				return this.computeAnimFrame(animationOut.type, 1 - t);
+				return this.computeAnimFrame(animationOut.type, 1 - t, animationOut);
 			}
 		}
 
@@ -142,9 +143,14 @@ export abstract class VisualNode<
 	 * Map an animation type + progress `t` (0→1 = entering, fully visible)
 	 * to an AnimOverride object.
 	 */
-	private computeAnimFrame(type: AnimationType, t: number): AnimOverride {
-		// Ease-out cubic for a natural feel: t → 1 - (1-t)^3
-		const eased = 1 - Math.pow(1 - t, 3);
+	private computeAnimFrame(type: AnimationType, t: number, animation?: ClipAnimation): AnimOverride {
+		// Check for spring-based animations
+		if (type.startsWith('spring-')) {
+			return this.computeSpringAnimFrame(type, t, animation);
+		}
+
+		// Apply easing based on animation config or default
+		const eased = this.applyEasing(t, animation);
 
 		switch (type) {
 			case "fade":
@@ -231,6 +237,103 @@ export abstract class VisualNode<
 
 			default:
 				return ANIM_NEUTRAL;
+		}
+	}
+
+	/**
+	 * Compute spring-based animation frame.
+	 * Uses physics-based spring calculations for natural motion.
+	 */
+	private computeSpringAnimFrame(type: AnimationType, t: number, animation?: ClipAnimation): AnimOverride {
+		// Get spring config from animation or use preset
+		const springConfig = animation?.springConfig ?? this.getSpringPreset(type);
+		
+		// Calculate frame number based on progress (t is 0-1, we need actual frame)
+		// Assuming 30fps reference for spring calculation
+		const fps = 30;
+		const durationInFrames = Math.round((animation?.duration ?? 0.4) * fps);
+		const frame = Math.round(t * durationInFrames);
+
+		// Calculate spring value
+		const springValue = spring({
+			frame,
+			fps,
+			config: springConfig,
+		});
+
+		switch (type) {
+			case "spring-bounce":
+				// Bouncy spring with scale and opacity
+				return {
+					...ANIM_NEUTRAL,
+					scaleMultiplier: springValue,
+					opacityMultiplier: Math.min(1, springValue * 1.2),
+				};
+
+			case "spring-elastic":
+				// Elastic spring with overshoot
+				return {
+					...ANIM_NEUTRAL,
+					scaleMultiplier: springValue,
+					opacityMultiplier: interpolate(springValue, [0, 0.5, 1], [0, 0.8, 1], {
+						extrapolateRight: 'clamp',
+					}),
+				};
+
+			case "spring-gentle":
+				// Gentle spring with smooth motion
+				return {
+					...ANIM_NEUTRAL,
+					opacityMultiplier: springValue,
+					translateY: interpolate(springValue, [0, 1], [50, 0], {
+						extrapolateRight: 'clamp',
+					}),
+				};
+
+			default:
+				return ANIM_NEUTRAL;
+		}
+	}
+
+	/**
+	 * Get spring preset based on animation type.
+	 */
+	private getSpringPreset(type: AnimationType): SpringConfig {
+		switch (type) {
+			case "spring-bounce":
+				return SpringPresets.bouncy;
+			case "spring-elastic":
+				return SpringPresets.snappy;
+			case "spring-gentle":
+				return SpringPresets.gentle;
+			default:
+				return SpringPresets.default;
+		}
+	}
+
+	/**
+	 * Apply easing function based on animation config.
+	 */
+	private applyEasing(t: number, animation?: ClipAnimation): number {
+		const easingType = animation?.easing ?? 'ease-out';
+		
+		switch (easingType) {
+			case 'linear':
+				return t;
+			case 'ease':
+				return Easing.ease(t);
+			case 'ease-in':
+				return Easing.easeIn(t);
+			case 'ease-out':
+				return Easing.easeOut(t);
+			case 'ease-in-out':
+				return Easing.easeInOut(t);
+			case 'spring':
+				// Spring easing is handled separately in computeSpringAnimFrame
+				return Easing.easeOut(t);
+			default:
+				// Default: cubic ease-out
+				return 1 - Math.pow(1 - t, 3);
 		}
 	}
 

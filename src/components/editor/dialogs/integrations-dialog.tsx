@@ -8,9 +8,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useIntegrationsStore } from "@/stores/integrations-store";
+import { useDialogStore } from "@/stores/dialog-store";
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Database, Music, Cloud, Bot } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Database, Music, Cloud, Bot, Wand2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function IntegrationsDialog({
@@ -22,13 +24,25 @@ export function IntegrationsDialog({
 }) {
     const { t } = useTranslation();
     const store = useIntegrationsStore();
+    const { integrationsTab, setIntegrationsTab } = useDialogStore();
     const [values, setValues] = useState(store);
+
+    // Use the tab from store if set, otherwise default to "database"
+    const activeTab = integrationsTab || "database";
 
     useEffect(() => {
         if (open) {
             setValues(store);
         }
     }, [open, store]);
+
+    // Reset the tab when dialog closes
+    const handleOpenChange = (isOpen: boolean) => {
+        if (!isOpen) {
+            setIntegrationsTab(null);
+        }
+        onOpenChange(isOpen);
+    };
 
     const handleChange = (key: keyof typeof values, value: string) => {
         setValues((prev) => ({ ...prev, [key]: value }));
@@ -40,18 +54,18 @@ export function IntegrationsDialog({
                 store.setIntegration(key as any, value);
             }
         });
-        onOpenChange(false);
+        handleOpenChange(false);
     };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-3xl h-[600px] max-h-[85vh] overflow-hidden flex flex-col p-0 gap-0">
                 <DialogHeader className="px-6 py-4 border-b">
                     <DialogTitle>{t("integrations.title")}</DialogTitle>
                 </DialogHeader>
 
                 <div className="flex-1 overflow-hidden">
-                    <Tabs defaultValue="database" orientation="vertical" className="flex h-full">
+                    <Tabs value={activeTab} onValueChange={(v) => setIntegrationsTab(v as any)} orientation="vertical" className="flex h-full">
                         <TabsList className="flex flex-col h-full w-48 justify-start gap-1 p-2 bg-muted/30 border-r">
                             <TabsTrigger value="database" className="w-full justify-start gap-2 px-3">
                                 <Database size={16} />
@@ -183,6 +197,7 @@ export function IntegrationsDialog({
                             </TabsContent>
 
                             <TabsContent value="ai" className="mt-0 space-y-6">
+                                {/* Transcription Services */}
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 pb-2 border-b">
                                         <Bot className="text-muted-foreground" />
@@ -210,6 +225,96 @@ export function IntegrationsDialog({
                                                 {t("integrations.stt.description")}
                                             </p>
                                         </div>
+                                    </div>
+                                </div>
+
+                                {/* AI Video Generation */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 pb-2 border-b">
+                                        <Wand2 className="text-muted-foreground" />
+                                        <h3 className="text-lg font-medium">{t("integrations.aiVideo.title")}</h3>
+                                    </div>
+                                    
+                                    {/* Provider Selection */}
+                                    <div className="grid gap-2">
+                                        <Label>{t("integrations.aiVideo.provider")}</Label>
+                                        <Select
+                                            value={values.aiVideoProvider}
+                                            onValueChange={(v) => handleChange("aiVideoProvider", v)}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="openai">OpenAI</SelectItem>
+                                                <SelectItem value="anthropic">Anthropic</SelectItem>
+                                                <SelectItem value="custom">Custom Endpoint</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    {/* OpenAI Configuration */}
+                                    {values.aiVideoProvider === 'openai' && (
+                                        <div className="grid gap-4">
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="openaiApiKey">{t("integrations.aiVideo.openaiApiKey")}</Label>
+                                                <Input
+                                                    id="openaiApiKey"
+                                                    type="password"
+                                                    value={values.openaiApiKey}
+                                                    onChange={(e) => handleChange("openaiApiKey", e.target.value)}
+                                                    placeholder="sk-..."
+                                                />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="openaiApiBaseUrl">{t("integrations.aiVideo.baseUrl")}</Label>
+                                                <Input
+                                                    id="openaiApiBaseUrl"
+                                                    value={values.openaiApiBaseUrl}
+                                                    onChange={(e) => handleChange("openaiApiBaseUrl", e.target.value)}
+                                                    placeholder="https://api.openai.com/v1"
+                                                />
+                                                <p className="text-xs text-muted-foreground">
+                                                    {t("integrations.aiVideo.baseUrlHint")}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Anthropic Configuration */}
+                                    {values.aiVideoProvider === 'anthropic' && (
+                                        <div className="grid gap-4">
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="anthropicApiKey">{t("integrations.aiVideo.anthropicApiKey")}</Label>
+                                                <Input
+                                                    id="anthropicApiKey"
+                                                    type="password"
+                                                    value={values.anthropicApiKey}
+                                                    onChange={(e) => handleChange("anthropicApiKey", e.target.value)}
+                                                    placeholder="sk-ant-..."
+                                                />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="anthropicApiBaseUrl">{t("integrations.aiVideo.baseUrl")}</Label>
+                                                <Input
+                                                    id="anthropicApiBaseUrl"
+                                                    value={values.anthropicApiBaseUrl}
+                                                    onChange={(e) => handleChange("anthropicApiBaseUrl", e.target.value)}
+                                                    placeholder="https://api.anthropic.com"
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Model Selection */}
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="aiVideoModel">{t("integrations.aiVideo.model")}</Label>
+                                        <Input
+                                            id="aiVideoModel"
+                                            value={values.aiVideoModel}
+                                            onChange={(e) => handleChange("aiVideoModel", e.target.value)}
+                                            placeholder="gpt-4o"
+                                        />
                                     </div>
                                 </div>
                             </TabsContent>

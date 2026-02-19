@@ -209,49 +209,48 @@ function PreviewToolbar({
 
 	return (
 		<div className="flex items-center justify-between pb-3 pt-4 px-5 gap-4">
-			{/* Left controls: Timecode and Playback */}
-			<div className="flex items-center gap-4">
-				<div className="flex items-center">
-					<EditableTimecode
-						time={currentTime}
-						duration={totalDuration}
-						format="HH:MM:SS:FF"
-						fps={fps}
-						onTimeChange={({ time }) => editor.playback.seek({ time })}
-						className="text-center w-[100px]"
-					/>
-					<span className="text-muted-foreground px-1 font-mono text-xs">/</span>
-					<span className="text-muted-foreground font-mono text-xs">
-						{formatTimeCode({
-							timeInSeconds: totalDuration,
-							format: "HH:MM:SS:FF",
-							fps,
-						})}
-					</span>
-				</div>
+			{/* Left controls: Timecode */}
+			<div className="flex items-center">
+				<EditableTimecode
+					time={currentTime}
+					duration={totalDuration}
+					format="HH:MM:SS:FF"
+					fps={fps}
+					onTimeChange={({ time }) => editor.playback.seek({ time })}
+					className="text-center w-[100px]"
+				/>
+				<span className="text-muted-foreground px-1 font-mono text-xs">/</span>
+				<span className="text-muted-foreground font-mono text-xs">
+					{formatTimeCode({
+						timeInSeconds: totalDuration,
+						format: "HH:MM:SS:FF",
+						fps,
+					})}
+				</span>
+			</div>
 
-				<div className="flex items-center gap-1">
-					<Button
-						variant="text"
-						size="icon"
-						type="button"
-						onClick={() => invokeAction("toggle-play")}
-						className="size-8"
-					>
-						{isPlaying ? <Pause className="size-4" /> : <Play className="size-4" />}
-					</Button>
+			{/* Center controls: Play and Record */}
+			<div className="flex items-center gap-1">
+				<Button
+					variant="text"
+					size="icon"
+					type="button"
+					onClick={() => invokeAction("toggle-play")}
+					className="size-8"
+				>
+					{isPlaying ? <Pause className="size-4" /> : <Play className="size-4" />}
+				</Button>
 
-					<Button
-						variant="text"
-						size="icon"
-						type="button"
-						onClick={() => setIsRecordingOpen(true)}
-						title="Record Video"
-						className="text-red-500 hover:text-red-600 size-8"
-					>
-						<Disc fill="currentColor" className="size-4" />
-					</Button>
-				</div>
+				<Button
+					variant="text"
+					size="icon"
+					type="button"
+					onClick={() => setIsRecordingOpen(true)}
+					title="Record Video"
+					className="text-red-500 hover:text-red-600 size-8"
+				>
+					<Disc fill="currentColor" className="size-4" />
+				</Button>
 			</div>
 
 			{/* Right controls: Quality, Ratio, Zoom, Fullscreen */}

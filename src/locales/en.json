@@ -46,7 +46,26 @@
         "captions": "Captions",
         "filters": "Filters",
         "settings": "Settings",
+        "ai-generation": "AI Generation",
         "comingSoon": "{{name}} view coming soon..."
+    },
+    "aiGeneration": {
+        "title": "AI Video Generation",
+        "description": "Generate video clips from text prompts using AI",
+        "promptPlaceholder": "Describe the video you want to generate...",
+        "generateButton": "Generate Video",
+        "generating": "Generating...",
+        "quickPrompts": {
+            "title": "Quick Prompts",
+            "sunset": "A beautiful sunset over the ocean",
+            "cityTimelapse": "City timelapse at night",
+            "natureWalk": "Peaceful nature walk through forest"
+        },
+        "settings": "Settings",
+        "duration": "Duration (seconds)",
+        "aspectRatio": "Aspect Ratio",
+        "noApiKey": "No API key configured.",
+        "openSettings": "Open Settings"
     },
     "effects": {
         "all": "All",
@@ -71,6 +90,40 @@
         "color": "Color",
         "dramatic": "Dramatic",
         "selectElement": "Select a clip to apply filters"
+    },
+    "fonts": {
+        "all": "All",
+        "system": "System",
+        "recent": "Recent",
+        "sansSerif": "Sans Serif",
+        "serif": "Serif",
+        "display": "Display",
+        "handwriting": "Handwriting",
+        "monospace": "Monospace",
+        "search": "Search fonts...",
+        "selectFont": "Select font...",
+        "noFontsFound": "No fonts found."
+    },
+    "textEffects": {
+        "all": "All",
+        "reveal": "Reveal",
+        "motion": "Motion",
+        "style": "Style",
+        "typewriter": "Typewriter",
+        "streamWord": "Stream Words",
+        "fadeChar": "Fade Characters",
+        "fadeWord": "Fade Words",
+        "elastic": "Elastic",
+        "bounce": "Bounce",
+        "wave": "Wave",
+        "glitch": "Glitch",
+        "neonGlow": "Neon Glow",
+        "outlineDraw": "Outline Draw",
+        "selectElement": "Select a text element to apply effects",
+        "duration": "Duration",
+        "intensity": "Intensity",
+        "delay": "Delay",
+        "loop": "Loop"
     },
     "timeline": {
         "toolbar": {
@@ -221,6 +274,20 @@
             "title": "STT Service",
             "url": "Custom STT Service URL",
             "description": "URL for local Docker STT service (e.g. http://localhost:8000)"
+        },
+        "aiVideo": {
+            "title": "AI Video Generation",
+            "description": "Configure AI providers for video generation",
+            "provider": "Provider",
+            "openai": "OpenAI (Sora)",
+            "anthropic": "Anthropic (Claude)",
+            "custom": "Custom Provider",
+            "apiKey": "API Key",
+            "apiBaseUrl": "API Base URL",
+            "model": "Model",
+            "openaiApiKeyPlaceholder": "sk-...",
+            "anthropicApiKeyPlaceholder": "sk-ant-...",
+            "customUrlPlaceholder": "https://api.example.com/v1"
         }
     },
     "export": {

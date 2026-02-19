@@ -23,7 +23,7 @@ export const TRACK_COLORS: Record<TrackType, { background: string }> = {
 } as const;
 
 export const TRACK_HEIGHTS: Record<TrackType, number> = {
-	video: 60,
+	video: 80, // Increased to accommodate docked audio waveform
 	text: 25,
 	audio: 50,
 	sticker: 50,

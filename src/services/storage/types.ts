@@ -28,6 +28,10 @@ export interface MediaAssetData {
 	thumbnailUrl?: string;
 	filmstripThumbnails?: string[];
 	filmstripInterval?: number;
+	/** Pre-computed audio waveform peaks for visualization. Array of channel peaks. */
+	audioWaveformPeaks?: number[][];
+	/** Whether the media has an audio track. For video files, indicates embedded audio. */
+	hasAudio?: boolean;
 }
 
 export type SerializedScene = Omit<TScene, "createdAt" | "updatedAt"> & {

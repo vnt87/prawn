@@ -35,6 +35,7 @@ import { toast } from "sonner";
 import { SOCIAL_LINKS } from "@/constants/site-constants";
 import { useTranslation } from "react-i18next";
 import { useEditorStore } from "@/stores/editor-store";
+import { useDialogStore } from "@/stores/dialog-store";
 import { Globe } from "lucide-react";
 
 interface MenuItem {
@@ -48,7 +49,6 @@ type MenuSection = (MenuItem | "---")[];
 
 export function EditorHeader() {
 	const [activeMenu, setActiveMenu] = useState<string | null>(null);
-	const [openDialog, setOpenDialog] = useState<"delete" | "shortcuts" | "integrations" | "about" | null>(null);
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [titleEditValue, setTitleEditValue] = useState("");
 	const editor = useEditor();
@@ -58,6 +58,7 @@ export function EditorHeader() {
 	const { theme, setTheme } = useTheme();
 	const { t, i18n } = useTranslation();
 	const { language, setLanguage } = useEditorStore();
+	const { openDialog, setOpenDialog } = useDialogStore();
 
 	const [settingsOpen, setSettingsOpen] = useState(false);
 	const settingsRef = useRef<HTMLDivElement>(null);

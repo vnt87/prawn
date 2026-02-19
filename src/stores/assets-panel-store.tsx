@@ -10,6 +10,7 @@ import {
 	Type,
 	Settings,
 	Palette,
+	Sparkles,
 } from "lucide-react";
 
 export const TAB_KEYS = [
@@ -21,6 +22,7 @@ export const TAB_KEYS = [
 	"transitions",
 	"captions",
 	"filters",
+	"ai-generation",
 	"settings",
 ] as const;
 
@@ -64,6 +66,10 @@ export const tabs = {
 	filters: {
 		icon: createIcon(Palette),
 		label: "Filters",
+	},
+	"ai-generation": {
+		icon: createIcon(Sparkles),
+		label: "AI Generate",
 	},
 	settings: {
 		icon: createIcon(Settings),

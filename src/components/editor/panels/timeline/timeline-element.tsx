@@ -3,6 +3,7 @@
 import { useEditor } from "@/hooks/use-editor";
 import { useAssetsPanelStore } from "@/stores/assets-panel-store";
 import AudioWaveform from "./audio-waveform";
+import { DockedWaveform } from "./docked-waveform";
 import { useTimelineElementResize } from "@/hooks/timeline/element/use-element-resize";
 import type { SnapPoint } from "@/hooks/timeline/use-timeline-snapping";
 import { TIMELINE_CONSTANTS } from "@/constants/timeline-constants";
@@ -415,6 +416,15 @@ function ElementContent({
 		);
 	}
 
+	// Check if this video has audio waveform peaks for docked waveform
+	const hasAudioWaveform = 
+		mediaAsset.type === "video" && 
+		mediaAsset.audioWaveformPeaks && 
+		mediaAsset.audioWaveformPeaks.length > 0;
+
+	// Get the muted state for video elements
+	const isVideoMuted = element.type === "video" && element.muted === true;
+
 	if (
 		mediaAsset.type === "image" ||
 		(mediaAsset.type === "video" && mediaAsset.thumbnailUrl)
@@ -424,75 +434,102 @@ function ElementContent({
 		const imageUrl =
 			mediaAsset.type === "image" ? mediaAsset.url : mediaAsset.thumbnailUrl;
 
+		// Calculate thumbnail section height - leave room for waveform if video has audio
+		const waveformHeight = hasAudioWaveform ? 20 : 0;
+		const thumbnailHeight = hasAudioWaveform 
+			? `calc(100% - ${waveformHeight}px)` 
+			: "100%";
+
 		return (
-			<div className="flex size-full items-center justify-center overflow-hidden">
-				<div
-					className={`relative size-full ${isSelected ? "bg-primary" : "bg-transparent"}`}
+			<div className="flex size-full flex-col overflow-hidden">
+				{/* Thumbnails section */}
+				<div 
+					className="relative overflow-hidden"
+					style={{ height: thumbnailHeight }}
 				>
-					{mediaAsset.filmstripThumbnails &&
-						mediaAsset.filmstripThumbnails.length > 0 ? (
-						<div
-							className="absolute w-full h-full flex overflow-hidden pointer-events-none align-top"
-							style={{
-								top: isSelected ? "0.25rem" : "0rem",
-								bottom: isSelected ? "0.25rem" : "0rem",
-								height: isSelected ? "calc(100% - 0.5rem)" : "100%",
-							}}
-						>
+					<div
+						className={`relative size-full ${isSelected ? "bg-primary" : "bg-transparent"}`}
+					>
+						{mediaAsset.filmstripThumbnails &&
+							mediaAsset.filmstripThumbnails.length > 0 ? (
 							<div
-								className="flex h-full absolute"
+								className="absolute w-full h-full flex overflow-hidden pointer-events-none align-top"
 								style={{
-									left: `${-element.trimStart * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel}px`,
+									top: isSelected ? "0.25rem" : "0rem",
+									bottom: isSelected ? "0.25rem" : "0rem",
+									height: isSelected ? "calc(100% - 0.5rem)" : "100%",
 								}}
 							>
-								{(() => {
-									const interval = mediaAsset.filmstripInterval ?? 5;
-									// Base width of one thumbnail interval (e.g. 1s or 5s) at current zoom
-									const baseWidth =
-										interval * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
+								<div
+									className="flex h-full absolute"
+									style={{
+										left: `${-element.trimStart * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel}px`,
+									}}
+								>
+									{(() => {
+										const interval = mediaAsset.filmstripInterval ?? 5;
+										// Base width of one thumbnail interval (e.g. 1s or 5s) at current zoom
+										const baseWidth =
+											interval * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
 
-									// Adaptive density:
-									// If zoomed out (small baseWidth), combine multiple intervals into one thumbnail render (skip some)
-									// We want visualized thumbnails to be roughly TARGET_WIDTH wide.
-									const TARGET_WIDTH = 100;
-									const step = Math.max(1, Math.ceil(TARGET_WIDTH / baseWidth));
-									const width = baseWidth * step;
+										// Adaptive density:
+										// If zoomed out (small baseWidth), combine multiple intervals into one thumbnail render (skip some)
+										// We want visualized thumbnails to be roughly TARGET_WIDTH wide.
+										const TARGET_WIDTH = 100;
+										const step = Math.max(1, Math.ceil(TARGET_WIDTH / baseWidth));
+										const width = baseWidth * step;
 
-									return mediaAsset.filmstripThumbnails.map((thumbnail, index) => {
-										if (index % step !== 0) return null;
+										return mediaAsset.filmstripThumbnails.map((thumbnail, index) => {
+											if (index % step !== 0) return null;
 
-										return (
-											<img
-												key={index}
-												src={thumbnail}
-												alt={`Thumbnail ${index}`}
-												className="h-full object-cover pointer-events-none select-none"
-												style={{
-													width: `${width}px`,
-													maxWidth: "none",
-												}}
-												draggable={false}
-											/>
-										);
-									});
-								})()}
+											return (
+												<img
+													key={index}
+													src={thumbnail}
+													alt={`Thumbnail ${index}`}
+													className="h-full object-cover pointer-events-none select-none"
+													style={{
+														width: `${width}px`,
+														maxWidth: "none",
+													}}
+													draggable={false}
+												/>
+											);
+										});
+									})()}
+								</div>
 							</div>
-						</div>
-					) : (
-						<div
-							className="absolute right-0 left-0"
-							style={{
-								backgroundImage: imageUrl ? `url(${imageUrl})` : "none",
-								backgroundRepeat: "repeat-x",
-								backgroundSize: `${tileWidth}px ${trackHeight}px`,
-								backgroundPosition: "left center",
-								pointerEvents: "none",
-								top: isSelected ? "0.25rem" : "0rem",
-								bottom: isSelected ? "0.25rem" : "0rem",
-							}}
-						/>
-					)}
+						) : (
+							<div
+								className="absolute right-0 left-0"
+								style={{
+									backgroundImage: imageUrl ? `url(${imageUrl})` : "none",
+									backgroundRepeat: "repeat-x",
+									backgroundSize: `${tileWidth}px ${trackHeight}px`,
+									backgroundPosition: "left center",
+									pointerEvents: "none",
+									top: isSelected ? "0.25rem" : "0rem",
+									bottom: isSelected ? "0.25rem" : "0rem",
+								}}
+							/>
+						)}
+					</div>
 				</div>
+
+				{/* Docked audio waveform section - only for videos with audio */}
+				{hasAudioWaveform && (
+					<div 
+						className="absolute bottom-0 left-0 right-0 bg-black/30"
+						style={{ height: `${waveformHeight}px` }}
+					>
+						<DockedWaveform
+							peaks={mediaAsset.audioWaveformPeaks!}
+							height={waveformHeight}
+							muted={isVideoMuted}
+							className="w-full h-full"
+						/>
+					</div>
+				)}
 			</div>
 		);
 	}

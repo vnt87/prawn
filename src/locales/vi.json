@@ -46,7 +46,26 @@
         "captions": "Phụ đề",
         "filters": "Bộ lọc",
         "settings": "Cài đặt",
+        "ai-generation": "Tạo AI",
         "comingSoon": "Giao diện {{name}} sắp ra mắt..."
+    },
+    "aiGeneration": {
+        "title": "Tạo Video AI",
+        "description": "Tạo các đoạn video từ mô tả văn bản bằng AI",
+        "promptPlaceholder": "Mô tả video bạn muốn tạo...",
+        "generateButton": "Tạo Video",
+        "generating": "Đang tạo...",
+        "quickPrompts": {
+            "title": "Mẫu nhanh",
+            "sunset": "Hoàng hôn tuyệt đẹp trên đại dương",
+            "cityTimelapse": "Time-lapse thành phố về đêm",
+            "natureWalk": "Đi bộ yên bình qua rừng"
+        },
+        "settings": "Cài đặt",
+        "duration": "Thời lượng (giây)",
+        "aspectRatio": "Tỷ lệ khung hình",
+        "noApiKey": "Chưa cấu hình API key.",
+        "openSettings": "Mở Cài đặt"
     },
     "effects": {
         "all": "Tất cả",
@@ -71,6 +90,40 @@
         "color": "Màu sắc",
         "dramatic": "Kịch tính",
         "selectElement": "Chọn một clip để áp dụng bộ lọc"
+    },
+    "fonts": {
+        "all": "Tất cả",
+        "system": "Hệ thống",
+        "recent": "Gần đây",
+        "sansSerif": "Sans Serif",
+        "serif": "Serif",
+        "display": "Display",
+        "handwriting": "Handwriting",
+        "monospace": "Monospace",
+        "search": "Tìm kiếm phông chữ...",
+        "selectFont": "Chọn phông chữ...",
+        "noFontsFound": "Không tìm thấy phông chữ."
+    },
+    "textEffects": {
+        "all": "Tất cả",
+        "reveal": "Hiển thị",
+        "motion": "Chuyển động",
+        "style": "Phong cách",
+        "typewriter": "Máy đánh chữ",
+        "streamWord": "Luồng từ",
+        "fadeChar": "Mờ ký tự",
+        "fadeWord": "Mờ từ",
+        "elastic": "Đàn hồi",
+        "bounce": "Nảy",
+        "wave": "Sóng",
+        "glitch": "Nhiễu",
+        "neonGlow": "Neon phát sáng",
+        "outlineDraw": "Vẽ viền",
+        "selectElement": "Chọn một phần tử văn bản để áp dụng hiệu ứng",
+        "duration": "Thời lượng",
+        "intensity": "Cường độ",
+        "delay": "Độ trễ",
+        "loop": "Lặp lại"
     },
     "timeline": {
         "toolbar": {
@@ -221,6 +274,20 @@
             "title": "Dịch vụ STT",
             "url": "URL dịch vụ STT tùy chỉnh",
             "description": "URL cho dịch vụ STT Docker cục bộ (ví dụ: http://localhost:8000)"
+        },
+        "aiVideo": {
+            "title": "Tạo Video AI",
+            "description": "Cấu hình nhà cung cấp AI để tạo video",
+            "provider": "Nhà cung cấp",
+            "openai": "OpenAI (Sora)",
+            "anthropic": "Anthropic (Claude)",
+            "custom": "Nhà cung cấp tùy chỉnh",
+            "apiKey": "API Key",
+            "apiBaseUrl": "URL cơ sở API",
+            "model": "Mô hình",
+            "openaiApiKeyPlaceholder": "sk-...",
+            "anthropicApiKeyPlaceholder": "sk-ant-...",
+            "customUrlPlaceholder": "https://api.example.com/v1"
         }
     },
     "export": {

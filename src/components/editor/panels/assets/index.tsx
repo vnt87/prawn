@@ -12,6 +12,7 @@ import { SoundsView } from "./views/sounds";
 import { StickersView } from "./views/stickers";
 import { TextView } from "./views/text";
 import { TransitionsView } from "./views/transitions";
+import { AIGenerationView } from "./views/ai-generation";
 import { useTranslation } from "react-i18next";
 
 export function AssetsPanel() {
@@ -27,6 +28,7 @@ export function AssetsPanel() {
 		transitions: <TransitionsView />,
 		captions: <Captions />,
 		filters: <FiltersView />,
+		"ai-generation": <AIGenerationView />,
 		settings: <SettingsView />,
 	};
 
