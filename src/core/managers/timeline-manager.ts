@@ -24,6 +24,7 @@ import {
 	PasteCommand,
 	UpdateElementStartTimeCommand,
 	MoveElementCommand,
+	FreezeFrameCommand,
 } from "@/lib/commands/timeline";
 import { BatchCommand } from "@/lib/commands";
 import type { InsertElementParams } from "@/lib/commands/timeline/element/insert-element";
@@ -258,6 +259,78 @@ export class TimelineManager {
 	}): void {
 		const command = new ToggleElementsMutedCommand(elements);
 		this.editor.command.execute({ command });
+	}
+
+	/**
+	 * Insert a freeze frame at the specified time.
+	 * Captures the current frame from a video and inserts it as a static image.
+	 */
+	async insertFreezeFrame({
+		time,
+		freezeDuration,
+	}: {
+		time: number;
+		freezeDuration?: number;
+	}): Promise<{ imageAssetId: string | null; imageElementId: string | null }> {
+		const activeProject = this.editor.project.getActive();
+		const projectId = activeProject?.metadata.id;
+
+		if (!projectId) {
+			console.warn("No active project found");
+			return { imageAssetId: null, imageElementId: null };
+		}
+
+		const command = new FreezeFrameCommand(
+			() => this.getTracks(),
+			(tracks) => this.updateTracks(tracks),
+			async (asset) => {
+				const id = await this.addMediaAssetInternal({ projectId, asset });
+				return id;
+			},
+			{ time, freezeDuration },
+		);
+
+		// Provide access to media assets
+		command.setGetMediaAssets(() => Promise.resolve(this.editor.media.getAssets()));
+
+		await this.editor.command.execute({ command });
+
+		return {
+			imageAssetId: command.getCreatedImageAssetId(),
+			imageElementId: command.getCreatedImageElementId(),
+		};
+	}
+
+	/**
+	 * Internal method to add media asset and return the ID.
+	 */
+	private async addMediaAssetInternal({
+		projectId,
+		asset,
+	}: {
+		projectId: string;
+		asset: Omit<import("@/types/assets").MediaAsset, "id">;
+	}): Promise<string> {
+		const generateUUID = (await import("@/utils/id")).generateUUID;
+		const newAsset: import("@/types/assets").MediaAsset = {
+			...asset,
+			id: generateUUID(),
+		};
+
+		// Add to media manager
+		this.editor.media.setAssets({
+			assets: [...this.editor.media.getAssets(), newAsset],
+		});
+
+		// Persist to storage
+		try {
+			const { storageService } = await import("@/services/storage/service");
+			await storageService.saveMediaAsset({ projectId, mediaAsset: newAsset });
+		} catch (error) {
+			console.error("Failed to save freeze frame asset:", error);
+		}
+
+		return newAsset.id;
 	}
 
 	getTracks(): TimelineTrack[] {

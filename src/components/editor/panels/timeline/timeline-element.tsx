@@ -39,8 +39,9 @@ import {
 	EyeOff,
 	Volume2,
 	VolumeX,
-	Search,
 	ArrowLeftRight,
+	Rewind,
+	Snowflake,
 } from "lucide-react";
 import { uppercase } from "@/utils/string";
 import type { ComponentProps } from "react";
@@ -194,20 +195,21 @@ export function TimelineElement({
 						Duplicate
 					</ActionMenuItem>
 				)}
-				{selectedElements.length === 1 && hasMediaId(element) && (
+				{/* Video-specific options: Reverse and Freeze Frame */}
+				{element.type === "video" && (
 					<>
-						<ContextMenuItem
-							icon={<Search className="size-4" />}
-							onClick={(event) => handleRevealInMedia({ event })}
+						<ActionMenuItem
+							action="toggle-reverse-selected"
+							icon={<Rewind className="size-4" />}
 						>
-							Reveal media
-						</ContextMenuItem>
-						<ContextMenuItem
-							icon={<ArrowLeftRight className="size-4" />}
-							disabled
+							{(element as any).reversed ? "Remove reverse" : "Reverse playback"}
+						</ActionMenuItem>
+						<ActionMenuItem
+							action="freeze-frame"
+							icon={<Snowflake className="size-4" />}
 						>
-							Replace media
-						</ContextMenuItem>
+							Freeze frame
+						</ActionMenuItem>
 					</>
 				)}
 				<ContextMenuSeparator />

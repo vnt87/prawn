@@ -10,3 +10,4 @@ export { UpdateElementCommand } from "./update-element";
 export { ToggleElementsVisibilityCommand } from "./toggle-elements-visibility";
 export { ToggleElementsMutedCommand } from "./toggle-elements-muted";
 export { MoveElementCommand } from "./move-elements";
+export { FreezeFrameCommand } from "./freeze-frame";

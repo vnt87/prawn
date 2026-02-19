@@ -191,3 +191,4 @@ export const CATEGORY_LABELS: Record<TextEffectPreset["category"], string> = {
 	reveal: "Reveal",
 	motion: "Motion",
 	style: "Style",
+};
