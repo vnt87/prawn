@@ -21,7 +21,15 @@ export const BLUR_INTENSITY_PRESETS: { label: string; value: number }[] = [
 	{ label: "Heavy", value: 18 },
 ] as const;
 
+export const FILMSTRIP_INTERVAL_PRESETS = [
+	{ value: "2", label: "Low (2s)", description: "Less memory usage" },
+	{ value: "1", label: "Standard (1s)", description: "Default" },
+	{ value: "0.5", label: "Dense (0.5s)", description: "More memory usage" },
+] as const;
+
 export const DEFAULT_CANVAS_SIZE: TCanvasSize = { width: 1920, height: 1080 };
 export const DEFAULT_FPS = 30;
 export const DEFAULT_BLUR_INTENSITY = 8;
 export const DEFAULT_COLOR = "#000000";
+/** Default interval in seconds between filmstrip thumbnails */
+export const DEFAULT_FILMSTRIP_INTERVAL = 1 as const;

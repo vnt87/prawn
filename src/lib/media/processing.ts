@@ -251,12 +251,43 @@ export async function generateImageThumbnail({
 	});
 }
 
+/**
+ * Regenerate filmstrip thumbnails for an existing video file.
+ * Returns the new thumbnails and interval used.
+ */
+export async function regenerateFilmstripThumbnails({
+	videoFile,
+	duration,
+	filmstripInterval,
+}: {
+	videoFile: File;
+	duration: number;
+	filmstripInterval: 0.5 | 1 | 2;
+}): Promise<{
+	filmstripThumbnails: string[];
+	filmstripInterval: number;
+}> {
+	const filmstripThumbnails = await generateFilmstripThumbnails({
+		videoFile,
+		duration,
+		interval: filmstripInterval,
+	});
+
+	return {
+		filmstripThumbnails,
+		filmstripInterval,
+	};
+}
+
 export async function processMediaAssets({
 	files,
 	onProgress,
+	filmstripInterval = 1,
 }: {
 	files: FileList | File[];
 	onProgress?: ({ progress }: { progress: number }) => void;
+	/** Interval in seconds between filmstrip thumbnails. Default is 1. */
+	filmstripInterval?: 0.5 | 1 | 2;
 }): Promise<ProcessedMediaAsset[]> {
 	const fileArray = Array.from(files);
 	const processedAssets: ProcessedMediaAsset[] = [];
@@ -275,7 +306,7 @@ export async function processMediaAssets({
 		const url = URL.createObjectURL(file);
 		let thumbnailUrl: string | undefined;
 		let filmstripThumbnails: string[] | undefined;
-		let filmstripInterval: number | undefined;
+		let filmstripIntervalUsed: number | undefined;
 		let duration: number | undefined;
 		let width: number | undefined;
 		let height: number | undefined;
@@ -304,11 +335,9 @@ export async function processMediaAssets({
 						timeInSeconds: 1,
 					});
 
-					// Generate filmstrip thumbnails
-					// Use a 5-second interval for now, or maybe dynamic based on duration?
-					// CapCut style usually has fixed width thumbnails corresponding to time.
+					// Generate filmstrip thumbnails using the configured interval
 					if (duration > 0) {
-						filmstripInterval = 1;
+						filmstripIntervalUsed = filmstripInterval;
 						filmstripThumbnails = await generateFilmstripThumbnails({
 							videoFile: file,
 							duration,
@@ -346,7 +375,7 @@ export async function processMediaAssets({
 				url,
 				thumbnailUrl,
 				filmstripThumbnails,
-				filmstripInterval,
+				filmstripInterval: filmstripIntervalUsed,
 				duration,
 				width,
 				height,

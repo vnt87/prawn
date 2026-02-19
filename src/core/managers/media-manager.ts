@@ -147,6 +147,45 @@ export class MediaManager {
 		this.notify();
 	}
 
+	/**
+	 * Update a specific media asset with new properties.
+	 * Useful for regenerating thumbnails or updating cached data.
+	 */
+	async updateMediaAsset({
+		projectId,
+		id,
+		updates,
+	}: {
+		projectId: string;
+		id: string;
+		updates: Partial<MediaAsset>;
+	}): Promise<void> {
+		const index = this.assets.findIndex((asset) => asset.id === id);
+		if (index === -1) {
+			console.error("Media asset not found:", id);
+			return;
+		}
+
+		// Update the asset with new properties
+		const updatedAsset: MediaAsset = {
+			...this.assets[index],
+			...updates,
+		};
+
+		this.assets = [
+			...this.assets.slice(0, index),
+			updatedAsset,
+			...this.assets.slice(index + 1),
+		];
+		this.notify();
+
+		try {
+			await storageService.saveMediaAsset({ projectId, mediaAsset: updatedAsset });
+		} catch (error) {
+			console.error("Failed to update media asset:", error);
+		}
+	}
+
 	isLoadingMedia(): boolean {
 		return this.isLoading;
 	}

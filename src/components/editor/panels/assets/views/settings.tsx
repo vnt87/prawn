@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { PanelBaseView as BaseView } from "@/components/editor/panels/panel-base-view";
 import {
 	Select,
@@ -10,11 +11,14 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import {
 	BLUR_INTENSITY_PRESETS,
 	DEFAULT_BLUR_INTENSITY,
 	DEFAULT_COLOR,
 	FPS_PRESETS,
+	FILMSTRIP_INTERVAL_PRESETS,
+	DEFAULT_FILMSTRIP_INTERVAL,
 } from "@/constants/project-constants";
 import { patternCraftGradients } from "@/data/colors/pattern-craft";
 import { colors } from "@/data/colors/solid";
@@ -23,6 +27,8 @@ import { useEditor } from "@/hooks/use-editor";
 import { useEditorStore } from "@/stores/editor-store";
 import { dimensionToAspectRatio } from "@/utils/geometry";
 import { cn } from "@/utils/ui";
+import { regenerateFilmstripThumbnails } from "@/lib/media/processing";
+import { RefreshCw } from "lucide-react";
 import {
 	PropertyGroup,
 	PropertyItem,
@@ -70,6 +76,7 @@ function ProjectInfoView() {
 	const editor = useEditor();
 	const activeProject = editor.project.getActive();
 	const { canvasPresets } = useEditorStore();
+	const [isRegenerating, setIsRegenerating] = useState(false);
 
 	const findPresetIndexByAspectRatio = ({
 		presets,
@@ -121,6 +128,72 @@ function ProjectInfoView() {
 		const fps = parseFloat(value);
 		editor.project.updateSettings({ settings: { fps } });
 	};
+
+	const handleFilmstripIntervalChange = (value: string) => {
+		const filmstripInterval = parseFloat(value) as 0.5 | 1 | 2;
+		editor.project.updateSettings({ settings: { filmstripInterval } });
+	};
+
+	const currentFilmstripInterval = activeProject.settings.filmstripInterval ?? DEFAULT_FILMSTRIP_INTERVAL;
+	const isDenseThumbnails = currentFilmstripInterval === 0.5;
+
+	// Get video assets that could have thumbnails regenerated
+	const mediaAssets = editor.media.getAssets();
+	const videoAssets = useMemo(() => 
+		mediaAssets.filter(asset => 
+			asset.type === "video" && 
+			asset.file && 
+			asset.duration &&
+			// Only include if the current interval differs from stored interval, or if no interval stored
+			(asset.filmstripInterval === undefined || asset.filmstripInterval !== currentFilmstripInterval)
+		),
+		[mediaAssets, currentFilmstripInterval]
+	);
+
+	const hasVideosToRegenerate = videoAssets.length > 0;
+
+	// Handler to regenerate thumbnails for all video assets
+	const handleRegenerateThumbnails = useCallback(async () => {
+		if (!hasVideosToRegenerate || isRegenerating) return;
+
+		setIsRegenerating(true);
+		const projectId = activeProject.metadata.id;
+		let successCount = 0;
+		let failCount = 0;
+
+		for (const asset of videoAssets) {
+			try {
+				const result = await regenerateFilmstripThumbnails({
+					videoFile: asset.file,
+					duration: asset.duration!,
+					filmstripInterval: currentFilmstripInterval,
+				});
+
+				await editor.media.updateMediaAsset({
+					projectId,
+					id: asset.id,
+					updates: {
+						filmstripThumbnails: result.filmstripThumbnails,
+						filmstripInterval: result.filmstripInterval,
+					},
+				});
+				successCount++;
+			} catch (error) {
+				console.error(`Failed to regenerate thumbnails for ${asset.name}:`, error);
+				failCount++;
+			}
+		}
+
+		setIsRegenerating(false);
+
+		if (successCount > 0 && failCount === 0) {
+			toast.success(`Regenerated thumbnails for ${successCount} video${successCount > 1 ? 's' : ''}`);
+		} else if (successCount > 0 && failCount > 0) {
+			toast.warning(`Regenerated ${successCount} video${successCount > 1 ? 's' : ''}, failed for ${failCount}`);
+		} else if (failCount > 0) {
+			toast.error(`Failed to regenerate thumbnails for ${failCount} video${failCount > 1 ? 's' : ''}`);
+		}
+	}, [videoAssets, hasVideosToRegenerate, isRegenerating, activeProject.metadata.id, currentFilmstripInterval, editor.media]);
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -176,6 +249,47 @@ function ProjectInfoView() {
 						</SelectContent>
 					</Select>
 				</PropertyItemValue>
+			</PropertyItem>
+
+			<PropertyItem direction="column">
+				<PropertyItemLabel>Thumbnail density</PropertyItemLabel>
+				<PropertyItemValue>
+					<Select
+						value={currentFilmstripInterval.toString()}
+						onValueChange={handleFilmstripIntervalChange}
+					>
+						<SelectTrigger>
+							<SelectValue placeholder="Select thumbnail density" />
+						</SelectTrigger>
+						<SelectContent>
+							{FILMSTRIP_INTERVAL_PRESETS.map((preset) => (
+								<SelectItem key={preset.value} value={preset.value}>
+									{preset.label}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				</PropertyItemValue>
+				{isDenseThumbnails && (
+					<p className="mt-2 text-xs text-amber-500">
+						⚠️ Dense thumbnails use more memory. May affect performance on large projects.
+					</p>
+				)}
+				{hasVideosToRegenerate && (
+					<Button
+						variant="outline"
+						size="sm"
+						className="mt-2 w-full"
+						onClick={handleRegenerateThumbnails}
+						disabled={isRegenerating}
+					>
+						<RefreshCw className={`mr-2 size-4 ${isRegenerating ? 'animate-spin' : ''}`} />
+						{isRegenerating 
+							? 'Regenerating...' 
+							: `Regenerate thumbnails (${videoAssets.length} video${videoAssets.length > 1 ? 's' : ''})`
+						}
+					</Button>
+				)}
 			</PropertyItem>
 		</div>
 	);

@@ -125,6 +125,7 @@ export function MediaView() {
 				files,
 				onProgress: (progress: { progress: number }) =>
 					setProgress(progress.progress),
+				filmstripInterval: activeProject.settings.filmstripInterval,
 			});
 			for (const asset of processedAssets) {
 				await editor.media.addMediaAsset({

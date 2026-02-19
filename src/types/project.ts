@@ -29,6 +29,8 @@ export interface TProjectSettings {
 	canvasSize: TCanvasSize;
 	originalCanvasSize?: TCanvasSize | null;
 	background: TBackground;
+	/** Interval in seconds between filmstrip thumbnails. Smaller = denser thumbnails but more memory usage. */
+	filmstripInterval?: 0.5 | 1 | 2;
 }
 
 export interface TTimelineViewState {

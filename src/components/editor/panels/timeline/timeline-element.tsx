@@ -453,51 +453,92 @@ function ElementContent({
 						{mediaAsset.filmstripThumbnails &&
 							mediaAsset.filmstripThumbnails.length > 0 ? (
 							<div
-								className="absolute w-full h-full flex overflow-hidden pointer-events-none align-top"
+								className="absolute w-full h-full overflow-hidden pointer-events-none"
 								style={{
 									top: isSelected ? "0.25rem" : "0rem",
 									bottom: isSelected ? "0.25rem" : "0rem",
 									height: isSelected ? "calc(100% - 0.5rem)" : "100%",
 								}}
 							>
-								<div
-									className="flex h-full absolute"
-									style={{
-										left: `${-element.trimStart * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel}px`,
-									}}
-								>
-									{(() => {
-										const interval = mediaAsset.filmstripInterval ?? 5;
-										// Base width of one thumbnail interval (e.g. 1s or 5s) at current zoom
-										const baseWidth =
-											interval * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
+								{(() => {
+										const interval = mediaAsset.filmstripInterval ?? 1;
+										
+										// Calculate available height for thumbnails (subtracting waveform if present)
+										const availableHeight = hasAudioWaveform 
+											? trackHeight - 20 - (isSelected ? 8 : 0)
+											: trackHeight - (isSelected ? 8 : 0);
+										
+										// Video aspect ratio for thumbnail sizing
+										const videoAspectRatio = mediaAsset.width && mediaAsset.height 
+											? mediaAsset.width / mediaAsset.height 
+											: 16 / 9;
+										
+										// Fixed thumbnail size based on track height (never stretches with zoom)
+										const thumbnailWidth = availableHeight * videoAspectRatio;
+										
+										// Pixels per second at current zoom level
+										const pixelsPerSecond = TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
+										
+										// Calculate visible time range for this element
+										const trimStartOffset = element.trimStart;
+										const elementDuration = element.duration;
+										
+										// Calculate which thumbnails we need to render
+										// Start from the first thumbnail that could be visible
+										const firstThumbnailIndex = Math.max(0, Math.floor(trimStartOffset / interval));
+										
+										// End at the last thumbnail that could be visible
+										const lastThumbnailIndex = Math.min(
+											mediaAsset.filmstripThumbnails.length - 1,
+											Math.ceil((trimStartOffset + elementDuration) / interval)
+										);
 
-										// Adaptive density:
-										// If zoomed out (small baseWidth), combine multiple intervals into one thumbnail render (skip some)
-										// We want visualized thumbnails to be roughly TARGET_WIDTH wide.
-										const TARGET_WIDTH = 100;
-										const step = Math.max(1, Math.ceil(TARGET_WIDTH / baseWidth));
-										const width = baseWidth * step;
+										// Build visible thumbnails array
+										const visibleThumbnails: React.ReactElement[] = [];
+										
+										for (let index = firstThumbnailIndex; index <= lastThumbnailIndex; index++) {
+											const thumbnail = mediaAsset.filmstripThumbnails[index];
+											if (!thumbnail) continue;
+											
+											// Position thumbnail at its time offset
+											const thumbnailTime = index * interval;
+											const leftPosition = (thumbnailTime - trimStartOffset) * pixelsPerSecond;
+											
+											// If zoomed in, we may need to repeat the thumbnail to fill gaps
+											// Calculate how many times this thumbnail should repeat
+											const intervalWidth = interval * pixelsPerSecond;
+											const repeatCount = Math.max(1, Math.ceil(intervalWidth / thumbnailWidth));
+											
+											// Render thumbnail(s) for this interval
+											for (let repeat = 0; repeat < repeatCount; repeat++) {
+												const repeatLeftPosition = leftPosition + (repeat * thumbnailWidth);
+												
+												// Skip if outside visible bounds
+												if (repeatLeftPosition > elementDuration * pixelsPerSecond + thumbnailWidth) continue;
+												if (repeatLeftPosition + thumbnailWidth < -thumbnailWidth) continue;
 
-										return mediaAsset.filmstripThumbnails.map((thumbnail, index) => {
-											if (index % step !== 0) return null;
-
-											return (
-												<img
-													key={index}
-													src={thumbnail}
-													alt={`Thumbnail ${index}`}
-													className="h-full object-cover pointer-events-none select-none"
-													style={{
-														width: `${width}px`,
-														maxWidth: "none",
-													}}
-													draggable={false}
-												/>
-											);
-										});
+												visibleThumbnails.push(
+													<img
+														key={`${index}-${repeat}`}
+														src={thumbnail}
+														alt={`Thumbnail ${index}`}
+														className="absolute pointer-events-none select-none"
+														style={{
+															position: "absolute",
+															left: `${repeatLeftPosition}px`,
+															width: `${thumbnailWidth}px`,
+															height: `${availableHeight}px`,
+															objectFit: "cover",
+															objectPosition: "center",
+														}}
+														draggable={false}
+													/>
+												);
+											}
+										}
+										
+										return visibleThumbnails;
 									})()}
-								</div>
 							</div>
 						) : (
 							<div
