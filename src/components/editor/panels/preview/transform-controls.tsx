@@ -362,16 +362,23 @@ export function TransformControls({ canvasRef, zoom }: TransformControlsProps) {
 			startX: e.clientX,
 			startY: e.clientY,
 			initialBounds: bounds,
-			initialTransforms: elements.map((el) => ({
-				trackId: el.trackId,
-				elementId: el.elementId,
-				transform: { ...el.transform },
-			})),
+			initialTransforms: elements.map((el) => {
+				// Look up the full element to get type and fontSize
+				const track = tracks.find((t: TimelineTrack) => t.id === el.trackId);
+				const element = track?.elements.find((e) => e.id === el.elementId);
+				return {
+					trackId: el.trackId,
+					elementId: el.elementId,
+					transform: { ...el.transform },
+					elementType: element?.type,
+					initialFontSize: element?.type === 'text' ? (element as { fontSize: number }).fontSize : undefined,
+				};
+			}),
 		});
 
 		// Capture pointer
 		(e.target as HTMLElement).setPointerCapture(e.pointerId);
-	}, [calculateBoundingBox, getSelectedTransforms]);
+	}, [calculateBoundingBox, getSelectedTransforms, tracks]);
 
 	// Handle pointer move during drag
 	const handlePointerMove = useCallback((e: React.PointerEvent) => {
@@ -450,23 +457,38 @@ export function TransformControls({ canvasRef, zoom }: TransformControlsProps) {
 				}
 			}
 
-			// Apply scale to all selected elements
+			// Apply scale/fontSize to all selected elements
 			for (const initial of dragState.initialTransforms) {
-				const newScale = Math.max(0.01, Math.min(5, initial.transform.scale * scaleFactor));
-
-				editor.timeline.updateElements({
-					updates: [{
-						trackId: initial.trackId,
-						elementId: initial.elementId,
-						updates: {
-							transform: {
-								...initial.transform,
-								scale: newScale,
+				if (initial.elementType === 'text' && initial.initialFontSize != null) {
+					// For text elements, update fontSize instead of transform.scale
+					const newFontSize = Math.max(1, Math.round(initial.initialFontSize * scaleFactor));
+					editor.timeline.updateElements({
+						updates: [{
+							trackId: initial.trackId,
+							elementId: initial.elementId,
+							updates: {
+								fontSize: newFontSize,
 							},
-						},
-					}],
-					pushHistory: false,
-				});
+						}],
+						pushHistory: false,
+					});
+				} else {
+					// For video/image/sticker elements, update transform.scale
+					const newScale = Math.max(0.01, Math.min(5, initial.transform.scale * scaleFactor));
+					editor.timeline.updateElements({
+						updates: [{
+							trackId: initial.trackId,
+							elementId: initial.elementId,
+							updates: {
+								transform: {
+									...initial.transform,
+									scale: newScale,
+								},
+							},
+						}],
+						pushHistory: false,
+					});
+				}
 			}
 		}
 	}, [dragState, calculateBoundingBox, canvasToScreen, getDisplayScale, editor.timeline]);
@@ -481,21 +503,45 @@ export function TransformControls({ canvasRef, zoom }: TransformControlsProps) {
 
 		// Push to history with the current values for undo/redo
 		for (const current of currentTransforms) {
-			editor.timeline.updateElements({
-				updates: [{
-					trackId: current.trackId,
-					elementId: current.elementId,
-					updates: {
-						transform: current.transform,
-					},
-				}],
-				pushHistory: true,
-			});
+			// Find the matching initial transform to check element type
+			const initial = dragState.initialTransforms.find(
+				(it) => it.trackId === current.trackId && it.elementId === current.elementId
+			);
+
+			if (initial?.elementType === 'text') {
+				// For text elements, get the current fontSize and push it to history
+				const track = tracks.find((t: TimelineTrack) => t.id === current.trackId);
+				const element = track?.elements.find((el) => el.id === current.elementId);
+				const currentFontSize = element?.type === 'text' ? (element as { fontSize: number }).fontSize : undefined;
+
+				editor.timeline.updateElements({
+					updates: [{
+						trackId: current.trackId,
+						elementId: current.elementId,
+						updates: {
+							transform: current.transform,
+							...(currentFontSize != null ? { fontSize: currentFontSize } : {}),
+						},
+					}],
+					pushHistory: true,
+				});
+			} else {
+				editor.timeline.updateElements({
+					updates: [{
+						trackId: current.trackId,
+						elementId: current.elementId,
+						updates: {
+							transform: current.transform,
+						},
+					}],
+					pushHistory: true,
+				});
+			}
 		}
 
 		setDragState(null);
 		(e.target as HTMLElement).releasePointerCapture(e.pointerId);
-	}, [dragState, getCurrentTransforms, editor.timeline]);
+	}, [dragState, getCurrentTransforms, editor.timeline, tracks]);
 
 	// Don't render if playing or no selection
 	const bounds = calculateBoundingBox();

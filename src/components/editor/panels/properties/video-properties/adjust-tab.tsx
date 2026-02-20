@@ -13,6 +13,7 @@ import {
 	PropertyItemLabel,
 } from "../property-item";
 import { useEditor } from "@/hooks/use-editor";
+import { useTranslation } from "react-i18next";
 
 export function AdjustTab({
 	element,
@@ -23,6 +24,7 @@ export function AdjustTab({
 	trackId: string;
 }) {
 	const editor = useEditor();
+	const { t } = useTranslation();
 
 	// Read current filters, falling back to neutral defaults
 	const filters: VideoFilters = element.filters ?? DEFAULT_VIDEO_FILTERS;
@@ -74,11 +76,11 @@ export function AdjustTab({
 	return (
 		<div className="flex flex-col pb-20">
 			{/* ── Color ── */}
-			<PropertyGroup title="Color" defaultExpanded={true} hasBorderTop>
+			<PropertyGroup title={t("properties.video.adjust.color")} defaultExpanded={true} hasBorderTop>
 				<div className="space-y-6">
 					{/* Temperature — pixel-level R/B channel shift */}
 					<AdjustSlider
-						label="Temp"
+						label={t("properties.video.adjust.temp")}
 						value={filters.temperature ?? 0}
 						defaultValue={0}
 						min={-100}
@@ -89,7 +91,7 @@ export function AdjustTab({
 					/>
 					{/* Tint — pixel-level G channel shift */}
 					<AdjustSlider
-						label="Tint"
+						label={t("properties.video.adjust.tint")}
 						value={filters.tint ?? 0}
 						defaultValue={0}
 						min={-100}
@@ -100,7 +102,7 @@ export function AdjustTab({
 					/>
 					{/* Saturation — CSS filter: saturate() */}
 					<AdjustSlider
-						label="Saturation"
+						label={t("properties.video.adjust.saturation")}
 						value={filters.saturation}
 						defaultValue={0}
 						min={-100}
@@ -113,11 +115,11 @@ export function AdjustTab({
 			</PropertyGroup>
 
 			{/* ── Lightness ── */}
-			<PropertyGroup title="Lightness" defaultExpanded={true} hasBorderTop>
+			<PropertyGroup title={t("properties.video.adjust.lightness")} defaultExpanded={true} hasBorderTop>
 				<div className="space-y-6">
 					{/* Exposure → brightness */}
 					<AdjustSlider
-						label="Exposure"
+						label={t("properties.video.adjust.exposure")}
 						value={filters.brightness}
 						defaultValue={0}
 						min={-100}
@@ -127,7 +129,7 @@ export function AdjustTab({
 					/>
 					{/* Contrast */}
 					<AdjustSlider
-						label="Contrast"
+						label={t("properties.video.adjust.contrast")}
 						value={filters.contrast}
 						defaultValue={0}
 						min={-100}
@@ -137,7 +139,7 @@ export function AdjustTab({
 					/>
 					{/* Highlight — pixel-level tone curve */}
 					<AdjustSlider
-						label="Highlight"
+						label={t("properties.video.adjust.highlight")}
 						value={filters.highlights ?? 0}
 						defaultValue={0}
 						min={-100}
@@ -147,7 +149,7 @@ export function AdjustTab({
 					/>
 					{/* Shadow — pixel-level tone curve */}
 					<AdjustSlider
-						label="Shadow"
+						label={t("properties.video.adjust.shadow")}
 						value={filters.shadows ?? 0}
 						defaultValue={0}
 						min={-100}
@@ -157,7 +159,7 @@ export function AdjustTab({
 					/>
 					{/* Whites — pixel-level white point */}
 					<AdjustSlider
-						label="Whites"
+						label={t("properties.video.adjust.whites")}
 						value={filters.whites ?? 0}
 						defaultValue={0}
 						min={-100}
@@ -167,7 +169,7 @@ export function AdjustTab({
 					/>
 					{/* Blacks — pixel-level black point */}
 					<AdjustSlider
-						label="Blacks"
+						label={t("properties.video.adjust.blacks")}
 						value={filters.blacks ?? 0}
 						defaultValue={0}
 						min={-100}
@@ -177,25 +179,25 @@ export function AdjustTab({
 					/>
 					{/* Brilliance — P4+ (not yet in VideoFilters type) */}
 					<AdjustSlider
-						label="Brilliance"
+						label={t("properties.video.adjust.brilliance")}
 						value={0}
 						defaultValue={0}
 						min={-100}
 						max={100}
 						disabled
-						badge="Soon"
-						onChange={() => {}}
-						onCommit={() => {}}
+						badge={t("common.comingSoon")}
+						onChange={() => { }}
+						onCommit={() => { }}
 					/>
 				</div>
 			</PropertyGroup>
 
 			{/* ── Effects ── */}
-			<PropertyGroup title="Effects" defaultExpanded={true} hasBorderTop>
+			<PropertyGroup title={t("properties.video.adjust.effects")} defaultExpanded={true} hasBorderTop>
 				<div className="space-y-6">
 					{/* Sharpen — convolution kernel */}
 					<AdjustSlider
-						label="Sharpen"
+						label={t("properties.video.adjust.sharpen")}
 						value={filters.sharpen ?? 0}
 						defaultValue={0}
 						min={0}
@@ -205,7 +207,7 @@ export function AdjustTab({
 					/>
 					{/* Clarity — large-radius unsharp mask */}
 					<AdjustSlider
-						label="Clarity"
+						label={t("properties.video.adjust.clarity")}
 						value={filters.clarity ?? 0}
 						defaultValue={0}
 						min={0}
@@ -215,7 +217,7 @@ export function AdjustTab({
 					/>
 					{/* Fade — white overlay */}
 					<AdjustSlider
-						label="Fade"
+						label={t("properties.video.adjust.fade")}
 						value={filters.fade}
 						defaultValue={0}
 						min={0}
@@ -225,7 +227,7 @@ export function AdjustTab({
 					/>
 					{/* Vignette — radial gradient overlay */}
 					<AdjustSlider
-						label="Vignette"
+						label={t("properties.video.adjust.vignette")}
 						value={filters.vignette}
 						defaultValue={0}
 						min={0}
@@ -237,24 +239,24 @@ export function AdjustTab({
 			</PropertyGroup>
 
 			{/* ── LUT (P4+) ── */}
-			<PropertyGroup title="LUT" defaultExpanded={true} hasBorderTop>
+			<PropertyGroup title={t("properties.video.adjust.lut")} defaultExpanded={true} hasBorderTop>
 				<div className="space-y-4">
 					<PropertyItem direction="column" className="items-stretch gap-2">
-						<PropertyItemLabel>Name</PropertyItemLabel>
+						<PropertyItemLabel>{t("properties.video.info.name")}</PropertyItemLabel>
 						<div className="bg-secondary px-3 py-2 rounded text-xs text-muted-foreground">
-							None — coming soon
+							{t("properties.animation.none")} — {t("common.comingSoon").toLowerCase()}
 						</div>
 					</PropertyItem>
 
 					<PropertyItem direction="column" className="items-stretch gap-2">
 						<div className="flex justify-between">
-							<PropertyItemLabel className="text-muted-foreground">Intensity</PropertyItemLabel>
+							<PropertyItemLabel className="text-muted-foreground">{t("properties.video.adjust.intensity")}</PropertyItemLabel>
 							<span className="text-xs text-muted-foreground">100</span>
 						</div>
 						<Slider defaultValue={[100]} max={100} step={1} disabled />
 					</PropertyItem>
 
-					</div>
+				</div>
 			</PropertyGroup>
 
 			{/* Reset all filters button */}
@@ -265,7 +267,7 @@ export function AdjustTab({
 					className="h-7 text-xs text-muted-foreground"
 					onClick={resetFilters}
 				>
-					<RefreshCcw className="size-3 mr-1" /> Reset all
+					<RefreshCcw className="size-3 mr-1" /> {t("properties.video.adjust.resetAll")}
 				</Button>
 			</div>
 		</div>

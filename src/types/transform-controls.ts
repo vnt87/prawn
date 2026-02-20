@@ -60,6 +60,10 @@ export interface TransformDragState {
 			position: { x: number; y: number };
 			rotate: number;
 		};
+		/** Element type (e.g., 'text', 'video') for type-specific resize behavior */
+		elementType?: string;
+		/** Initial font size for text elements (used for resize) */
+		initialFontSize?: number;
 	}>;
 }
 
@@ -88,11 +92,11 @@ export const ROTATION_HANDLE_OFFSET = 20;
  */
 export function getHandlePositions(bounds: BoundingBox, scale: number): HandlePosition[] {
 	const { x, y, width, height, rotation } = bounds;
-	
+
 	// Calculate half dimensions
 	const halfW = (width * scale) / 2;
 	const halfH = (height * scale) / 2;
-	
+
 	// Corner positions (relative to center)
 	const corners: Array<{ type: HandleType; relX: number; relY: number }> = [
 		{ type: 'nw', relX: -halfW, relY: -halfH },
@@ -100,7 +104,7 @@ export function getHandlePositions(bounds: BoundingBox, scale: number): HandlePo
 		{ type: 'se', relX: halfW, relY: halfH },
 		{ type: 'sw', relX: -halfW, relY: halfH },
 	];
-	
+
 	// Edge positions (relative to center)
 	const edges: Array<{ type: HandleType; relX: number; relY: number }> = [
 		{ type: 'n', relX: 0, relY: -halfH },
@@ -108,14 +112,14 @@ export function getHandlePositions(bounds: BoundingBox, scale: number): HandlePo
 		{ type: 's', relX: 0, relY: halfH },
 		{ type: 'w', relX: -halfW, relY: 0 },
 	];
-	
+
 	const handles: HandlePosition[] = [];
-	
+
 	// Apply rotation to all positions
 	const rad = (rotation * Math.PI) / 180;
 	const cos = Math.cos(rad);
 	const sin = Math.sin(rad);
-	
+
 	// Add corner handles
 	for (const corner of corners) {
 		const rotatedX = corner.relX * cos - corner.relY * sin;
@@ -127,7 +131,7 @@ export function getHandlePositions(bounds: BoundingBox, scale: number): HandlePo
 			cursor: HANDLE_CURSORS[corner.type],
 		});
 	}
-	
+
 	// Add edge handles
 	for (const edge of edges) {
 		const rotatedX = edge.relX * cos - edge.relY * sin;
@@ -139,7 +143,7 @@ export function getHandlePositions(bounds: BoundingBox, scale: number): HandlePo
 			cursor: HANDLE_CURSORS[edge.type],
 		});
 	}
-	
+
 	// Add rotation handle (above center, rotated)
 	const rotateRelY = -halfH - ROTATION_HANDLE_OFFSET;
 	const rotatedX = 0 * cos - rotateRelY * sin;
@@ -150,6 +154,6 @@ export function getHandlePositions(bounds: BoundingBox, scale: number): HandlePo
 		y: y * scale + rotatedY,
 		cursor: HANDLE_CURSORS['rotate'],
 	});
-	
+
 	return handles;
 }

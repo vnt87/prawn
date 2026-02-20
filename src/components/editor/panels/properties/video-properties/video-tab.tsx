@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BasicVideoTab } from "./basic-video-tab";
 import { MaskTab } from "./mask-tab";
 import { RemoveBgTab } from "./remove-bg-tab";
+import { useTranslation } from "react-i18next";
 
 export function VideoTab({
 	element,
@@ -12,6 +13,8 @@ export function VideoTab({
 	/** Track id passed down so sub-tabs can call editor.timeline.updateElements */
 	trackId: string;
 }) {
+	const { t } = useTranslation();
+
 	return (
 		<div className="flex flex-col h-full">
 			<Tabs defaultValue="basic" className="w-full flex flex-col h-full">
@@ -21,19 +24,19 @@ export function VideoTab({
 							value="basic"
 							className="flex-1 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md text-xs h-6 px-2"
 						>
-							Basic
+							{t("properties.video.subTabs.basic")}
 						</TabsTrigger>
 						<TabsTrigger
 							value="remove_bg"
 							className="flex-1 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md text-xs h-6 px-2"
 						>
-							Remove BG
+							{t("properties.video.subTabs.removeBackground")}
 						</TabsTrigger>
 						<TabsTrigger
 							value="mask"
 							className="flex-1 data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-md text-xs h-6 px-2"
 						>
-							Mask
+							{t("properties.video.subTabs.mask")}
 						</TabsTrigger>
 					</TabsList>
 				</div>

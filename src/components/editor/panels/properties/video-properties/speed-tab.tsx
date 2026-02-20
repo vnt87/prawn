@@ -10,6 +10,7 @@ import {
 	PropertyItemLabel,
 } from "../property-item";
 import { useEditor } from "@/hooks/use-editor";
+import { useTranslation } from "react-i18next";
 
 export function SpeedTab({
 	element,
@@ -20,6 +21,7 @@ export function SpeedTab({
 	trackId: string;
 }) {
 	const editor = useEditor();
+	const { t } = useTranslation();
 
 	// ---- Helpers ----
 
@@ -49,12 +51,12 @@ export function SpeedTab({
 
 	return (
 		<div className="flex flex-col pb-20">
-			<PropertyGroup title="Standard" defaultExpanded={true}>
+			<PropertyGroup title={t("properties.video.speed.standard")} defaultExpanded={true}>
 				<div className="space-y-6">
 					{/* Speed multiplier slider */}
 					<PropertyItem direction="column" className="items-stretch gap-2">
 						<div className="flex justify-between">
-							<PropertyItemLabel>Speed</PropertyItemLabel>
+							<PropertyItemLabel>{t("properties.video.speed.label")}</PropertyItemLabel>
 							<span className="text-xs bg-secondary px-2 py-0.5 rounded">
 								{currentSpeed.toFixed(2)}x
 							</span>
@@ -76,7 +78,7 @@ export function SpeedTab({
 					{/* Effective duration display (read-only, derived from speed) */}
 					<PropertyItem direction="column" className="items-stretch gap-2">
 						<div className="flex justify-between">
-							<PropertyItemLabel>Effective duration</PropertyItemLabel>
+							<PropertyItemLabel>{t("properties.video.speed.effectiveDuration")}</PropertyItemLabel>
 							<span className="text-xs bg-secondary px-2 py-0.5 rounded">
 								{effectiveDuration.toFixed(1)}s
 							</span>
@@ -94,11 +96,11 @@ export function SpeedTab({
 
 					{/* Change audio pitch (stored, pitch shifting is P4+) */}
 					<PropertyItem>
-						<PropertyItemLabel>Change audio pitch</PropertyItemLabel>
+						<PropertyItemLabel>{t("properties.video.speed.changePitch")}</PropertyItemLabel>
 						<div className="flex flex-col items-end gap-1">
 							<Switch disabled />
 							<span className="text-[10px] bg-secondary px-2 py-0.5 rounded text-muted-foreground">
-								Soon
+								{t("common.comingSoon")}
 							</span>
 						</div>
 					</PropertyItem>

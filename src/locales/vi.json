@@ -184,12 +184,154 @@
             "color": "Màu sắc",
             "opacity": "Độ mờ",
             "background": "Nền",
-            "placeholder": "Tên"
+            "placeholder": "Tên",
+            "bold": "In đậm",
+            "italic": "In nghiêng",
+            "underline": "Gạch chân",
+            "strikethrough": "Gạch ngang"
         },
         "video": {
             "title": "Thuộc tính video",
             "scale": "Tỷ lệ",
-            "scaleTooltip": "Hiện app chỉ hỗ trợ uniform scale (scale cả dài lẫn rộng cùng lúc) vì ban đầu code ko set riêng width với height, giờ hơi lười update lại cả đống renderer code, transform UI, drag handlers, undo/redo logic etc. Nếu mấy ní cần cái chức năng củ lìn này thì log issue trên Github nhé, nếu nhiều request thì tính sau."
+            "scaleTooltip": "Hiện app chỉ hỗ trợ uniform scale (scale cả dài lẫn rộng cùng lúc) vì ban đầu code ko set riêng width với height, giờ hơi lười update lại cả đống renderer code, transform UI, drag handlers, undo/redo logic etc. Nếu mấy ní cần cái chức năng củ lìn này thì log issue trên Github nhé, nếu nhiều request thì tính sau.",
+            "tabs": {
+                "video": "Video",
+                "audio": "Âm thanh",
+                "speed": "Tốc độ",
+                "animation": "Chuyển động",
+                "adjust": "Điều chỉnh",
+                "info": "Thông tin"
+            },
+            "subTabs": {
+                "basic": "Cơ bản",
+                "removeBackground": "Xóa nền",
+                "mask": "Mặt nạ"
+            },
+            "basic": {
+                "transform": "Biến đổi",
+                "position": "Vị trí",
+                "rotate": "Xoay",
+                "flip": "Lật",
+                "resetTransform": "Đặt lại biến đổi",
+                "blend": "Hòa trộn",
+                "opacity": "Độ mờ",
+                "mode": "Chế độ",
+                "blendModes": {
+                    "source-over": "Bình thường",
+                    "multiply": "Nhân",
+                    "screen": "Làm sáng",
+                    "overlay": "Phủ",
+                    "darken": "Làm tối",
+                    "lighten": "Làm sáng",
+                    "color-dodge": "Né màu",
+                    "color-burn": "Đốt màu",
+                    "hard-light": "Ánh sáng gắt",
+                    "soft-light": "Ánh sáng dịu",
+                    "difference": "Khác biệt",
+                    "exclusion": "Loại trừ"
+                }
+            },
+            "speed": {
+                "standard": "Tiêu chuẩn",
+                "label": "Tốc độ",
+                "effectiveDuration": "Thời lượng thực tế",
+                "changePitch": "Thay đổi tông độ âm thanh"
+            },
+            "audio": {
+                "basic": "Cơ bản",
+                "volume": "Âm lượng",
+                "fadeIn": "Lớn dần",
+                "fadeOut": "Nhỏ dần",
+                "enhancements": "Nâng cao",
+                "normalizeLoudness": "Chuẩn hóa âm lượng",
+                "normalizeLoudnessDesc": "Chuẩn hóa độ lớn của clip đã chọn theo mức mục tiêu.",
+                "enhanceVoice": "Tăng cường giọng nói"
+            },
+            "mask": {
+                "title": "Mặt nạ",
+                "settings": "Cài đặt mặt nạ",
+                "track": "Theo dõi mặt nạ",
+                "direction": "Hướng",
+                "both": "Cả hai",
+                "trackBtn": "Theo dõi",
+                "feather": "Làm mờ biên",
+                "roundCorners": "Bo góc",
+                "shapes": {
+                    "split": "Chia nhỏ",
+                    "filmstrip": "Dải phim",
+                    "circle": "Hình tròn",
+                    "rectangle": "Hình chữ nhật",
+                    "stars": "Ngôi sao",
+                    "heart": "Trái tim",
+                    "text": "Văn bản",
+                    "brush": "Cọ",
+                    "pen": "Bút"
+                }
+            },
+            "removeBg": {
+                "auto": "Xóa tự động",
+                "custom": "Xóa tùy chỉnh",
+                "chroma": "Chroma key"
+            },
+            "animation": {
+                "in": "Vào",
+                "out": "Ra",
+                "combo": "Phối hợp",
+                "duration": "Thời lượng",
+                "springSettings": "Cài đặt Spring",
+                "springAnimations": "Hiệu ứng Spring",
+                "none": "Không có",
+                "noCombo": "Không có hiệu ứng phối hợp nào",
+                "presets": {
+                    "fade": "Mờ dần",
+                    "slideLeft": "Trượt sang trái",
+                    "slideRight": "Trượt sang phải",
+                    "slideUp": "Trượt lên",
+                    "slideDown": "Trượt xuống",
+                    "zoomIn": "Phóng to",
+                    "zoomOut": "Thu nhỏ",
+                    "spin": "Xoay",
+                    "blur": "Mờ",
+                    "rise": "Nổi lên",
+                    "fall": "Rơi xuống",
+                    "breathe": "Nhịp thở",
+                    "kenBurnsIn": "Ken Burns Vào",
+                    "kenBurnsOut": "Ken Burns Ra",
+                    "springBounce": "Đàn hồi",
+                    "springElastic": "Co giãn",
+                    "springGentle": "Nhẹ nhàng"
+                }
+            },
+            "adjust": {
+                "color": "Màu sắc",
+                "lightness": "Ánh sáng",
+                "effects": "Hiệu ứng",
+                "lut": "LUT",
+                "temp": "Nhiệt độ",
+                "tint": "Sắc thái",
+                "saturation": "Độ bão hòa",
+                "exposure": "Độ phơi sáng",
+                "contrast": "Độ tương phản",
+                "highlight": "Vùng sáng",
+                "shadow": "Vùng tối",
+                "whites": "Điểm trắng",
+                "blacks": "Điểm đen",
+                "brilliance": "Độ rực rỡ",
+                "sharpen": "Độ sắc nét",
+                "clarity": "Độ trong trẻo",
+                "fade": "Mờ dần",
+                "vignette": "Làm tối góc",
+                "intensity": "Cường độ",
+                "resetAll": "Đặt lại tất cả"
+            },
+            "info": {
+                "details": "Chi tiết",
+                "name": "Tên",
+                "resolution": "Độ phân giải",
+                "frameRate": "Tỷ lệ khung hình",
+                "duration": "Thời lượng",
+                "assetNotFound": "Không tìm thấy tài nguyên"
+            }
         },
         "audio": "Thuộc tính âm thanh"
     },

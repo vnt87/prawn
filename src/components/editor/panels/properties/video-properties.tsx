@@ -7,6 +7,7 @@ import { AudioTab } from "./video-properties/audio-tab";
 import { SpeedTab } from "./video-properties/speed-tab";
 import { AnimationTab } from "./video-properties/animation-tab";
 import { AdjustTab } from "./video-properties/adjust-tab";
+import { useTranslation } from "react-i18next";
 
 export function VideoProperties({
 	_element: element,
@@ -16,6 +17,7 @@ export function VideoProperties({
 	/** Track id needed to call editor.timeline.updateElements */
 	trackId: string;
 }) {
+	const { t } = useTranslation();
 	const editor = useEditor();
 	const asset = editor.media.getAssets().find((a) => a.id === element.mediaId);
 
@@ -32,37 +34,37 @@ export function VideoProperties({
 							value="video"
 							className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-foreground text-muted-foreground rounded-none px-0 pb-2 bg-transparent h-auto"
 						>
-							Video
+							{t("properties.video.tabs.video")}
 						</TabsTrigger>
 						<TabsTrigger
 							value="audio"
 							className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-foreground text-muted-foreground rounded-none px-0 pb-2 bg-transparent h-auto"
 						>
-							Audio
+							{t("properties.video.tabs.audio")}
 						</TabsTrigger>
 						<TabsTrigger
 							value="speed"
 							className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-foreground text-muted-foreground rounded-none px-0 pb-2 bg-transparent h-auto"
 						>
-							Speed
+							{t("properties.video.tabs.speed")}
 						</TabsTrigger>
 						<TabsTrigger
 							value="animation"
 							className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-foreground text-muted-foreground rounded-none px-0 pb-2 bg-transparent h-auto"
 						>
-							Animation
+							{t("properties.video.tabs.animation")}
 						</TabsTrigger>
 						<TabsTrigger
 							value="adjust"
 							className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-foreground text-muted-foreground rounded-none px-0 pb-2 bg-transparent h-auto"
 						>
-							Adjust
+							{t("properties.video.tabs.adjust")}
 						</TabsTrigger>
 						<TabsTrigger
 							value="info"
 							className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-foreground text-muted-foreground rounded-none px-0 pb-2 bg-transparent h-auto"
 						>
-							Info
+							{t("properties.video.tabs.info")}
 						</TabsTrigger>
 					</TabsList>
 				</div>

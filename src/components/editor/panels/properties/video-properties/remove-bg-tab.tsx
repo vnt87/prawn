@@ -16,16 +16,18 @@ import {
 } from "../property-item";
 import { useState } from "react";
 import { cn } from "@/utils/ui";
+import { useTranslation } from "react-i18next";
 
 export function RemoveBgTab({
-	element,
-	trackId: _trackId,
+    element: _element,
+    trackId: _trackId,
 }: {
-	element: VideoElement | ImageElement;
-	/** Reserved for future bg-removal state persistence via updateElements */
-	trackId: string;
+    element: VideoElement | ImageElement;
+    /** Reserved for future bg-removal state persistence via updateElements */
+    trackId: string;
 }) {
-    const [removalType, setRemovalType] = useState<"auto" | "custom" | "chroma" | null>("auto");
+    const { t } = useTranslation();
+    const [removalType, _setRemovalType] = useState<"auto" | "custom" | "chroma" | null>("auto");
     const [customTool, setCustomTool] = useState<"brush_plus" | "eraser_plus" | "brush" | "eraser">("brush_plus");
 
     return (
@@ -34,14 +36,14 @@ export function RemoveBgTab({
             <div className="px-4 py-3 flex items-center gap-2">
                 <Switch id="auto-removal" />
                 <label htmlFor="auto-removal" className="text-xs font-medium flex items-center gap-1 cursor-pointer">
-                    Auto removal
+                    {t("properties.video.removeBg.auto")}
                 </label>
             </div>
 
             <div className="h-px bg-border mx-4" />
 
             {/* Custom Removal */}
-            <PropertyGroup title="Custom removal" defaultExpanded={true} collapsible={true}
+            <PropertyGroup title={t("properties.video.removeBg.custom")} defaultExpanded={true} collapsible={true}
                 extraHeaderContent={
                     <RefreshCcw className="size-3.5 text-muted-foreground ml-auto" />
                 }
@@ -73,7 +75,7 @@ export function RemoveBgTab({
 
                     <PropertyItem direction="column" className="items-stretch gap-2">
                         <div className="flex justify-between">
-                            <PropertyItemLabel>Size</PropertyItemLabel>
+                            <PropertyItemLabel>{t("properties.text.style")}</PropertyItemLabel>
                             <div className="flex items-center gap-2">
                                 <div className="bg-secondary px-2 py-0.5 rounded text-[10px] min-w-[30px] text-center">20</div>
                                 <div className="flex flex-col -gap-1">
@@ -93,7 +95,7 @@ export function RemoveBgTab({
             <div className="h-px bg-border mx-4" />
 
             {/* Chroma Key */}
-            <PropertyGroup title="Chroma key" defaultExpanded={false} collapsible={true}>
+            <PropertyGroup title={t("properties.video.removeBg.chroma")} defaultExpanded={false} collapsible={true}>
                 {/* Content would go here if expanded */}
                 <div className="h-4" />
             </PropertyGroup>

@@ -25,36 +25,38 @@ import {
 import { cn } from "@/utils/ui";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 export function MaskTab({
-	element,
-	trackId: _trackId,
+    element: _element,
+    trackId: _trackId,
 }: {
-	element: VideoElement | ImageElement;
-	/** Reserved for future mask persistence via updateElements */
-	trackId: string;
+    element: VideoElement | ImageElement;
+    /** Reserved for future mask persistence via updateElements */
+    trackId: string;
 }) {
+    const { t } = useTranslation();
     const [selectedShape, setSelectedShape] = useState<string>("rectangle");
 
     const shapes = [
-        { id: "split", label: "Split", icon: Layout },
-        { id: "filmstrip", label: "Filmstrip", icon: Film },
-        { id: "circle", label: "Circle", icon: Circle },
-        { id: "rectangle", label: "Rectangle", icon: RectangleHorizontal },
-        { id: "stars", label: "Stars", icon: Star },
-        { id: "heart", label: "Heart", icon: Heart },
-        { id: "text", label: "Text", icon: Type },
-        { id: "brush", label: "Brush", icon: Brush },
-        { id: "pen", label: "Pen", icon: PenTool },
+        { id: "split", label: t("properties.video.mask.shapes.split"), icon: Layout },
+        { id: "filmstrip", label: t("properties.video.mask.shapes.filmstrip"), icon: Film },
+        { id: "circle", label: t("properties.video.mask.shapes.circle"), icon: Circle },
+        { id: "rectangle", label: t("properties.video.mask.shapes.rectangle"), icon: RectangleHorizontal },
+        { id: "stars", label: t("properties.video.mask.shapes.stars"), icon: Star },
+        { id: "heart", label: t("properties.video.mask.shapes.heart"), icon: Heart },
+        { id: "text", label: t("properties.video.mask.shapes.text"), icon: Type },
+        { id: "brush", label: t("properties.video.mask.shapes.brush"), icon: Brush },
+        { id: "pen", label: t("properties.video.mask.shapes.pen"), icon: PenTool },
     ];
 
     return (
         <div className="flex flex-col pb-20">
-            <PropertyGroup title="Mask" defaultExpanded={true} collapsible={false}>
+            <PropertyGroup title={t("properties.video.mask.title")} defaultExpanded={true} collapsible={false}>
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                         <Switch defaultChecked />
-                        <span className="text-xs font-medium">Mask</span>
+                        <span className="text-xs font-medium">{t("properties.video.mask.title")}</span>
                     </div>
                 </div>
 
@@ -95,10 +97,10 @@ export function MaskTab({
             </PropertyGroup>
 
             {/* Mask Settings */}
-            <PropertyGroup title="Mask settings" defaultExpanded={true}>
+            <PropertyGroup title={t("properties.video.mask.settings")} defaultExpanded={true}>
                 <div className="space-y-4">
                     <PropertyItem>
-                        <PropertyItemLabel>Position</PropertyItemLabel>
+                        <PropertyItemLabel>{t("properties.video.basic.position")}</PropertyItemLabel>
                         <div className="flex gap-2">
                             <div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
                                 <span className="text-muted-foreground text-xs">X</span>
@@ -120,7 +122,7 @@ export function MaskTab({
                     </PropertyItem>
 
                     <PropertyItem>
-                        <PropertyItemLabel>Rotation</PropertyItemLabel>
+                        <PropertyItemLabel>{t("properties.video.basic.rotate")}</PropertyItemLabel>
                         <div className="flex gap-2 items-center">
                             <div className="flex items-center gap-1 bg-secondary rounded px-2 py-1 w-20">
                                 <div className="flex-1 text-center text-xs">0.0°</div>
@@ -136,7 +138,7 @@ export function MaskTab({
                     </PropertyItem>
 
                     <PropertyItem>
-                        <PropertyItemLabel>Size</PropertyItemLabel>
+                        <PropertyItemLabel>{t("properties.video.scale")}</PropertyItemLabel>
                         <div className="flex gap-2 items-center">
                             <div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
                                 <Maximize2 className="size-3 text-muted-foreground rotate-90" />
@@ -160,7 +162,7 @@ export function MaskTab({
 
                     <PropertyItem direction="column" className="items-stretch gap-2">
                         <div className="flex justify-between">
-                            <PropertyItemLabel>Feather</PropertyItemLabel>
+                            <PropertyItemLabel>{t("properties.video.mask.feather")}</PropertyItemLabel>
                             <div className="bg-secondary px-2 py-0.5 rounded text-[10px] min-w-[30px] text-center">0</div>
                         </div>
                         <Slider defaultValue={[0]} max={100} step={1} />
@@ -168,7 +170,7 @@ export function MaskTab({
 
                     <PropertyItem direction="column" className="items-stretch gap-2">
                         <div className="flex justify-between">
-                            <PropertyItemLabel>Round corners</PropertyItemLabel>
+                            <PropertyItemLabel>{t("properties.video.mask.roundCorners")}</PropertyItemLabel>
                             <div className="bg-secondary px-2 py-0.5 rounded text-[10px] min-w-[30px] text-center">0</div>
                         </div>
                         <Slider defaultValue={[0]} max={100} step={1} />
@@ -177,17 +179,17 @@ export function MaskTab({
             </PropertyGroup>
 
             {/* Track Mask */}
-            <PropertyGroup title="Track mask" defaultExpanded={false}>
+            <PropertyGroup title={t("properties.video.mask.track")} defaultExpanded={false}>
                 <div className="space-y-4">
                     <PropertyItem>
-                        <PropertyItemLabel>Direction</PropertyItemLabel>
+                        <PropertyItemLabel>{t("properties.video.mask.direction")}</PropertyItemLabel>
                         <div className="bg-secondary rounded px-3 py-1.5 text-xs w-full max-w-[200px] flex justify-between items-center cursor-pointer">
-                            Both
+                            {t("properties.video.mask.both")}
                             <ChevronDown className="size-3 opacity-50" />
                         </div>
                     </PropertyItem>
                     <div className="flex justify-end">
-                        <Button size="sm" className="h-7 px-4">Track</Button>
+                        <Button size="sm" className="h-7 px-4">{t("properties.video.mask.trackBtn")}</Button>
                     </div>
                 </div>
             </PropertyGroup>

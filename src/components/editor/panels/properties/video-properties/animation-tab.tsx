@@ -27,39 +27,33 @@ import {
 	Activity,
 	Feather,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 /** Preset animation options shown as a grid of cards. */
-const ANIMATION_PRESETS: {
-	type: AnimationType;
-	label: string;
-	icon: React.ComponentType<{ className?: string }>;
-}[] = [
-	{ type: "fade", label: "Fade", icon: Eye },
-	{ type: "slide-left", label: "Slide Left", icon: ArrowLeft },
-	{ type: "slide-right", label: "Slide Right", icon: ArrowRight },
-	{ type: "slide-up", label: "Slide Up", icon: ArrowUp },
-	{ type: "slide-down", label: "Slide Down", icon: ArrowDown },
-	{ type: "zoom-in", label: "Zoom In", icon: ZoomIn },
-	{ type: "zoom-out", label: "Zoom Out", icon: ZoomOut },
-	{ type: "spin", label: "Spin", icon: RefreshCw },
+const getAnimationPresets = (t: TFunction) => [
+	{ type: "fade" as AnimationType, label: t("properties.video.animation.presets.fade"), icon: Eye },
+	{ type: "slide-left" as AnimationType, label: t("properties.video.animation.presets.slideLeft"), icon: ArrowLeft },
+	{ type: "slide-right" as AnimationType, label: t("properties.video.animation.presets.slideRight"), icon: ArrowRight },
+	{ type: "slide-up" as AnimationType, label: t("properties.video.animation.presets.slideUp"), icon: ArrowUp },
+	{ type: "slide-down" as AnimationType, label: t("properties.video.animation.presets.slideDown"), icon: ArrowDown },
+	{ type: "zoom-in" as AnimationType, label: t("properties.video.animation.presets.zoomIn"), icon: ZoomIn },
+	{ type: "zoom-out" as AnimationType, label: t("properties.video.animation.presets.zoomOut"), icon: ZoomOut },
+	{ type: "spin" as AnimationType, label: t("properties.video.animation.presets.spin"), icon: RefreshCw },
 	// New animations ported from Twick
-	{ type: "blur", label: "Blur", icon: Droplet },
-	{ type: "rise", label: "Rise", icon: ArrowUp },
-	{ type: "fall", label: "Fall", icon: ArrowDown },
-	{ type: "breathe", label: "Breathe", icon: Heart },
-	{ type: "ken-burns-in", label: "Ken Burns In", icon: Maximize },
-	{ type: "ken-burns-out", label: "Ken Burns Out", icon: Minimize },
+	{ type: "blur" as AnimationType, label: t("properties.video.animation.presets.blur"), icon: Droplet },
+	{ type: "rise" as AnimationType, label: t("properties.video.animation.presets.rise"), icon: ArrowUp },
+	{ type: "fall" as AnimationType, label: t("properties.video.animation.presets.fall"), icon: ArrowDown },
+	{ type: "breathe" as AnimationType, label: t("properties.video.animation.presets.breathe"), icon: Heart },
+	{ type: "ken-burns-in" as AnimationType, label: t("properties.video.animation.presets.kenBurnsIn"), icon: Maximize },
+	{ type: "ken-burns-out" as AnimationType, label: t("properties.video.animation.presets.kenBurnsOut"), icon: Minimize },
 ];
 
 /** Spring-based animation presets */
-const SPRING_PRESETS: {
-	type: AnimationType;
-	label: string;
-	icon: React.ComponentType<{ className?: string }>;
-}[] = [
-	{ type: "spring-bounce", label: "Spring Bounce", icon: Zap },
-	{ type: "spring-elastic", label: "Spring Elastic", icon: Activity },
-	{ type: "spring-gentle", label: "Spring Gentle", icon: Feather },
+const getSpringPresets = (t: TFunction) => [
+	{ type: "spring-bounce" as AnimationType, label: t("properties.video.animation.presets.springBounce"), icon: Zap },
+	{ type: "spring-elastic" as AnimationType, label: t("properties.video.animation.presets.springElastic"), icon: Activity },
+	{ type: "spring-gentle" as AnimationType, label: t("properties.video.animation.presets.springGentle"), icon: Feather },
 ];
 
 /** Default animation duration in seconds when a preset is selected. */
@@ -86,6 +80,7 @@ export function AnimationTab({
 	trackId: string;
 }) {
 	const editor = useEditor();
+	const { t } = useTranslation();
 
 	// Read current animation state from element
 	const animIn = element.animationIn;
@@ -173,38 +168,10 @@ export function AnimationTab({
 		});
 	}
 
-	function updateAnimInEasing(easing: EasingType) {
-		if (!animIn) return;
-		editor.timeline.updateElements({
-			updates: [
-				{
-					trackId,
-					elementId: element.id,
-					updates: { animationIn: { ...animIn, easing } },
-				},
-			],
-			pushHistory: true,
-		});
-	}
-
-	function updateAnimOutEasing(easing: EasingType) {
-		if (!animOut) return;
-		editor.timeline.updateElements({
-			updates: [
-				{
-					trackId,
-					elementId: element.id,
-					updates: { animationOut: { ...animOut, easing } },
-				},
-			],
-			pushHistory: true,
-		});
-	}
-
 	return (
 		<div className="flex flex-col pb-20">
 			{/* ── In animation ── */}
-			<PropertyGroup title="In" defaultExpanded={true}>
+			<PropertyGroup title={t("properties.video.animation.in")} defaultExpanded={true}>
 				{/* "None" clear button + preset grid */}
 				<AnimationGrid
 					selected={animIn?.type ?? null}
@@ -217,6 +184,7 @@ export function AnimationTab({
 							})
 							: setAnimIn(undefined)
 					}
+					t={t}
 				/>
 				{/* Duration slider — only shown when an animation is selected */}
 				{animIn && (
@@ -226,7 +194,7 @@ export function AnimationTab({
 							className="items-stretch gap-2 mt-4"
 						>
 							<div className="flex justify-between">
-								<PropertyItemLabel>Duration</PropertyItemLabel>
+								<PropertyItemLabel>{t("properties.video.animation.duration")}</PropertyItemLabel>
 								<span className="text-xs bg-secondary px-2 py-0.5 rounded">
 									{animIn.duration.toFixed(1)}s
 								</span>
@@ -245,6 +213,7 @@ export function AnimationTab({
 							<SpringConfigControls
 								config={animIn.springConfig ?? DEFAULT_SPRING_CONFIG}
 								onChange={updateAnimInSpringConfig}
+								t={t}
 							/>
 						)}
 					</>
@@ -252,7 +221,7 @@ export function AnimationTab({
 			</PropertyGroup>
 
 			{/* ── Out animation ── */}
-			<PropertyGroup title="Out" defaultExpanded={true} hasBorderTop>
+			<PropertyGroup title={t("properties.video.animation.out")} defaultExpanded={true} hasBorderTop>
 				<AnimationGrid
 					selected={animOut?.type ?? null}
 					onSelect={(type) =>
@@ -264,6 +233,7 @@ export function AnimationTab({
 							})
 							: setAnimOut(undefined)
 					}
+					t={t}
 				/>
 				{animOut && (
 					<>
@@ -272,7 +242,7 @@ export function AnimationTab({
 							className="items-stretch gap-2 mt-4"
 						>
 							<div className="flex justify-between">
-								<PropertyItemLabel>Duration</PropertyItemLabel>
+								<PropertyItemLabel>{t("properties.video.animation.duration")}</PropertyItemLabel>
 								<span className="text-xs bg-secondary px-2 py-0.5 rounded">
 									{animOut.duration.toFixed(1)}s
 								</span>
@@ -291,6 +261,7 @@ export function AnimationTab({
 							<SpringConfigControls
 								config={animOut.springConfig ?? DEFAULT_SPRING_CONFIG}
 								onChange={updateAnimOutSpringConfig}
+								t={t}
 							/>
 						)}
 					</>
@@ -298,9 +269,9 @@ export function AnimationTab({
 			</PropertyGroup>
 
 			{/* ── Combo animations (P4+) ── */}
-			<PropertyGroup title="Combo" defaultExpanded={false} hasBorderTop>
+			<PropertyGroup title={t("properties.video.animation.combo")} defaultExpanded={false} hasBorderTop>
 				<div className="p-4 text-center text-muted-foreground text-sm">
-					No combo animations available
+					{t("properties.video.animation.noCombo")}
 				</div>
 			</PropertyGroup>
 		</div>
@@ -311,14 +282,16 @@ export function AnimationTab({
 function SpringConfigControls({
 	config,
 	onChange,
+	t,
 }: {
 	config: SpringConfig;
 	onChange: (config: Partial<SpringConfig>) => void;
+	t: TFunction;
 }) {
 	return (
 		<div className="mt-4 p-3 bg-muted/30 rounded-lg space-y-3">
-			<div className="text-xs font-medium text-muted-foreground mb-2">Spring Settings</div>
-			
+			<div className="text-xs font-medium text-muted-foreground mb-2">{t("properties.video.animation.springSettings")}</div>
+
 			<PropertyItem direction="column" className="items-stretch gap-1">
 				<div className="flex justify-between">
 					<PropertyItemLabel className="text-xs">Damping</PropertyItemLabel>
@@ -368,21 +341,23 @@ function SpringConfigControls({
 function AnimationGrid({
 	selected,
 	onSelect,
+	t,
 }: {
 	selected: AnimationType | null;
 	onSelect: (type: AnimationType | null) => void;
+	t: TFunction;
 }) {
 	return (
 		<>
 			<div className="grid grid-cols-4 gap-2">
 				{/* None / clear */}
 				<AnimCard
-					label="None"
+					label={t("properties.video.animation.none")}
 					icon={X}
 					active={selected === null}
 					onClick={() => onSelect(null)}
 				/>
-				{ANIMATION_PRESETS.map((preset) => (
+				{getAnimationPresets(t).map((preset) => (
 					<AnimCard
 						key={preset.type}
 						label={preset.label}
@@ -392,12 +367,12 @@ function AnimationGrid({
 					/>
 				))}
 			</div>
-			
+
 			{/* Spring animations section */}
 			<div className="mt-4">
-				<div className="text-xs font-medium text-muted-foreground mb-2">Spring Animations</div>
+				<div className="text-xs font-medium text-muted-foreground mb-2">{t("properties.video.animation.springAnimations")}</div>
 				<div className="grid grid-cols-3 gap-2">
-					{SPRING_PRESETS.map((preset) => (
+					{getSpringPresets(t).map((preset) => (
 						<AnimCard
 							key={preset.type}
 							label={preset.label}

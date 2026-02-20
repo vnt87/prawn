@@ -184,12 +184,154 @@
             "color": "Color",
             "opacity": "Opacity",
             "background": "Background",
-            "placeholder": "Name"
+            "placeholder": "Name",
+            "bold": "Bold",
+            "italic": "Italic",
+            "underline": "Underline",
+            "strikethrough": "Strikethrough"
         },
         "video": {
             "title": "Video properties",
             "scale": "Scale",
-            "scaleTooltip": "Currently only uniform scaling is supported (width and height at the same time). Because I initially coded it this way and now I'm too lazy to update a bunch of renderer code, transform UIs, drag handlers and undo/redo logic. If you need this feature for some reason, log a GitHub issue and I'll consider it if there are enough requests."
+            "scaleTooltip": "Currently only uniform scaling is supported (width and height at the same time). Because I initially coded it this way and now I'm too lazy to update a bunch of renderer code, transform UIs, drag handlers and undo/redo logic. If you need this feature for some reason, log a GitHub issue and I'll consider it if there are enough requests.",
+            "tabs": {
+                "video": "Video",
+                "audio": "Audio",
+                "speed": "Speed",
+                "animation": "Animation",
+                "adjust": "Adjust",
+                "info": "Info"
+            },
+            "subTabs": {
+                "basic": "Basic",
+                "removeBackground": "Remove BG",
+                "mask": "Mask"
+            },
+            "basic": {
+                "transform": "Transform",
+                "position": "Position",
+                "rotate": "Rotate",
+                "flip": "Flip",
+                "resetTransform": "Reset transform",
+                "blend": "Blend",
+                "opacity": "Opacity",
+                "mode": "Mode",
+                "blendModes": {
+                    "source-over": "Normal",
+                    "multiply": "Multiply",
+                    "screen": "Screen",
+                    "overlay": "Overlay",
+                    "darken": "Darken",
+                    "lighten": "Lighten",
+                    "color-dodge": "Color Dodge",
+                    "color-burn": "Color Burn",
+                    "hard-light": "Hard Light",
+                    "soft-light": "Soft Light",
+                    "difference": "Difference",
+                    "exclusion": "Exclusion"
+                }
+            },
+            "speed": {
+                "standard": "Standard",
+                "label": "Speed",
+                "effectiveDuration": "Effective duration",
+                "changePitch": "Change audio pitch"
+            },
+            "audio": {
+                "basic": "Basic",
+                "volume": "Volume",
+                "fadeIn": "Fade in",
+                "fadeOut": "Fade out",
+                "enhancements": "Enhancements",
+                "normalizeLoudness": "Normalize loudness",
+                "normalizeLoudnessDesc": "Normalize the loudness of the selected clip to a target level.",
+                "enhanceVoice": "Enhance voice"
+            },
+            "mask": {
+                "title": "Mask",
+                "settings": "Mask settings",
+                "track": "Track mask",
+                "direction": "Direction",
+                "both": "Both",
+                "trackBtn": "Track",
+                "feather": "Feather",
+                "roundCorners": "Round corners",
+                "shapes": {
+                    "split": "Split",
+                    "filmstrip": "Filmstrip",
+                    "circle": "Circle",
+                    "rectangle": "Rectangle",
+                    "stars": "Stars",
+                    "heart": "Heart",
+                    "text": "Text",
+                    "brush": "Brush",
+                    "pen": "Pen"
+                }
+            },
+            "removeBg": {
+                "auto": "Auto removal",
+                "custom": "Custom removal",
+                "chroma": "Chroma key"
+            },
+            "animation": {
+                "in": "In",
+                "out": "Out",
+                "combo": "Combo",
+                "duration": "Duration",
+                "springSettings": "Spring Settings",
+                "springAnimations": "Spring Animations",
+                "none": "None",
+                "noCombo": "No combo animations available",
+                "presets": {
+                    "fade": "Fade",
+                    "slideLeft": "Slide Left",
+                    "slideRight": "Slide Right",
+                    "slideUp": "Slide Up",
+                    "slideDown": "Slide Down",
+                    "zoomIn": "Zoom In",
+                    "zoomOut": "Zoom Out",
+                    "spin": "Spin",
+                    "blur": "Blur",
+                    "rise": "Rise",
+                    "fall": "Fall",
+                    "breathe": "Breathe",
+                    "kenBurnsIn": "Ken Burns In",
+                    "kenBurnsOut": "Ken Burns Out",
+                    "springBounce": "Spring Bounce",
+                    "springElastic": "Spring Elastic",
+                    "springGentle": "Spring Gentle"
+                }
+            },
+            "adjust": {
+                "color": "Color",
+                "lightness": "Lightness",
+                "effects": "Effects",
+                "lut": "LUT",
+                "temp": "Temp",
+                "tint": "Tint",
+                "saturation": "Saturation",
+                "exposure": "Exposure",
+                "contrast": "Contrast",
+                "highlight": "Highlight",
+                "shadow": "Shadow",
+                "whites": "Whites",
+                "blacks": "Blacks",
+                "brilliance": "Brilliance",
+                "sharpen": "Sharpen",
+                "clarity": "Clarity",
+                "fade": "Fade",
+                "vignette": "Vignette",
+                "intensity": "Intensity",
+                "resetAll": "Reset all"
+            },
+            "info": {
+                "details": "Details",
+                "name": "Name",
+                "resolution": "Resolution",
+                "frameRate": "Frame rate",
+                "duration": "Duration",
+                "assetNotFound": "Asset not found"
+            }
         },
         "audio": "Audio properties"
     },

@@ -21,6 +21,12 @@ import { useEditor } from "@/hooks/use-editor";
 import { DEFAULT_COLOR } from "@/constants/project-constants";
 import { MIN_FONT_SIZE, MAX_FONT_SIZE } from "@/constants/text-constants";
 import { useTranslation } from "react-i18next";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function TextProperties({
 	element,
@@ -308,100 +314,140 @@ export function TextProperties({
 						<PropertyItem direction="column">
 							<PropertyItemLabel>{t("properties.text.style")}</PropertyItemLabel>
 							<PropertyItemValue>
-								<div className="flex items-center gap-2">
-									<Button
-										variant={element.fontWeight === "bold" ? "default" : "outline"}
-										size="sm"
-										onClick={() =>
-											editor.timeline.updateElements({
-												updates: [
-													{
-														trackId,
-														elementId: element.id,
-														updates: {
-															fontWeight:
-																element.fontWeight === "bold" ? "normal" : "bold",
-														},
-													},
-												],
-											})
-										}
-										className="h-8 px-3 font-bold"
-									>
-										<Bold size={16} />
-									</Button>
-									<Button
-										variant={element.fontStyle === "italic" ? "default" : "outline"}
-										size="sm"
-										onClick={() =>
-											editor.timeline.updateElements({
-												updates: [
-													{
-														trackId,
-														elementId: element.id,
-														updates: {
-															fontStyle:
-																element.fontStyle === "italic" ? "normal" : "italic",
-														},
-													},
-												],
-											})
-										}
-										className="h-8 px-3 italic"
-									>
-										<Italic size={16} />
-									</Button>
-									<Button
-										variant={
-											element.textDecoration === "underline" ? "default" : "outline"
-										}
-										size="sm"
-										onClick={() =>
-											editor.timeline.updateElements({
-												updates: [
-													{
-														trackId,
-														elementId: element.id,
-														updates: {
-															textDecoration:
-																element.textDecoration === "underline"
-																	? "none"
-																	: "underline",
-														},
-													},
-												],
-											})
-										}
-										className="h-8 px-3 underline"
-									>
-										<Underline size={16} />
-									</Button>
-									<Button
-										variant={
-											element.textDecoration === "line-through" ? "default" : "outline"
-										}
-										size="sm"
-										onClick={() =>
-											editor.timeline.updateElements({
-												updates: [
-													{
-														trackId,
-														elementId: element.id,
-														updates: {
-															textDecoration:
-																element.textDecoration === "line-through"
-																	? "none"
-																	: "line-through",
-														},
-													},
-												],
-											})
-										}
-										className="h-8 px-3 line-through"
-									>
-										<Strikethrough size={16} />
-									</Button>
-								</div>
+								<TooltipProvider>
+									<div className="flex items-center gap-2">
+										<Tooltip delayDuration={300}>
+											<TooltipTrigger asChild>
+												<Button
+													variant={element.fontWeight === "bold" ? "default" : "outline"}
+													size="sm"
+													onClick={() =>
+														editor.timeline.updateElements({
+															updates: [
+																{
+																	trackId,
+																	elementId: element.id,
+																	updates: {
+																		fontWeight:
+																			element.fontWeight === "bold"
+																				? "normal"
+																				: "bold",
+																	},
+																},
+															],
+														})
+													}
+													className="h-8 px-3 font-bold"
+												>
+													<Bold size={16} />
+												</Button>
+											</TooltipTrigger>
+											<TooltipContent>
+												<p>{t("properties.text.bold")}</p>
+											</TooltipContent>
+										</Tooltip>
+
+										<Tooltip delayDuration={300}>
+											<TooltipTrigger asChild>
+												<Button
+													variant={element.fontStyle === "italic" ? "default" : "outline"}
+													size="sm"
+													onClick={() =>
+														editor.timeline.updateElements({
+															updates: [
+																{
+																	trackId,
+																	elementId: element.id,
+																	updates: {
+																		fontStyle:
+																			element.fontStyle === "italic"
+																				? "normal"
+																				: "italic",
+																	},
+																},
+															],
+														})
+													}
+												>
+													<Italic size={16} />
+												</Button>
+											</TooltipTrigger>
+											<TooltipContent>
+												<p>{t("properties.text.italic")}</p>
+											</TooltipContent>
+										</Tooltip>
+
+										<Tooltip delayDuration={300}>
+											<TooltipTrigger asChild>
+												<Button
+													variant={
+														element.textDecoration === "underline"
+															? "default"
+															: "outline"
+													}
+													size="sm"
+													onClick={() =>
+														editor.timeline.updateElements({
+															updates: [
+																{
+																	trackId,
+																	elementId: element.id,
+																	updates: {
+																		textDecoration:
+																			element.textDecoration === "underline"
+																				? "none"
+																				: "underline",
+																	},
+																},
+															],
+														})
+													}
+													className="h-8 px-3 underline"
+												>
+													<Underline size={16} />
+												</Button>
+											</TooltipTrigger>
+											<TooltipContent>
+												<p>{t("properties.text.underline")}</p>
+											</TooltipContent>
+										</Tooltip>
+
+										<Tooltip delayDuration={300}>
+											<TooltipTrigger asChild>
+												<Button
+													variant={
+														element.textDecoration === "line-through"
+															? "default"
+															: "outline"
+													}
+													size="sm"
+													onClick={() =>
+														editor.timeline.updateElements({
+															updates: [
+																{
+																	trackId,
+																	elementId: element.id,
+																	updates: {
+																		textDecoration:
+																			element.textDecoration === "line-through"
+																				? "none"
+																				: "line-through",
+																	},
+																},
+															],
+														})
+													}
+													className="h-8 px-3 line-through"
+												>
+													<Strikethrough size={16} />
+												</Button>
+											</TooltipTrigger>
+											<TooltipContent>
+												<p>{t("properties.text.strikethrough")}</p>
+											</TooltipContent>
+										</Tooltip>
+									</div>
+								</TooltipProvider>
 							</PropertyItemValue>
 						</PropertyItem>
 						<PropertyItem direction="column">

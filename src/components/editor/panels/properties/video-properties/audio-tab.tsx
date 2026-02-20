@@ -9,6 +9,7 @@ import {
 	PropertyItemLabel,
 } from "../property-item";
 import { useEditor } from "@/hooks/use-editor";
+import { useTranslation } from "react-i18next";
 
 /**
  * Convert a dB value to a linear gain multiplier.
@@ -36,6 +37,7 @@ export function AudioTab({
 	trackId: string;
 }) {
 	const editor = useEditor();
+	const { t } = useTranslation();
 
 	// ---- Helpers ----
 
@@ -66,12 +68,12 @@ export function AudioTab({
 	return (
 		<div className="flex flex-col pb-20">
 			{/* ── Basic Audio ── */}
-			<PropertyGroup title="Basic" defaultExpanded={true}>
+			<PropertyGroup title={t("properties.video.audio.basic")} defaultExpanded={true}>
 				<div className="space-y-6">
 					{/* Volume (dB) */}
 					<PropertyItem direction="column" className="items-stretch gap-2">
 						<div className="flex justify-between">
-							<PropertyItemLabel>Volume</PropertyItemLabel>
+							<PropertyItemLabel>{t("properties.video.audio.volume")}</PropertyItemLabel>
 							<span className="text-xs">{volumeDb >= 0 ? "+" : ""}{volumeDb}dB</span>
 						</div>
 						{/*
@@ -93,7 +95,7 @@ export function AudioTab({
 					{/* Fade in */}
 					<PropertyItem direction="column" className="items-stretch gap-2">
 						<div className="flex justify-between">
-							<PropertyItemLabel>Fade in</PropertyItemLabel>
+							<PropertyItemLabel>{t("properties.video.audio.fadeIn")}</PropertyItemLabel>
 							<span className="text-xs">{fadeIn.toFixed(1)}s</span>
 						</div>
 						<Slider
@@ -109,7 +111,7 @@ export function AudioTab({
 					{/* Fade out */}
 					<PropertyItem direction="column" className="items-stretch gap-2">
 						<div className="flex justify-between">
-							<PropertyItemLabel>Fade out</PropertyItemLabel>
+							<PropertyItemLabel>{t("properties.video.audio.fadeOut")}</PropertyItemLabel>
 							<span className="text-xs">{fadeOut.toFixed(1)}s</span>
 						</div>
 						<Slider
@@ -126,7 +128,7 @@ export function AudioTab({
 
 			{/* ── Enhancements (P4+ / AI required) ── */}
 			<PropertyGroup
-				title="Enhancements"
+				title={t("properties.video.audio.enhancements")}
 				defaultExpanded={true}
 				hasBorderTop
 				collapsible={false}
@@ -134,30 +136,30 @@ export function AudioTab({
 				<div className="space-y-4">
 					<div className="flex items-center justify-between">
 						<div className="flex flex-col gap-1">
-							<span className="text-sm text-muted-foreground">Normalize loudness</span>
+							<span className="text-sm text-muted-foreground">{t("properties.video.audio.normalizeLoudness")}</span>
 							<span className="text-[10px] text-muted-foreground w-48">
-								Normalize the loudness of the selected clip to a target level.
+								{t("properties.video.audio.normalizeLoudnessDesc")}
 							</span>
 						</div>
 						<div className="flex flex-col items-end gap-1">
 							<Switch disabled />
 							<span className="text-[10px] bg-secondary px-2 py-0.5 rounded text-muted-foreground">
-								Soon
+								{t("common.comingSoon")}
 							</span>
 						</div>
 					</div>
 
 					<div className="flex items-center justify-between pt-2">
-						<span className="text-sm text-muted-foreground">Enhance voice</span>
+						<span className="text-sm text-muted-foreground">{t("properties.video.audio.enhanceVoice")}</span>
 						<div className="flex flex-col items-end gap-1">
 							<Switch disabled />
 							<span className="text-[10px] bg-secondary px-2 py-0.5 rounded text-muted-foreground">
-								Soon
+								{t("common.comingSoon")}
 							</span>
 						</div>
 					</div>
 
-					</div>
+				</div>
 			</PropertyGroup>
 		</div>
 	);

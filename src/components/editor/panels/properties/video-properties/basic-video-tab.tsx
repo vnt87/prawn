@@ -34,22 +34,6 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-// Common Canvas 2D blend modes to expose in the UI
-const BLEND_MODES: { value: GlobalCompositeOperation; label: string }[] = [
-	{ value: "source-over", label: "Normal" },
-	{ value: "multiply", label: "Multiply" },
-	{ value: "screen", label: "Screen" },
-	{ value: "overlay", label: "Overlay" },
-	{ value: "darken", label: "Darken" },
-	{ value: "lighten", label: "Lighten" },
-	{ value: "color-dodge", label: "Color Dodge" },
-	{ value: "color-burn", label: "Color Burn" },
-	{ value: "hard-light", label: "Hard Light" },
-	{ value: "soft-light", label: "Soft Light" },
-	{ value: "difference", label: "Difference" },
-	{ value: "exclusion", label: "Exclusion" },
-];
-
 export function BasicVideoTab({
 	element,
 	trackId,
@@ -59,6 +43,22 @@ export function BasicVideoTab({
 }) {
 	const editor = useEditor();
 	const { t } = useTranslation();
+
+	// Common Canvas 2D blend modes to expose in the UI
+	const BLEND_MODES: { value: GlobalCompositeOperation; label: string }[] = [
+		{ value: "source-over", label: t("properties.video.basic.blendModes.source-over") },
+		{ value: "multiply", label: t("properties.video.basic.blendModes.multiply") },
+		{ value: "screen", label: t("properties.video.basic.blendModes.screen") },
+		{ value: "overlay", label: t("properties.video.basic.blendModes.overlay") },
+		{ value: "darken", label: t("properties.video.basic.blendModes.darken") },
+		{ value: "lighten", label: t("properties.video.basic.blendModes.lighten") },
+		{ value: "color-dodge", label: t("properties.video.basic.blendModes.color-dodge") },
+		{ value: "color-burn", label: t("properties.video.basic.blendModes.color-burn") },
+		{ value: "hard-light", label: t("properties.video.basic.blendModes.hard-light") },
+		{ value: "soft-light", label: t("properties.video.basic.blendModes.soft-light") },
+		{ value: "difference", label: t("properties.video.basic.blendModes.difference") },
+		{ value: "exclusion", label: t("properties.video.basic.blendModes.exclusion") },
+	];
 
 	// ---- Helpers: push element updates through the command system ----
 
@@ -120,7 +120,7 @@ export function BasicVideoTab({
 	return (
 		<div className="flex flex-col pb-20">
 			{/* ── Transform ── */}
-			<PropertyGroup title="Transform" defaultExpanded={true}>
+			<PropertyGroup title={t("properties.video.basic.transform")} defaultExpanded={true}>
 				<div className="space-y-4">
 					<PropertyItem direction="column" className="items-stretch gap-2">
 						<div className="flex justify-between items-center">
@@ -188,7 +188,7 @@ export function BasicVideoTab({
 
 					{/* Position */}
 					<PropertyItem>
-						<PropertyItemLabel>Position</PropertyItemLabel>
+						<PropertyItemLabel>{t("properties.video.basic.position")}</PropertyItemLabel>
 						<div className="flex gap-2">
 							{/* X */}
 							<div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
@@ -229,7 +229,7 @@ export function BasicVideoTab({
 
 					{/* Rotation */}
 					<PropertyItem>
-						<PropertyItemLabel>Rotate</PropertyItemLabel>
+						<PropertyItemLabel>{t("properties.video.basic.rotate")}</PropertyItemLabel>
 						<div className="flex items-center gap-2">
 							<input
 								className="bg-secondary rounded px-2 py-0.5 text-xs w-20 text-right outline-none"
@@ -259,7 +259,7 @@ export function BasicVideoTab({
 
 					{/* Flip controls */}
 					<PropertyItem>
-						<PropertyItemLabel>Flip</PropertyItemLabel>
+						<PropertyItemLabel>{t("properties.video.basic.flip")}</PropertyItemLabel>
 						<div className="flex gap-2">
 							<Button
 								variant={element.transform.flipX ? "default" : "outline"}
@@ -308,18 +308,18 @@ export function BasicVideoTab({
 								})
 							}
 						>
-							<RefreshCcw className="size-3 mr-1" /> Reset transform
+							<RefreshCcw className="size-3 mr-1" /> {t("properties.video.basic.resetTransform")}
 						</Button>
 					</div>
 				</div>
 			</PropertyGroup>
 
 			{/* ── Blend ── */}
-			<PropertyGroup title="Blend" defaultExpanded={true} hasBorderTop>
+			<PropertyGroup title={t("properties.video.basic.blend")} defaultExpanded={true} hasBorderTop>
 				<div className="space-y-4">
 					{/* Opacity */}
 					<PropertyItem>
-						<PropertyItemLabel>Opacity</PropertyItemLabel>
+						<PropertyItemLabel>{t("properties.video.basic.opacity")}</PropertyItemLabel>
 						<div className="flex items-center gap-2">
 							<Slider
 								value={[opacityPercent]}
@@ -336,7 +336,7 @@ export function BasicVideoTab({
 
 					{/* Blend Mode — full Select dropdown */}
 					<PropertyItem>
-						<PropertyItemLabel>Mode</PropertyItemLabel>
+						<PropertyItemLabel>{t("properties.video.basic.mode")}</PropertyItemLabel>
 						<Select
 							value={blendMode}
 							onValueChange={(v) =>
