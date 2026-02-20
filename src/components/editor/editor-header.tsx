@@ -29,6 +29,7 @@ import { useTheme } from "next-themes";
 import { ExportButton } from "./export-button";
 import { DeleteProjectDialog } from "./dialogs/delete-project-dialog";
 import { ShortcutsDialog } from "./dialogs/shortcuts-dialog";
+import { ProjectSettingsDialog } from "./dialogs/project-settings-dialog";
 import { IntegrationsDialog } from "./dialogs/integrations-dialog";
 import { AboutDialog } from "./dialogs/about-dialog";
 import { CommandPalette } from "./command-palette";
@@ -301,6 +302,18 @@ export function EditorHeader() {
 									className="header-menu-dropdown-item"
 									onClick={(e) => {
 										e.stopPropagation();
+										setOpenDialog("project-settings");
+										setSettingsOpen(false);
+									}}
+								>
+									<Settings size={14} style={{ marginRight: 8 }} />
+									{t("projectSettings.title")}
+								</div>
+
+								<div
+									className="header-menu-dropdown-item"
+									onClick={(e) => {
+										e.stopPropagation();
 										setOpenDialog("integrations");
 										setSettingsOpen(false);
 									}}
@@ -376,6 +389,10 @@ export function EditorHeader() {
 			<AboutDialog
 				isOpen={openDialog === "about"}
 				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "about" : null)}
+			/>
+			<ProjectSettingsDialog
+				isOpen={openDialog === "project-settings"}
+				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "project-settings" : null)}
 			/>
 			<CommandPalette />
 		</>

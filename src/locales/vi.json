@@ -45,7 +45,7 @@
         "transitions": "Chuyển cảnh",
         "captions": "Phụ đề",
         "filters": "Bộ lọc",
-        "settings": "Cài đặt",
+        "settings": "Cài đặt nền",
         "ai-generation": "Tạo AI",
         "comingSoon": "Giao diện {{name}} sắp ra mắt..."
     },
@@ -498,5 +498,20 @@
         "resetView": "Đặt lại",
         "close": "Đóng",
         "dragRegionToSelect": "Kéo vùng màu trên sóng âm để chọn đoạn, hoặc dùng nút Đánh dấu"
+    },
+    "projectSettings": {
+        "title": "Cài đặt dự án",
+        "general": "Chung",
+        "name": "Tên dự án",
+        "author": "Tác giả",
+        "authorPlaceholder": "Tác giả dự án...",
+        "description": "Mô tả",
+        "descriptionPlaceholder": "Mô tả dự án...",
+        "canvas": "Khung hình",
+        "aspectRatio": "Tỷ lệ khung hình",
+        "frameRate": "Tốc độ khung hình",
+        "interface": "Giao diện",
+        "thumbnailDensity": "Mật độ hình xem trước",
+        "regenerateThumbnails": "Tạo lại hình xem trước"
     }
 }

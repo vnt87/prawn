@@ -45,7 +45,7 @@
         "transitions": "Transitions",
         "captions": "Captions",
         "filters": "Filters",
-        "settings": "Settings",
+        "settings": "Background Settings",
         "ai-generation": "AI Generation",
         "comingSoon": "{{name}} view coming soon..."
     },
@@ -498,5 +498,20 @@
         "resetView": "Reset View",
         "close": "Close",
         "dragRegionToSelect": "Drag the colored region on the waveform to select a clip, or use In/Out buttons"
+    },
+    "projectSettings": {
+        "title": "Project Settings",
+        "general": "General",
+        "name": "Project Name",
+        "author": "Author",
+        "authorPlaceholder": "Project author...",
+        "description": "Description",
+        "descriptionPlaceholder": "Project description...",
+        "canvas": "Canvas",
+        "aspectRatio": "Aspect Ratio",
+        "frameRate": "Frame rate",
+        "interface": "Interface",
+        "thumbnailDensity": "Thumbnail density",
+        "regenerateThumbnails": "Regenerate thumbnails"
     }
 }

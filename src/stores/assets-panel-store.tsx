@@ -11,6 +11,8 @@ import {
 	Settings,
 	Palette,
 	Sparkles,
+	Glasses,
+	Wallpaper,
 } from "lucide-react";
 
 export const TAB_KEYS = [
@@ -64,7 +66,7 @@ export const tabs = {
 		label: "Captions",
 	},
 	filters: {
-		icon: createIcon(Palette),
+		icon: createIcon(Glasses),
 		label: "Filters",
 	},
 	"ai-generation": {
@@ -72,7 +74,7 @@ export const tabs = {
 		label: "AI Generate",
 	},
 	settings: {
-		icon: createIcon(Settings),
+		icon: createIcon(Wallpaper),
 		label: "Settings",
 	},
 } satisfies Record<

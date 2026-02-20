@@ -50,7 +50,7 @@ export class ProjectManager {
 		projectName: null,
 	};
 
-	constructor(private editor: EditorCore) {}
+	constructor(private editor: EditorCore) { }
 
 	private async ensureStorageMigrations(): Promise<void> {
 		if (this.storageMigrationPromise) {
@@ -106,7 +106,7 @@ export class ProjectManager {
 
 		try {
 			await storageService.saveProject({ project: newProject });
-			this.updateMetadata(newProject);
+			this.internalUpdateMetadataInList(newProject);
 
 			return newProject.metadata.id;
 		} catch (error) {
@@ -179,7 +179,7 @@ export class ProjectManager {
 
 			await storageService.saveProject({ project: updatedProject });
 			this.active = updatedProject;
-			this.updateMetadata(updatedProject);
+			this.internalUpdateMetadataInList(updatedProject);
 		} catch (error) {
 			console.error("Failed to save project:", error);
 		}
@@ -283,7 +283,7 @@ export class ProjectManager {
 				this.notify();
 			}
 
-			this.updateMetadata(updatedProject);
+			this.internalUpdateMetadataInList(updatedProject);
 		} catch (error) {
 			console.error("Failed to rename project:", error);
 			toast.error("Failed to rename project", {
@@ -291,6 +291,19 @@ export class ProjectManager {
 					error instanceof Error ? error.message : "Please try again",
 			});
 		}
+	}
+
+	async updateMetadata(updates: Partial<TProjectMetadata>): Promise<void> {
+		if (!this.active) return;
+
+		const updatedProject: TProject = {
+			...this.active,
+			metadata: { ...this.active.metadata, ...updates, updatedAt: new Date() },
+		};
+		this.active = updatedProject;
+		this.notify();
+		this.internalUpdateMetadataInList(updatedProject);
+		this.editor.save.markDirty();
 	}
 
 	async duplicateProjects({ ids }: { ids: string[] }): Promise<string[]> {
@@ -405,7 +418,7 @@ export class ProjectManager {
 			);
 
 			for (const { newProject } of duplicationPlans) {
-				this.updateMetadata(newProject);
+				this.internalUpdateMetadataInList(newProject);
 			}
 
 			return duplicationPlans.map((plan) => plan.newProjectId);
@@ -446,7 +459,7 @@ export class ProjectManager {
 		};
 		this.active = updatedProject;
 		this.notify();
-		this.updateMetadata(updatedProject);
+		this.internalUpdateMetadataInList(updatedProject);
 		this.editor.save.markDirty();
 	}
 
@@ -606,7 +619,7 @@ export class ProjectManager {
 		return true;
 	}
 
-	private updateMetadata(project: TProject): void {
+	private internalUpdateMetadataInList(project: TProject): void {
 		const index = this.savedProjects.findIndex(
 			(p) => p.id === project.metadata.id,
 		);

@@ -38,262 +38,15 @@ import {
 import { ColorPicker } from "@/components/ui/color-picker";
 
 export function SettingsView() {
-	return <ProjectSettingsTabs />;
-}
-
-function ProjectSettingsTabs() {
 	return (
-		<BaseView
-			defaultTab="project-info"
-			tabs={[
-				{
-					value: "project-info",
-					label: "Project info",
-					content: (
-						<div className="p-5">
-							<ProjectInfoView />
-						</div>
-					),
-				},
-				{
-					value: "background",
-					label: "Background",
-					content: (
-						<div className="flex h-full flex-col justify-between">
-							<div className="flex-1">
-								<BackgroundView />
-							</div>
-						</div>
-					),
-				},
-			]}
-			className="flex h-full flex-col justify-between p-0"
-		/>
-	);
-}
-
-function ProjectInfoView() {
-	const editor = useEditor();
-	const activeProject = editor.project.getActive();
-	const { canvasPresets } = useEditorStore();
-	const [isRegenerating, setIsRegenerating] = useState(false);
-
-	const findPresetIndexByAspectRatio = ({
-		presets,
-		targetAspectRatio,
-	}: {
-		presets: Array<{ width: number; height: number }>;
-		targetAspectRatio: string;
-	}) => {
-		for (let index = 0; index < presets.length; index++) {
-			const preset = presets[index];
-			const presetAspectRatio = dimensionToAspectRatio({
-				width: preset.width,
-				height: preset.height,
-			});
-			if (presetAspectRatio === targetAspectRatio) {
-				return index;
-			}
-		}
-		return -1;
-	};
-
-	const currentCanvasSize = activeProject.settings.canvasSize;
-	const currentAspectRatio = dimensionToAspectRatio(currentCanvasSize);
-	const originalCanvasSize = activeProject.settings.originalCanvasSize ?? null;
-	const presetIndex = findPresetIndexByAspectRatio({
-		presets: canvasPresets,
-		targetAspectRatio: currentAspectRatio,
-	});
-	const originalPresetValue = "original";
-	const selectedPresetValue =
-		presetIndex !== -1 ? presetIndex.toString() : originalPresetValue;
-
-	const handleAspectRatioChange = ({ value }: { value: string }) => {
-		if (value === originalPresetValue) {
-			const canvasSize = originalCanvasSize ?? currentCanvasSize;
-			editor.project.updateSettings({
-				settings: { canvasSize },
-			});
-			return;
-		}
-		const index = parseInt(value, 10);
-		const preset = canvasPresets[index];
-		if (preset) {
-			editor.project.updateSettings({ settings: { canvasSize: preset } });
-		}
-	};
-
-	const handleFpsChange = (value: string) => {
-		const fps = parseFloat(value);
-		editor.project.updateSettings({ settings: { fps } });
-	};
-
-	const handleFilmstripIntervalChange = (value: string) => {
-		const filmstripInterval = parseFloat(value) as 0.5 | 1 | 2;
-		editor.project.updateSettings({ settings: { filmstripInterval } });
-	};
-
-	const currentFilmstripInterval = activeProject.settings.filmstripInterval ?? DEFAULT_FILMSTRIP_INTERVAL;
-	const isDenseThumbnails = currentFilmstripInterval === 0.5;
-
-	// Get video assets that could have thumbnails regenerated
-	const mediaAssets = editor.media.getAssets();
-	const videoAssets = useMemo(() => 
-		mediaAssets.filter(asset => 
-			asset.type === "video" && 
-			asset.file && 
-			asset.duration &&
-			// Only include if the current interval differs from stored interval, or if no interval stored
-			(asset.filmstripInterval === undefined || asset.filmstripInterval !== currentFilmstripInterval)
-		),
-		[mediaAssets, currentFilmstripInterval]
-	);
-
-	const hasVideosToRegenerate = videoAssets.length > 0;
-
-	// Handler to regenerate thumbnails for all video assets
-	const handleRegenerateThumbnails = useCallback(async () => {
-		if (!hasVideosToRegenerate || isRegenerating) return;
-
-		setIsRegenerating(true);
-		const projectId = activeProject.metadata.id;
-		let successCount = 0;
-		let failCount = 0;
-
-		for (const asset of videoAssets) {
-			try {
-				const result = await regenerateFilmstripThumbnails({
-					videoFile: asset.file,
-					duration: asset.duration!,
-					filmstripInterval: currentFilmstripInterval,
-				});
-
-				await editor.media.updateMediaAsset({
-					projectId,
-					id: asset.id,
-					updates: {
-						filmstripThumbnails: result.filmstripThumbnails,
-						filmstripInterval: result.filmstripInterval,
-					},
-				});
-				successCount++;
-			} catch (error) {
-				console.error(`Failed to regenerate thumbnails for ${asset.name}:`, error);
-				failCount++;
-			}
-		}
-
-		setIsRegenerating(false);
-
-		if (successCount > 0 && failCount === 0) {
-			toast.success(`Regenerated thumbnails for ${successCount} video${successCount > 1 ? 's' : ''}`);
-		} else if (successCount > 0 && failCount > 0) {
-			toast.warning(`Regenerated ${successCount} video${successCount > 1 ? 's' : ''}, failed for ${failCount}`);
-		} else if (failCount > 0) {
-			toast.error(`Failed to regenerate thumbnails for ${failCount} video${failCount > 1 ? 's' : ''}`);
-		}
-	}, [videoAssets, hasVideosToRegenerate, isRegenerating, activeProject.metadata.id, currentFilmstripInterval, editor.media]);
-
-	return (
-		<div className="flex flex-col gap-4">
-			<PropertyItem direction="column">
-				<PropertyItemLabel>Name</PropertyItemLabel>
-				<PropertyItemValue>{activeProject.metadata.name}</PropertyItemValue>
-			</PropertyItem>
-
-			<PropertyItem direction="column">
-				<PropertyItemLabel>Aspect ratio</PropertyItemLabel>
-				<PropertyItemValue>
-					<Select
-						value={selectedPresetValue}
-						onValueChange={(value) => handleAspectRatioChange({ value })}
-					>
-						<SelectTrigger>
-							<SelectValue placeholder="Select an aspect ratio" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value={originalPresetValue}>Original</SelectItem>
-							{canvasPresets.map((preset, index) => {
-								const label = dimensionToAspectRatio({
-									width: preset.width,
-									height: preset.height,
-								});
-								return (
-									<SelectItem key={label} value={index.toString()}>
-										{label}
-									</SelectItem>
-								);
-							})}
-						</SelectContent>
-					</Select>
-				</PropertyItemValue>
-			</PropertyItem>
-
-			<PropertyItem direction="column">
-				<PropertyItemLabel>Frame rate</PropertyItemLabel>
-				<PropertyItemValue>
-					<Select
-						value={activeProject.settings.fps.toString()}
-						onValueChange={handleFpsChange}
-					>
-						<SelectTrigger>
-							<SelectValue placeholder="Select a frame rate" />
-						</SelectTrigger>
-						<SelectContent>
-							{FPS_PRESETS.map((preset) => (
-								<SelectItem key={preset.value} value={preset.value}>
-									{preset.label}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				</PropertyItemValue>
-			</PropertyItem>
-
-			<PropertyItem direction="column">
-				<PropertyItemLabel>Thumbnail density</PropertyItemLabel>
-				<PropertyItemValue>
-					<Select
-						value={currentFilmstripInterval.toString()}
-						onValueChange={handleFilmstripIntervalChange}
-					>
-						<SelectTrigger>
-							<SelectValue placeholder="Select thumbnail density" />
-						</SelectTrigger>
-						<SelectContent>
-							{FILMSTRIP_INTERVAL_PRESETS.map((preset) => (
-								<SelectItem key={preset.value} value={preset.value}>
-									{preset.label}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				</PropertyItemValue>
-				{isDenseThumbnails && (
-					<p className="mt-2 text-xs text-amber-500">
-						⚠️ Dense thumbnails use more memory. May affect performance on large projects.
-					</p>
-				)}
-				{hasVideosToRegenerate && (
-					<Button
-						variant="outline"
-						size="sm"
-						className="mt-2 w-full"
-						onClick={handleRegenerateThumbnails}
-						disabled={isRegenerating}
-					>
-						<RefreshCw className={`mr-2 size-4 ${isRegenerating ? 'animate-spin' : ''}`} />
-						{isRegenerating 
-							? 'Regenerating...' 
-							: `Regenerate thumbnails (${videoAssets.length} video${videoAssets.length > 1 ? 's' : ''})`
-						}
-					</Button>
-				)}
-			</PropertyItem>
+		<div className="flex h-full flex-col justify-between overflow-y-auto">
+			<div className="flex-1">
+				<BackgroundView />
+			</div>
 		</div>
 	);
 }
+
 
 const BlurPreview = memo(
 	({
@@ -355,18 +108,18 @@ const BackgroundPreviews = memo(
 						className={cn(
 							"border-foreground/15 hover:border-primary aspect-square size-20 cursor-pointer rounded-sm border",
 							isColorBackground &&
-								bg === currentBackgroundColor &&
-								"border-primary border-2",
+							bg === currentBackgroundColor &&
+							"border-primary border-2",
 						)}
 						style={
 							useBackgroundColor
 								? { backgroundColor: bg }
 								: {
-										background: bg,
-										backgroundSize: "cover",
-										backgroundPosition: "center",
-										backgroundRepeat: "no-repeat",
-									}
+									background: bg,
+									backgroundSize: "cover",
+									backgroundPosition: "center",
+									backgroundRepeat: "no-repeat",
+								}
 						}
 						onClick={() => handleColorSelect({ bg })}
 						type="button"

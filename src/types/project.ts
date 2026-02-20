@@ -2,13 +2,13 @@ import type { TScene } from "./timeline";
 
 export type TBackground =
 	| {
-			type: "color";
-			color: string;
-	  }
+		type: "color";
+		color: string;
+	}
 	| {
-			type: "blur";
-			blurIntensity: number;
-	  };
+		type: "blur";
+		blurIntensity: number;
+	};
 
 export interface TCanvasSize {
 	width: number;
@@ -18,6 +18,8 @@ export interface TCanvasSize {
 export interface TProjectMetadata {
 	id: string;
 	name: string;
+	author?: string;
+	description?: string;
 	thumbnail?: string;
 	duration: number;
 	createdAt: Date;
