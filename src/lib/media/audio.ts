@@ -231,10 +231,9 @@ async function fetchLibraryAudioClip({
 			trimStart: element.trimStart,
 			trimEnd: element.trimEnd,
 			muted,
-			// Library audio elements share the AudioElement volume field
 			volume: element.volume ?? 1,
-			fadeIn: 0,
-			fadeOut: 0,
+			fadeIn: element.fadeIn ?? 0,
+			fadeOut: element.fadeOut ?? 0,
 			speed: element.speed ?? 1,
 			pitchShiftCents: 0,
 		};

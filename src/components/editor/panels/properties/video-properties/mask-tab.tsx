@@ -11,8 +11,7 @@ import {
     Layout,
     Film,
     RefreshCcw,
-    ChevronUp,
-    ChevronDown,
+    Move,
 } from "lucide-react";
 import {
     PropertyGroup,
@@ -52,6 +51,13 @@ export function MaskTab({
     function updateMask(updates: Partial<ClipMask>) {
         editor.timeline.updateElements({
             updates: [{ trackId, elementId: element.id, updates: { mask: { ...mask, ...updates } } }],
+        });
+    }
+
+    function updateMaskLive(updates: Partial<ClipMask>) {
+        editor.timeline.updateElements({
+            updates: [{ trackId, elementId: element.id, updates: { mask: { ...mask, ...updates } } }],
+            pushHistory: false,
         });
     }
 
@@ -116,90 +122,70 @@ export function MaskTab({
                 </div>
             </PropertyGroup>
 
-            {/* Mask Settings — only editable when enabled */}
+            {/* Mask Settings */}
             <PropertyGroup title={t("properties.video.mask.settings")} defaultExpanded={true}>
-                <div className="space-y-4">
-                    {/* Position */}
-                    <PropertyItem>
-                        <PropertyItemLabel>{t("properties.video.basic.position")}</PropertyItemLabel>
-                        <div className="flex gap-2">
-                            <NumericInput
-                                label="X"
-                                value={Math.round(mask.x * 100)}
-                                onChange={(v) => updateMask({ x: v / 100 })}
-                                disabled={!mask.enabled}
-                            />
-                            <NumericInput
-                                label="Y"
-                                value={Math.round(mask.y * 100)}
-                                onChange={(v) => updateMask({ y: v / 100 })}
-                                disabled={!mask.enabled}
-                            />
-                        </div>
-                    </PropertyItem>
+                <div className="space-y-5">
+                    {/* Position X */}
+                    <MaskSlider
+                        label={`${t("properties.video.basic.position")} X`}
+                        value={Math.round(mask.x * 100)}
+                        min={0} max={100}
+                        disabled={!mask.enabled}
+                        onChange={(v) => updateMaskLive({ x: v / 100 })}
+                        onCommit={(v) => updateMask({ x: v / 100 })}
+                    />
 
-                    {/* Scale */}
-                    <PropertyItem>
-                        <PropertyItemLabel>{t("properties.video.scale")}</PropertyItemLabel>
-                        <div className="flex gap-2">
-                            <NumericInput
-                                label="W"
-                                value={Math.round(mask.scaleX * 100)}
-                                onChange={(v) => updateMask({ scaleX: v / 100 })}
-                                disabled={!mask.enabled}
-                            />
-                            <NumericInput
-                                label="H"
-                                value={Math.round(mask.scaleY * 100)}
-                                onChange={(v) => updateMask({ scaleY: v / 100 })}
-                                disabled={!mask.enabled}
-                            />
-                        </div>
-                    </PropertyItem>
+                    {/* Position Y */}
+                    <MaskSlider
+                        label={`${t("properties.video.basic.position")} Y`}
+                        value={Math.round(mask.y * 100)}
+                        min={0} max={100}
+                        disabled={!mask.enabled}
+                        onChange={(v) => updateMaskLive({ y: v / 100 })}
+                        onCommit={(v) => updateMask({ y: v / 100 })}
+                    />
+
+                    {/* Scale X (Width) */}
+                    <MaskSlider
+                        label={`${t("properties.video.scale")} W`}
+                        value={Math.round(mask.scaleX * 100)}
+                        min={5} max={200}
+                        disabled={!mask.enabled}
+                        onChange={(v) => updateMaskLive({ scaleX: v / 100 })}
+                        onCommit={(v) => updateMask({ scaleX: v / 100 })}
+                    />
+
+                    {/* Scale Y (Height) */}
+                    <MaskSlider
+                        label={`${t("properties.video.scale")} H`}
+                        value={Math.round(mask.scaleY * 100)}
+                        min={5} max={200}
+                        disabled={!mask.enabled}
+                        onChange={(v) => updateMaskLive({ scaleY: v / 100 })}
+                        onCommit={(v) => updateMask({ scaleY: v / 100 })}
+                    />
 
                     {/* Rotation */}
-                    <PropertyItem>
-                        <PropertyItemLabel>{t("properties.video.basic.rotate")}</PropertyItemLabel>
-                        <NumericInput
-                            label="°"
-                            value={mask.rotation}
-                            onChange={(v) => updateMask({ rotation: v })}
-                            disabled={!mask.enabled}
-                        />
-                    </PropertyItem>
-
-                    {/* Feather */}
-                    <PropertyItem direction="column" className="items-stretch gap-2">
-                        <div className="flex justify-between">
-                            <PropertyItemLabel>{t("properties.video.mask.feather")}</PropertyItemLabel>
-                            <div className="bg-secondary px-2 py-0.5 rounded text-[10px] min-w-[30px] text-center">{mask.feather}</div>
-                        </div>
-                        <Slider
-                            value={[mask.feather]}
-                            min={0}
-                            max={50}
-                            step={1}
-                            disabled={!mask.enabled}
-                            onValueChange={([v]) => updateMask({ feather: v })}
-                        />
-                    </PropertyItem>
+                    <MaskSlider
+                        label={t("properties.video.basic.rotate")}
+                        value={mask.rotation}
+                        min={-180} max={180}
+                        suffix="°"
+                        disabled={!mask.enabled}
+                        onChange={(v) => updateMaskLive({ rotation: v })}
+                        onCommit={(v) => updateMask({ rotation: v })}
+                    />
 
                     {/* Round Corners (rectangle only) */}
                     {mask.shape === "rectangle" && (
-                        <PropertyItem direction="column" className="items-stretch gap-2">
-                            <div className="flex justify-between">
-                                <PropertyItemLabel>{t("properties.video.mask.roundCorners")}</PropertyItemLabel>
-                                <div className="bg-secondary px-2 py-0.5 rounded text-[10px] min-w-[30px] text-center">{mask.roundCorners}</div>
-                            </div>
-                            <Slider
-                                value={[mask.roundCorners]}
-                                min={0}
-                                max={100}
-                                step={1}
-                                disabled={!mask.enabled}
-                                onValueChange={([v]) => updateMask({ roundCorners: v })}
-                            />
-                        </PropertyItem>
+                        <MaskSlider
+                            label={t("properties.video.mask.roundCorners")}
+                            value={mask.roundCorners}
+                            min={0} max={100}
+                            disabled={!mask.enabled}
+                            onChange={(v) => updateMaskLive({ roundCorners: v })}
+                            onCommit={(v) => updateMask({ roundCorners: v })}
+                        />
                     )}
 
                     {/* Invert toggle */}
@@ -213,40 +199,68 @@ export function MaskTab({
                     </PropertyItem>
                 </div>
             </PropertyGroup>
+
+            {/* Edit Mask on Preview */}
+            {mask.enabled && (
+                <div className="px-4 pt-2">
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full h-8 text-xs gap-1.5"
+                        onClick={() => {
+                            // Center & reset mask scale to make it clearly visible for editing
+                            updateMask({ x: 0.5, y: 0.5 });
+                        }}
+                    >
+                        <Move size={12} />
+                        {t("properties.video.mask.editMask")}
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }
 
-// ── Tiny numeric input helper ──────────────────────────────────────────────
+// ── Reusable slider for mask properties ───────────────────────────────────
 
-function NumericInput({
+function MaskSlider({
     label,
     value,
-    onChange,
+    min,
+    max,
+    suffix = "",
     disabled = false,
+    onChange,
+    onCommit,
 }: {
     label: string;
     value: number;
-    onChange: (v: number) => void;
+    min: number;
+    max: number;
+    suffix?: string;
     disabled?: boolean;
+    onChange: (v: number) => void;
+    onCommit: (v: number) => void;
 }) {
     return (
-        <div className={cn("flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1", disabled && "opacity-50")}>
-            <span className="text-muted-foreground text-xs">{label}</span>
-            <input
-                type="number"
-                value={value}
-                disabled={disabled}
-                className="flex-1 text-center text-xs bg-transparent border-none outline-none w-0 min-w-0"
-                onChange={(e) => {
-                    const n = parseFloat(e.target.value);
-                    if (!isNaN(n)) onChange(n);
-                }}
-            />
-            <div className="flex flex-col gap-0">
-                <ChevronUp className="size-2 text-muted-foreground cursor-pointer" onClick={() => !disabled && onChange(value + 1)} />
-                <ChevronDown className="size-2 text-muted-foreground cursor-pointer" onClick={() => !disabled && onChange(value - 1)} />
+        <div className="space-y-2">
+            <div className="flex justify-between items-center">
+                <span className={cn("text-xs", disabled ? "text-muted-foreground/60" : "text-muted-foreground")}>
+                    {label}
+                </span>
+                <div className="bg-secondary/50 rounded px-2 py-0.5 text-[10px] w-14 text-center">
+                    {value}{suffix}
+                </div>
             </div>
+            <Slider
+                value={[value]}
+                min={min}
+                max={max}
+                step={1}
+                disabled={disabled}
+                onValueChange={([v]) => onChange(v)}
+                onPointerUp={() => onCommit(value)}
+            />
         </div>
     );
 }

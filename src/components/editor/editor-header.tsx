@@ -32,6 +32,7 @@ import { ShortcutsDialog } from "./dialogs/shortcuts-dialog";
 import { ProjectSettingsDialog } from "./dialogs/project-settings-dialog";
 import { IntegrationsDialog } from "./dialogs/integrations-dialog";
 import { AboutDialog } from "./dialogs/about-dialog";
+import { FaceSwapDialog } from "./dialogs/faceswap-dialog";
 import { CommandPalette } from "./command-palette";
 import { toast } from "sonner";
 import { SOCIAL_LINKS } from "@/constants/site-constants";
@@ -394,6 +395,7 @@ export function EditorHeader() {
 				isOpen={openDialog === "project-settings"}
 				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "project-settings" : null)}
 			/>
+			<FaceSwapDialog />
 			<CommandPalette />
 		</>
 	);

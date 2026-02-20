@@ -246,6 +246,10 @@ interface BaseAudioElement extends BaseTimelineElement {
 	buffer?: AudioBuffer;
 	/** Audio normalization settings. */
 	normalization?: AudioNormalization;
+	/** Audio fade-in duration in seconds. Default 0. */
+	fadeIn?: number;
+	/** Audio fade-out duration in seconds. Default 0. */
+	fadeOut?: number;
 }
 
 export interface UploadAudioElement extends BaseAudioElement {

@@ -22,7 +22,8 @@
         "or": "hoặc",
         "clickToEdit": "Nhấp để chỉnh sửa phím tắt",
         "pressAnyKey": "Nhấn tổ hợp phím bất kỳ...",
-        "saveChanges": "Lưu thay đổi"
+        "saveChanges": "Lưu thay đổi",
+        "new": "Mới"
     },
     "header": {
         "file": "Tệp",
@@ -265,6 +266,7 @@
                 "trackBtn": "Theo dõi",
                 "feather": "Làm mờ biên",
                 "roundCorners": "Bo góc",
+                "editMask": "Căn giữa mặt nạ trên preview",
                 "shapes": {
                     "split": "Chia nhỏ",
                     "filmstrip": "Dải phim",
@@ -467,6 +469,62 @@
             "openaiApiKeyPlaceholder": "sk-...",
             "anthropicApiKeyPlaceholder": "sk-ant-...",
             "customUrlPlaceholder": "https://api.example.com/v1"
+        },
+        "facefusion": {
+            "title": "FaceFusion",
+            "serviceUrl": "URL dịch vụ",
+            "serviceUrlHint": "URL cho dịch vụ FaceFusion (ví dụ: http://localhost:8004)",
+            "defaultModel": "Mô hình mặc định",
+            "defaultModelHint": "Mô hình thay đổi khuôn mặt sử dụng mặc định",
+            "modalProcessing": "Xử lý Modal",
+            "modalProcessingHint": "Chuyển xử lý sang GPU đám mây Modal.com"
+        }
+    },
+    "faceswap": {
+        "title": "Đổi khuôn mặt",
+        "description": "Thay đổi khuôn mặt trong hình ảnh và video bằng AI",
+        "notConfigured": "Chưa cấu hình dịch vụ FaceFusion.",
+        "openSettings": "Mở Cài đặt",
+        "launchTool": "Mở công cụ Đổi khuôn mặt",
+        "features": "Tính năng",
+        "featuresList": {
+            "faceSwap": "Đổi khuôn mặt",
+            "faceEnhance": "Nâng cao khuôn mặt",
+            "multipleFaces": "Nhiều khuôn mặt",
+            "videoSupport": "Hỗ trợ video"
+        },
+        "configureService": "Cấu hình dịch vụ",
+        "dialog": {
+            "title": "Studio Đổi khuôn mặt",
+            "subtitle": "Tải lên nguồn và đích để bắt đầu",
+            "modalEnabled": "Đã bật GPU Modal",
+            "filesTab": "Tệp",
+            "settingsTab": "Cài đặt",
+            "sourceFace": "Khuôn mặt nguồn",
+            "uploadSource": "Tải lên khuôn mặt nguồn",
+            "targetMedia": "Phương tiện đích",
+            "uploadTarget": "Tải lên hình ảnh hoặc video đích",
+            "supportedFormats": "Hình ảnh, Video",
+            "detectedFaces": "Khuôn mặt phát hiện được",
+            "selectFaceHint": "Nhấp để chọn khuôn mặt cần thay thế",
+            "model": "Mô hình",
+            "modelHint": "Mô hình chất lượng cao hơn sẽ chậm hơn",
+            "processingOptions": "Tùy chọn xử lý",
+            "faceEnhancer": "Nâng cao khuôn mặt",
+            "frameEnhancer": "Nâng cao khung hình",
+            "startProcess": "Bắt đầu xử lý",
+            "processing": "Đang xử lý...",
+            "source": "Nguồn",
+            "target": "Đích",
+            "video": "Video",
+            "image": "Hình ảnh",
+            "previewHint": "Xem trước sẽ hiển thị ở đây sau khi xử lý",
+            "uploadPrompt": "Tải lên khuôn mặt nguồn và phương tiện đích để bắt đầu",
+            "startingProcess": "Đang bắt đầu quá trình đổi khuôn mặt...",
+            "frameProgress": "Đang xử lý khung hình",
+            "processComplete": "Đổi khuôn mặt hoàn tất!",
+            "complete": "Hoàn tất",
+            "frame": "Khung hình"
         }
     },
     "export": {

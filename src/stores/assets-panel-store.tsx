@@ -13,6 +13,7 @@ import {
 	Sparkles,
 	Glasses,
 	Wallpaper,
+	ScanFace,
 } from "lucide-react";
 
 export const TAB_KEYS = [
@@ -25,6 +26,7 @@ export const TAB_KEYS = [
 	"captions",
 	"filters",
 	"ai-generation",
+	"faceswap",
 	"settings",
 ] as const;
 
@@ -72,6 +74,10 @@ export const tabs = {
 	"ai-generation": {
 		icon: createIcon(Sparkles),
 		label: "AI Generate",
+	},
+	faceswap: {
+		icon: createIcon(ScanFace),
+		label: "Face Swap",
 	},
 	settings: {
 		icon: createIcon(Wallpaper),

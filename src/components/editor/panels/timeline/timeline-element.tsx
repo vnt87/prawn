@@ -5,6 +5,7 @@ import { useAssetsPanelStore } from "@/stores/assets-panel-store";
 import AudioWaveform from "./audio-waveform";
 import { DockedWaveform } from "./docked-waveform";
 import { useTimelineElementResize } from "@/hooks/timeline/element/use-element-resize";
+import { useElementFadeDrag } from "@/hooks/timeline/element/use-element-fade-drag";
 import type { SnapPoint } from "@/hooks/timeline/use-timeline-snapping";
 import { TIMELINE_CONSTANTS } from "@/constants/timeline-constants";
 import {
@@ -97,6 +98,13 @@ export function TimelineElement({
 			onResizeStateChange,
 		});
 
+	const { handleFadeStart, currentFadeIn, currentFadeOut, isFadeDragging } =
+		useElementFadeDrag({
+			element,
+			track,
+			zoomLevel,
+		});
+
 	const isCurrentElementSelected = selectedElements.some(
 		(selected) =>
 			selected.elementId === element.id && selected.trackId === track.id,
@@ -152,6 +160,9 @@ export function TimelineElement({
 						onElementClick={onElementClick}
 						onElementMouseDown={onElementMouseDown}
 						handleResizeStart={handleResizeStart}
+						handleFadeStart={handleFadeStart}
+						currentFadeIn={currentFadeIn}
+						currentFadeOut={currentFadeOut}
 						zoomLevel={zoomLevel}
 					/>
 				</div>
@@ -226,6 +237,9 @@ function ElementInner({
 	onElementClick,
 	onElementMouseDown,
 	handleResizeStart,
+	handleFadeStart,
+	currentFadeIn,
+	currentFadeOut,
 	zoomLevel,
 }: {
 	element: TimelineElementType;
@@ -245,8 +259,14 @@ function ElementInner({
 		elementId: string;
 		side: "left" | "right";
 	}) => void;
+	handleFadeStart: (e: React.MouseEvent, side: "left" | "right") => void;
+	currentFadeIn: number;
+	currentFadeOut: number;
 	zoomLevel: number;
 }) {
+	// Support fades for video, audio, and image elements
+	const supportsFade = element.type === "video" || element.type === "audio" || element.type === "image";
+
 	return (
 		<div
 			className={`relative h-full cursor-pointer overflow-hidden rounded-[0.5rem] ${getTrackClasses(
@@ -288,6 +308,26 @@ function ElementInner({
 					)}
 			</button>
 
+			{/* Fade overlays — always visible when fade is set */}
+			{supportsFade && (
+				<>
+					{currentFadeIn > 0 && (
+						<FadeOverlay
+							side="left"
+							fadeDuration={currentFadeIn}
+							zoomLevel={zoomLevel}
+						/>
+					)}
+					{currentFadeOut > 0 && (
+						<FadeOverlay
+							side="right"
+							fadeDuration={currentFadeOut}
+							zoomLevel={zoomLevel}
+						/>
+					)}
+				</>
+			)}
+
 			{isSelected && (
 				<>
 					<ResizeHandle
@@ -299,6 +339,24 @@ function ElementInner({
 						side="right"
 						elementId={element.id}
 						handleResizeStart={handleResizeStart}
+					/>
+				</>
+			)}
+
+			{/* Fade handles — visible when selected */}
+			{isSelected && supportsFade && (
+				<>
+					<FadeHandle
+						side="left"
+						fadeDuration={currentFadeIn}
+						zoomLevel={zoomLevel}
+						handleFadeStart={handleFadeStart}
+					/>
+					<FadeHandle
+						side="right"
+						fadeDuration={currentFadeOut}
+						zoomLevel={zoomLevel}
+						handleFadeStart={handleFadeStart}
 					/>
 				</>
 			)}
@@ -329,6 +387,98 @@ function ResizeHandle({
 		>
 			<div className="bg-foreground h-[1.5rem] w-[0.2rem] rounded-full" />
 		</button>
+	);
+}
+
+/**
+ * Draggable handle at the top corner of a timeline element for adjusting fade duration.
+ * Positioned at the boundary between faded and non-faded regions.
+ */
+function FadeHandle({
+	side,
+	fadeDuration,
+	zoomLevel,
+	handleFadeStart,
+}: {
+	side: "left" | "right";
+	fadeDuration: number;
+	zoomLevel: number;
+	handleFadeStart: (e: React.MouseEvent, side: "left" | "right") => void;
+}) {
+	const isLeft = side === "left";
+	const fadeWidth = fadeDuration * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
+
+	return (
+		<div
+			className="absolute top-0 z-50 flex items-start justify-center cursor-ew-resize"
+			style={{
+				[isLeft ? "left" : "right"]: `${Math.max(0, fadeWidth - 5)}px`,
+				width: "10px",
+				height: "100%",
+			}}
+			onMouseDown={(e) => handleFadeStart(e, side)}
+		>
+			{/* Visual indicator: small diamond/triangle */}
+			<div
+				className="mt-0.5 size-2.5 rotate-45 rounded-[1px] bg-white/90 shadow-sm border border-white/50"
+			/>
+		</div>
+	);
+}
+
+/**
+ * Visual overlay showing the fade region on a timeline element.
+ * Renders a diagonal line with a semi-transparent area indicating the fade.
+ */
+function FadeOverlay({
+	side,
+	fadeDuration,
+	zoomLevel,
+}: {
+	side: "left" | "right";
+	fadeDuration: number;
+	zoomLevel: number;
+}) {
+	const fadeWidth = fadeDuration * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
+
+	if (fadeWidth <= 0) return null;
+
+	const isLeft = side === "left";
+
+	return (
+		<div
+			className="pointer-events-none absolute top-0 z-40"
+			style={{
+				[isLeft ? "left" : "right"]: 0,
+				width: `${fadeWidth}px`,
+				height: "100%",
+			}}
+		>
+			{/* Diagonal gradient overlay */}
+			<svg
+				width="100%"
+				height="100%"
+				preserveAspectRatio="none"
+				viewBox="0 0 100 100"
+				className="absolute inset-0"
+			>
+				{/* Semi-transparent fill above the diagonal line */}
+				<polygon
+					points={isLeft ? "0,0 100,0 0,100" : "0,0 100,0 100,100"}
+					fill="rgba(0,0,0,0.45)"
+				/>
+				{/* Diagonal line */}
+				<line
+					x1={isLeft ? "0" : "100"}
+					y1="100"
+					x2={isLeft ? "100" : "0"}
+					y2="0"
+					stroke="rgba(255,255,255,0.7)"
+					strokeWidth="1.5"
+					vectorEffect="non-scaling-stroke"
+				/>
+			</svg>
+		</div>
 	);
 }
 

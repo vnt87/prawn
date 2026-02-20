@@ -668,25 +668,25 @@ export abstract class VisualNode<
 		if (mask && mask.enabled) {
 			const mW = renderer.width * mask.scaleX;
 			const mH = renderer.height * mask.scaleY;
-			const mX = renderer.width * mask.x - mW / 2;
-			const mY = renderer.height * mask.y - mH / 2;
+			const mCX = renderer.width * mask.x;
+			const mCY = renderer.height * mask.y;
+			const mX = mCX - mW / 2;
+			const mY = mCY - mH / 2;
 
-			if (mask.feather > 0) {
-				// Feather via shadow clipping trick:
-				// draw an outer rect as shadow source, restrict shadow to canvas
-				renderer.context.save();
-				renderer.context.shadowBlur = mask.feather * 2;
-				renderer.context.shadowColor = "black";
-				renderer.context.shadowOffsetX = renderer.width * 2;
-				renderer.context.shadowOffsetY = 0;
-				// Clip to shadow from a shape offset far to the right
-				const path = this.buildMaskPath(mask, mX - renderer.width * 2, mY, mW, mH);
-				renderer.context.clip(path, mask.inverted ? "evenodd" : "nonzero");
-				renderer.context.restore();
-			} else {
-				const path = this.buildMaskPath(mask, mX, mY, mW, mH);
-				renderer.context.clip(path, mask.inverted ? "evenodd" : "nonzero");
+			let path = this.buildMaskPath(mask, mX, mY, mW, mH);
+
+			// Rotate the path only (not the canvas context) via DOMMatrix
+			if (mask.rotation !== 0) {
+				const m = new DOMMatrix();
+				m.translateSelf(mCX, mCY);
+				m.rotateSelf(mask.rotation);
+				m.translateSelf(-mCX, -mCY);
+				const rotated = new Path2D();
+				rotated.addPath(path, m);
+				path = rotated;
 			}
+
+			renderer.context.clip(path, mask.inverted ? "evenodd" : "nonzero");
 		}
 
 		// ---- Draw the media ----

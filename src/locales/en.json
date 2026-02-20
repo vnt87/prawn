@@ -22,7 +22,8 @@
         "or": "or",
         "clickToEdit": "Click to edit shortcut",
         "pressAnyKey": "Press any key combination...",
-        "saveChanges": "Save Changes"
+        "saveChanges": "Save Changes",
+        "new": "New"
     },
     "header": {
         "file": "File",
@@ -265,6 +266,7 @@
                 "trackBtn": "Track",
                 "feather": "Feather",
                 "roundCorners": "Round corners",
+                "editMask": "Center mask on preview",
                 "shapes": {
                     "split": "Split",
                     "filmstrip": "Filmstrip",
@@ -428,6 +430,7 @@
         "assets": "Assets",
         "storage": "Storage",
         "ai": "AI",
+        "faceswap": "Face Swap",
         "upstash": {
             "title": "Upstash Redis",
             "url": "REST URL",
@@ -467,6 +470,62 @@
             "openaiApiKeyPlaceholder": "sk-...",
             "anthropicApiKeyPlaceholder": "sk-ant-...",
             "customUrlPlaceholder": "https://api.example.com/v1"
+        },
+        "facefusion": {
+            "title": "FaceFusion",
+            "serviceUrl": "Service URL",
+            "serviceUrlHint": "URL for FaceFusion service (e.g. http://localhost:8004)",
+            "defaultModel": "Default Model",
+            "defaultModelHint": "The face swap model to use by default",
+            "modalProcessing": "Modal Processing",
+            "modalProcessingHint": "Offload processing to Modal.com cloud GPUs"
+        }
+    },
+    "faceswap": {
+        "title": "Face Swap",
+        "description": "Swap faces in images and videos using AI",
+        "notConfigured": "FaceFusion service not configured.",
+        "openSettings": "Open Settings",
+        "launchTool": "Launch FaceSwap Tool",
+        "features": "Features",
+        "featuresList": {
+            "faceSwap": "Face Swap",
+            "faceEnhance": "Face Enhance",
+            "multipleFaces": "Multiple Faces",
+            "videoSupport": "Video Support"
+        },
+        "configureService": "Configure Service",
+        "dialog": {
+            "title": "Face Swap Studio",
+            "subtitle": "Upload source and target to begin",
+            "modalEnabled": "Modal GPU Enabled",
+            "filesTab": "Files",
+            "settingsTab": "Settings",
+            "sourceFace": "Source Face",
+            "uploadSource": "Upload source face",
+            "targetMedia": "Target Media",
+            "uploadTarget": "Upload target image or video",
+            "supportedFormats": "Images, Videos",
+            "detectedFaces": "Detected Faces",
+            "selectFaceHint": "Click to select which face to replace",
+            "model": "Model",
+            "modelHint": "Higher quality models are slower",
+            "processingOptions": "Processing Options",
+            "faceEnhancer": "Face Enhancer",
+            "frameEnhancer": "Frame Enhancer",
+            "startProcess": "Start Processing",
+            "processing": "Processing...",
+            "source": "Source",
+            "target": "Target",
+            "video": "Video",
+            "image": "Image",
+            "previewHint": "Preview will appear here after processing",
+            "uploadPrompt": "Upload a source face and target media to begin",
+            "startingProcess": "Starting face swap process...",
+            "frameProgress": "Processing frame",
+            "processComplete": "Face swap completed successfully!",
+            "complete": "Complete",
+            "frame": "Frame"
         }
     },
     "export": {

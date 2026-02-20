@@ -28,8 +28,14 @@ interface IntegrationsState {
     aiVideoProvider: 'openai' | 'anthropic' | 'custom';
     aiVideoModel: string;
 
+    // FaceFusion - Face Swap
+    facefusionServiceUrl: string;
+    facefusionEnableModal: boolean;
+    facefusionDefaultModel: string;
+
     // Actions
-    setIntegration: (key: keyof Omit<IntegrationsState, "setIntegration">, value: string) => void;
+    setIntegration: (key: keyof Omit<IntegrationsState, "setIntegration" | "facefusionEnableModal">, value: string) => void;
+    setFacefusionEnableModal: (value: boolean) => void;
 }
 
 export const useIntegrationsStore = create<IntegrationsState>()(
@@ -54,10 +60,22 @@ export const useIntegrationsStore = create<IntegrationsState>()(
             aiVideoProvider: "openai",
             aiVideoModel: "gpt-4o",
 
+            // FaceFusion defaults
+            facefusionServiceUrl: "",
+            facefusionEnableModal: false,
+            facefusionDefaultModel: "inswapper_128",
+
             setIntegration: (key, value) => {
                 set((state) => ({
                     ...state,
                     [key]: value,
+                }));
+            },
+
+            setFacefusionEnableModal: (value) => {
+                set((state) => ({
+                    ...state,
+                    facefusionEnableModal: value,
                 }));
             },
         }),

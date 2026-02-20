@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
-type DialogType = "delete" | "shortcuts" | "integrations" | "about" | "command-palette" | "project-settings" | null;
-type IntegrationsTab = "database" | "assets" | "storage" | "ai" | null;
+type DialogType = "delete" | "shortcuts" | "integrations" | "about" | "command-palette" | "project-settings" | "faceswap" | null;
+type IntegrationsTab = "database" | "assets" | "storage" | "ai" | "faceswap" | null;
 
 interface DialogState {
     openDialog: DialogType;

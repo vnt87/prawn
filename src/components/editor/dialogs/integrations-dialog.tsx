@@ -12,7 +12,8 @@ import { useDialogStore } from "@/stores/dialog-store";
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Database, Music, Cloud, Bot, Wand2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Database, Music, Cloud, Bot, Wand2, ScanFace } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export function IntegrationsDialog({
@@ -54,6 +55,8 @@ export function IntegrationsDialog({
                 store.setIntegration(key as any, value);
             }
         });
+        // Handle boolean facefusionEnableModal separately
+        store.setFacefusionEnableModal(values.facefusionEnableModal);
         handleOpenChange(false);
     };
 
@@ -82,6 +85,10 @@ export function IntegrationsDialog({
                             <TabsTrigger value="ai" className="w-full justify-start gap-2 px-3">
                                 <Bot size={16} />
                                 {t("integrations.ai")}
+                            </TabsTrigger>
+                            <TabsTrigger value="faceswap" className="w-full justify-start gap-2 px-3">
+                                <ScanFace size={16} />
+                                {t("integrations.faceswap")}
                             </TabsTrigger>
                         </TabsList>
 
@@ -315,6 +322,65 @@ export function IntegrationsDialog({
                                             onChange={(e) => handleChange("aiVideoModel", e.target.value)}
                                             placeholder="gpt-4o"
                                         />
+                                    </div>
+                                </div>
+                            </TabsContent>
+
+                            {/* FaceSwap Integration */}
+                            <TabsContent value="faceswap" className="mt-0 space-y-6">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 pb-2 border-b">
+                                        <ScanFace className="text-muted-foreground" />
+                                        <h3 className="text-lg font-medium">{t("integrations.facefusion.title")}</h3>
+                                    </div>
+                                    <div className="grid gap-4">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="facefusionServiceUrl">{t("integrations.facefusion.serviceUrl")}</Label>
+                                            <Input
+                                                id="facefusionServiceUrl"
+                                                value={values.facefusionServiceUrl}
+                                                onChange={(e) => handleChange("facefusionServiceUrl", e.target.value)}
+                                                placeholder="http://localhost:8004"
+                                            />
+                                            <p className="text-xs text-muted-foreground">
+                                                {t("integrations.facefusion.serviceUrlHint")}
+                                            </p>
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="facefusionDefaultModel">{t("integrations.facefusion.defaultModel")}</Label>
+                                            <Select
+                                                value={values.facefusionDefaultModel}
+                                                onValueChange={(v) => handleChange("facefusionDefaultModel", v)}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="inswapper_128">InSwapper 128</SelectItem>
+                                                    <SelectItem value="inswapper_128_beta">InSwapper 128 Beta</SelectItem>
+                                                    <SelectItem value="hyperswap_1a_256">HyperSwap 1A 256</SelectItem>
+                                                    <SelectItem value="blendswap_256">BlendSwap 256</SelectItem>
+                                                    <SelectItem value="simswap_256">SimSwap 256</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <p className="text-xs text-muted-foreground">
+                                                {t("integrations.facefusion.defaultModelHint")}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center justify-between rounded-lg border p-4">
+                                            <div className="space-y-0.5">
+                                                <Label className="text-base">{t("integrations.facefusion.modalProcessing")}</Label>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {t("integrations.facefusion.modalProcessingHint")}
+                                                </p>
+                                            </div>
+                                            <Switch
+                                                checked={values.facefusionEnableModal}
+                                                onCheckedChange={(checked) => 
+                                                    setValues((prev) => ({ ...prev, facefusionEnableModal: checked }))
+                                                }
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </TabsContent>
