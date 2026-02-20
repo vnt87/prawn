@@ -159,6 +159,8 @@ export interface AudioClipSource {
 	fadeIn: number;
 	/** Audio fade-out duration in seconds. Default 0. */
 	fadeOut: number;
+	/** Playback speed. Default 1.0. */
+	speed: number;
 }
 
 async function fetchLibraryAudioSource({
@@ -221,6 +223,7 @@ async function fetchLibraryAudioClip({
 			volume: element.volume ?? 1,
 			fadeIn: 0,
 			fadeOut: 0,
+			speed: element.speed ?? 1,
 		};
 	} catch (error) {
 		console.warn("Failed to fetch library audio:", error);
@@ -271,6 +274,7 @@ function collectMediaAudioClip({
 		volume,
 		fadeIn,
 		fadeOut,
+		speed: element.speed ?? 1,
 	};
 }
 

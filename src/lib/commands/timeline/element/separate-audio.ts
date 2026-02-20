@@ -1,9 +1,8 @@
 import { Command } from "@/lib/commands";
-import type { TimelineTrack, VideoElement, AudioElement } from "@/types/timeline";
+import type { TimelineTrack, VideoElement, AudioElement, AudioTrack } from "@/types/timeline";
 import type { MediaAsset } from "@/types/assets";
 import { generateUUID } from "@/utils/id";
 import { Input, ALL_FORMATS, BlobSource, AudioBufferSink } from "mediabunny";
-import { EditorCore } from "@/core";
 import {
 	buildEmptyTrack,
 	getDefaultInsertIndexForTrack,
@@ -18,8 +17,6 @@ const NUM_CHANNELS = 2;
  * The original video's audio is muted.
  */
 export class SeparateAudioCommand extends Command {
-	private trackId: string;
-	private elementId: string;
 	private videoElement: VideoElement | null = null;
 	private createdAudioAssetId: string | null = null;
 	private createdAudioElementId: string | null = null;
@@ -37,109 +34,211 @@ export class SeparateAudioCommand extends Command {
 		},
 	) {
 		super();
-		this.trackId = params.element.trackId;
-		this.elementId = params.element.elementId;
+		this.elementTarget = params.element;
+	}
+
+	private elementTarget: { trackId: string; elementId: string };
+
+	/**
+	 * Extracts audio from the video element and returns it as a WAV blob.
+	 */
+	private async extractAudioFromVideo({
+		element,
+		mediaFile,
+	}: {
+		element: VideoElement;
+		mediaFile: File;
+	}): Promise<Blob | null> {
+		try {
+			console.log(`[SeparateAudio] Extracting audio from ${element.name}`, {
+				trimStart: element.trimStart,
+				duration: element.duration,
+				speed: element.speed,
+			});
+
+			const input = new Input({
+				source: new BlobSource(mediaFile),
+				formats: ALL_FORMATS,
+			});
+
+			const audioTrack = await input.getPrimaryAudioTrack();
+			if (!audioTrack) {
+				console.warn("[SeparateAudio] No audio track found in video");
+				input.dispose();
+				return null;
+			}
+
+			const sink = new AudioBufferSink(audioTrack);
+
+			// CORRECT CALCULATION: trimEnd in file time is NOT duration.
+			// duration = (trimEnd - trimStart) / speed
+			// => trimEnd = trimStart + duration * speed
+			const speed = element.speed ?? 1;
+			const trimEnd = element.trimStart + element.duration * speed;
+
+			console.log(`[SeparateAudio] Sink range:`, {
+				start: element.trimStart,
+				end: trimEnd,
+			});
+
+			const buffers: Array<{ buffer: AudioBuffer; timestamp: number }> = [];
+			for await (const buffer of sink.buffers(element.trimStart, trimEnd)) {
+				buffers.push(buffer);
+			}
+
+			input.dispose();
+
+			if (buffers.length === 0) {
+				console.warn("[SeparateAudio] No audio buffers extracted");
+				return null;
+			}
+
+			console.log(`[SeparateAudio] Extracted ${buffers.length} buffers`);
+
+			// Combine all buffers into a single samples array
+			const totalSamples = buffers.reduce(
+				(sum, { buffer }) => sum + buffer.length,
+				0,
+			);
+			const sampleRate = buffers[0].buffer.sampleRate;
+			const numChannels = buffers[0].buffer.numberOfChannels;
+
+			const interleavedSamples = new Float32Array(totalSamples * 2);
+			let currentOffset = 0;
+
+			for (const { buffer } of buffers) {
+				const leftChannel = buffer.getChannelData(0);
+				const rightChannel =
+					numChannels > 1 ? buffer.getChannelData(1) : leftChannel;
+
+				for (let i = 0; i < buffer.length; i++) {
+					interleavedSamples[currentOffset * 2] = leftChannel[i];
+					interleavedSamples[currentOffset * 2 + 1] = rightChannel[i];
+					currentOffset++;
+				}
+			}
+
+			return this.createWavBlob({
+				samples: interleavedSamples,
+			});
+		} catch (error) {
+			console.error("[SeparateAudio] Error extracting audio:", error);
+			return null;
+		}
 	}
 
 	async execute(): Promise<void> {
 		this.originalTracks = this.getTracks();
 
-		// Find the video element
-		const { track, element } = this.findVideoElement();
-		if (!track || !element) {
-			console.warn("No video element found for audio separation");
+		// Find the element
+		const { element } = this.findElement(this.elementTarget);
+		if (!element || element.type !== "video") {
+			console.warn("[SeparateAudio] Target video element not found");
 			return;
 		}
 
-		this.videoElement = element as VideoElement;
+		this.videoElement = element;
 
-		// Get the media asset for the video
-		const mediaAssets = await this.getMediaAssets?.() ?? [];
-		const mediaAsset = mediaAssets.find((a) => a.id === this.videoElement!.mediaId);
+		// Get the media asset
+		const mediaAssets = (await this.getMediaAssets?.()) ?? [];
+		const mediaAsset = mediaAssets.find((a) => a.id === element.mediaId);
 		if (!mediaAsset?.file) {
-			console.warn("No media asset or file found for video element");
+			console.warn("[SeparateAudio] Media file not found");
 			return;
 		}
 
-		// Calculate trim values - trimEnd is the end position in source media
-		// If not set, it should be trimStart + (duration * speed) because
-		// timeline duration = (trimEnd - trimStart) / speed
-		const speed = this.videoElement.speed ?? 1;
-		const trimStart = this.videoElement.trimStart;
-		const trimEnd = this.videoElement.trimEnd ?? (trimStart + this.videoElement.duration * speed);
-		const duration = this.videoElement.duration;
-		
-		console.log("[SeparateAudio] Trim values:", { trimStart, trimEnd, duration, speed });
-		console.log("[SeparateAudio] Video element:", this.videoElement);
-
-		// Extract audio from video
+		// Extract audio - this is async and can take time
 		const audioBlob = await this.extractAudioFromVideo({
-			file: mediaAsset.file,
-			trimStart,
-			trimEnd,
-			duration,
+			element,
+			mediaFile: mediaAsset.file,
 		});
 
 		if (!audioBlob) {
-			console.warn("Failed to extract audio from video");
+			console.warn("[SeparateAudio] Failed to extract audio");
 			return;
 		}
 
-		// Create blob URL for the audio
-		this.audioBlobUrl = URL.createObjectURL(audioBlob);
-
 		// Create audio asset
-		const assetId = await this.addMediaAsset({
+		const audioAssetId = await this.addMediaAsset({
 			type: "audio",
-			name: `Audio - ${this.videoElement.name}`,
-			url: this.audioBlobUrl,
-			thumbnailUrl: undefined,
+			name: `Audio - ${element.name}`,
+			url: URL.createObjectURL(audioBlob),
+			thumbnailUrl: "",
 			width: 0,
 			height: 0,
-			duration: this.videoElement.duration,
-			file: new File([audioBlob], `separated-audio-${Date.now()}.wav`, { type: "audio/wav" }),
+			duration: element.duration,
+			file: new File([audioBlob], `audio-${Date.now()}.wav`, {
+				type: "audio/wav",
+			}),
 		});
 
-		this.createdAudioAssetId = assetId;
+		this.createdAudioAssetId = audioAssetId;
+		this.audioBlobUrl = URL.createObjectURL(audioBlob); // Store for cleanup (actually addMediaAsset generates URL too, but this is safe)
 
 		// Create audio element
 		const audioElement: AudioElement = {
 			id: generateUUID(),
 			type: "audio",
-			name: `Audio - ${this.videoElement.name}`,
-			mediaId: assetId,
+			name: `Audio - ${element.name}`,
+			mediaId: audioAssetId,
+			startTime: element.startTime,
+			duration: element.duration,
+			trimStart: 0, // New asset = already trimmed, starts at 0
+			trimEnd: 0, // trimEnd = amount trimmed from end; 0 = no trimming
+			volume: element.volume ?? 1,
+			speed: element.speed ?? 1, // Preserve speed
 			sourceType: "upload",
-			startTime: this.videoElement.startTime,
-			duration: this.videoElement.duration,
-			trimStart: this.videoElement.trimStart,
-			trimEnd: this.videoElement.trimEnd ?? this.videoElement.duration,
-			volume: this.videoElement.volume ?? 1,
-			muted: false,
 		};
 		this.createdAudioElementId = audioElement.id;
+
+		// Refresh tracks to prevent corruption from stale state
+		this.originalTracks = this.getTracks();
+
+		// Find the elements again in the fresh track state
+		const freshState = this.findElement(this.elementTarget);
+		if (!freshState.element) {
+			console.warn("[SeparateAudio] Element disappeared during extraction");
+			return;
+		}
 
 		// Start with a copy of original tracks
 		let newTracks = [...this.originalTracks];
 
+		// Mute the original video element
+		newTracks = newTracks.map((t) => {
+			if (t.id === this.elementTarget.trackId && t.type === "video") {
+				return {
+					...t,
+					elements: (t.elements as any[]).map((el) => {
+						if (el.id === this.elementTarget.elementId) {
+							return { ...el, muted: true };
+						}
+						return el;
+					}),
+				};
+			}
+			return t;
+		}) as TimelineTrack[];
+
 		// Find an existing audio track or create one
 		let audioTrack = newTracks.find(
-			(t) => t.type === "audio" && !t.muted
+			(t) => t.type === "audio" && !("muted" in t && t.muted)
 		);
 
 		if (!audioTrack) {
-			// Create a new audio track manually
+			// Create a new audio track
 			const newTrackId = generateUUID();
 			const newAudioTrack: TimelineTrack = buildEmptyTrack({
 				id: newTrackId,
 				type: "audio",
 			});
-			
+
 			// Insert at the appropriate index
 			const insertIndex = getDefaultInsertIndexForTrack({
 				tracks: newTracks,
 				trackType: "audio",
 			});
-			
+
 			newTracks.splice(insertIndex, 0, newAudioTrack);
 			this.createdAudioTrackId = newTrackId;
 			audioTrack = newAudioTrack;
@@ -154,23 +253,7 @@ export class SeparateAudioCommand extends Command {
 				};
 			}
 			return t;
-		});
-
-		// Mute the original video element
-		newTracks = newTracks.map((t) => {
-			if (t.id === this.trackId && t.type === "video") {
-				return {
-					...t,
-					elements: t.elements.map((el) => {
-						if (el.id === this.videoElement!.id) {
-							return { ...el, muted: true };
-						}
-						return el;
-					}),
-				};
-			}
-			return t;
-		});
+		}) as TimelineTrack[];
 
 		this.newTracks = newTracks;
 		this.updateTracks(newTracks);
@@ -191,115 +274,16 @@ export class SeparateAudioCommand extends Command {
 		this.updateTracks(this.newTracks);
 	}
 
-	private findVideoElement(): { track: TimelineTrack | null; element: VideoElement | null } {
+	private findElement(target: { trackId: string; elementId: string }): { track: TimelineTrack | null; element: VideoElement | null } {
 		for (const track of this.originalTracks) {
-			if (track.type !== "video") continue;
-			if (track.id !== this.trackId) continue;
-			
+			if (track.id !== target.trackId) continue;
 			for (const element of track.elements) {
-				if (element.type === "video" && element.id === this.elementId) {
-					return { track, element };
+				if (element.id === target.elementId) {
+					return { track, element: element as VideoElement };
 				}
 			}
 		}
 		return { track: null, element: null };
-	}
-
-	private async extractAudioFromVideo({
-		file,
-		trimStart,
-		trimEnd,
-		duration,
-	}: {
-		file: File;
-		trimStart: number;
-		trimEnd: number;
-		duration: number;
-	}): Promise<Blob | null> {
-		try {
-			const input = new Input({
-				source: new BlobSource(file),
-				formats: ALL_FORMATS,
-			});
-
-			const audioTrack = await input.getPrimaryAudioTrack();
-			if (!audioTrack) {
-				console.warn("No audio track found in video");
-				return null;
-			}
-
-			const sink = new AudioBufferSink(audioTrack);
-			const totalSamples = Math.ceil(duration * SAMPLE_RATE);
-			const mixBuffers = [
-				new Float32Array(totalSamples),
-				new Float32Array(totalSamples),
-			];
-			
-			console.log("[SeparateAudio] Audio extraction params:", {
-				totalSamples,
-				sampleRate: SAMPLE_RATE,
-				trimStart,
-				trimEnd,
-				bufferRange: trimEnd - trimStart
-			});
-
-			// Iterate through audio buffers within the trim range
-			let bufferCount = 0;
-			let totalAudioSamples = 0;
-			for await (const { buffer, timestamp } of sink.buffers(trimStart, trimEnd)) {
-				bufferCount++;
-				totalAudioSamples += buffer.length;
-				console.log("[SeparateAudio] Buffer:", {
-					bufferCount,
-					timestamp,
-					bufferLength: buffer.length,
-					sampleRate: buffer.sampleRate,
-					numberOfChannels: buffer.numberOfChannels
-				});
-				// Calculate the output position based on timestamp relative to trimStart
-				const relativeTime = timestamp - trimStart;
-				const outputStartSample = Math.floor(relativeTime * SAMPLE_RATE);
-
-				// Resample if needed
-				const resampleRatio = SAMPLE_RATE / buffer.sampleRate;
-
-				for (let ch = 0; ch < NUM_CHANNELS; ch++) {
-					const sourceChannel = Math.min(ch, buffer.numberOfChannels - 1);
-					const channelData = buffer.getChannelData(sourceChannel);
-					const outputChannel = mixBuffers[ch];
-
-					const resampledLength = Math.floor(channelData.length * resampleRatio);
-					for (let i = 0; i < resampledLength; i++) {
-						const outputIdx = outputStartSample + i;
-						if (outputIdx < 0 || outputIdx >= totalSamples) continue;
-
-						const sourceIdx = Math.floor(i / resampleRatio);
-						if (sourceIdx < channelData.length) {
-							outputChannel[outputIdx] += channelData[sourceIdx];
-						}
-					}
-				}
-			}
-
-			// Clamp to prevent clipping
-			for (const channel of mixBuffers) {
-				for (let i = 0; i < channel.length; i++) {
-					channel[i] = Math.max(-1, Math.min(1, channel[i]));
-				}
-			}
-
-			// Interleave channels for WAV output
-			const interleavedSamples = new Float32Array(totalSamples * NUM_CHANNELS);
-			for (let i = 0; i < totalSamples; i++) {
-				interleavedSamples[i * 2] = mixBuffers[0][i];
-				interleavedSamples[i * 2 + 1] = mixBuffers[1][i];
-			}
-
-			return this.createWavBlob({ samples: interleavedSamples });
-		} catch (error) {
-			console.error("Failed to extract audio from video:", error);
-			return null;
-		}
 	}
 
 	private createWavBlob({ samples }: { samples: Float32Array }): Blob {

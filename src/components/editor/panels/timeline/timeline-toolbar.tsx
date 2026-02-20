@@ -35,7 +35,6 @@ import {
 	Layers,
 	Mic,
 	Snowflake,
-	Rewind,
 	AudioLines,
 } from "lucide-react";
 import { useState } from "react";
@@ -123,9 +122,8 @@ function ToolbarLeftSection() {
 
 				<ToolbarButton
 					icon={<AudioLines size={18} />}
-					tooltip={`${t("timeline.toolbar.separateAudio")} (Coming soon)`}
-					disabled
-					onClick={() => { }}
+					tooltip={t("timeline.toolbar.separateAudio")}
+					onClick={({ event }) => handleAction({ action: "separate-audio", event })}
 				/>
 
 				<ToolbarButton
@@ -140,13 +138,6 @@ function ToolbarLeftSection() {
 					icon={<Snowflake size={18} />}
 					tooltip={t("timeline.toolbar.freezeFrame")}
 					onClick={({ event }) => handleAction({ action: "freeze-frame", event })}
-				/>
-
-				<ToolbarButton
-					icon={<Rewind size={18} />}
-					tooltip={`${t("timeline.contextMenu.reversePlayback")} (Coming soon)`}
-					disabled
-					onClick={() => { }}
 				/>
 
 				<ToolbarButton

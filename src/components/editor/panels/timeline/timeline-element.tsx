@@ -31,7 +31,7 @@ import { mediaSupportsAudio } from "@/lib/media/media-utils";
 import { getActionDefinition, type TAction, invokeAction } from "@/lib/actions";
 import { useElementSelection } from "@/hooks/timeline/element/use-element-selection";
 import Image from "next/image";
-import { Snowflake, Rewind, Copy, Trash2, Scissors, Eye, EyeOff, Volume2, VolumeX } from "lucide-react";
+import { Snowflake, Copy, Trash2, Scissors, Eye, EyeOff, Volume2, VolumeX, AudioLines } from "lucide-react";
 import { uppercase } from "@/utils/string";
 import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
@@ -186,14 +186,22 @@ export function TimelineElement({
 						{t("timeline.contextMenu.duplicate")}
 					</ActionMenuItem>
 				)}
-				{/* Video-specific options: Freeze Frame only - Separate Audio and Reverse coming soon */}
+				{/* Video-specific options: Freeze Frame and Separate Audio */}
 				{element.type === "video" && (
-					<ActionMenuItem
-						action="freeze-frame"
-						icon={<Snowflake className="size-4" />}
-					>
-						{t("timeline.contextMenu.freezeFrame")}
-					</ActionMenuItem>
+					<>
+						<ActionMenuItem
+							action="freeze-frame"
+							icon={<Snowflake className="size-4" />}
+						>
+							{t("timeline.contextMenu.freezeFrame")}
+						</ActionMenuItem>
+						<ActionMenuItem
+							action="separate-audio"
+							icon={<AudioLines size={18} />}
+						>
+							{t("timeline.contextMenu.separateAudio")}
+						</ActionMenuItem>
+					</>
 				)}
 				<ContextMenuSeparator />
 				<DeleteMenuItem
@@ -554,14 +562,6 @@ function ElementContent({
 							muted={isVideoMuted}
 							className="w-full h-full px-1"
 						/>
-					</div>
-				)}
-
-				{/* Reverse indicator for video elements */}
-				{element.type === "video" && (element as any).reversed && (
-					<div className="absolute top-1 right-1 bg-orange-500/80 rounded px-1 py-0.5 flex items-center gap-0.5 pointer-events-none">
-						<Rewind className="size-3 text-white" />
-						<span className="text-[10px] text-white font-medium">R</span>
 					</div>
 				)}
 			</div>

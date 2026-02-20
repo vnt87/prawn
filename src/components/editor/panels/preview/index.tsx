@@ -569,7 +569,7 @@ function PreviewCanvas({ zoom = 1, quality = 1 }: { zoom?: number; quality?: num
 					transform: "translate3d(0, 0, 0)", // Force hardware acceleration
 				}}
 			/>
-			<PreviewInteractionOverlay canvasRef={canvasRef} />
+			<PreviewInteractionOverlay canvasRef={canvasRef} zoom={zoom} />
 		</div>
 	);
 }

@@ -6,8 +6,6 @@ export interface VideoNodeParams extends VisualNodeParams {
 	url: string;
 	file: File;
 	mediaId: string;
-	/** Play video in reverse. Default false. */
-	reversed?: boolean;
 }
 
 export class VideoNode extends VisualNode<VideoNodeParams> {

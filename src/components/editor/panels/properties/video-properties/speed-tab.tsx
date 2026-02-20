@@ -4,7 +4,6 @@ import type { ImageElement, VideoElement } from "@/types/timeline";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Rewind } from "lucide-react";
 import {
 	PropertyGroup,
 	PropertyItem,
@@ -42,25 +41,9 @@ export function SpeedTab({
 		});
 	}
 
-	/** Toggle reverse playback. */
-	function toggleReverse() {
-		if (element.type !== "video") return;
-		editor.timeline.updateElements({
-			updates: [
-				{
-					trackId,
-					elementId: element.id,
-					updates: { reversed: !element.reversed },
-				},
-			],
-			pushHistory: true,
-		});
-	}
-
 	// ---- Derived values ----
 
 	const currentSpeed = (element as VideoElement).speed ?? 1;
-	const isReversed = element.type === "video" ? (element.reversed ?? false) : false;
 	// Effective duration at the current speed (original duration = element.duration at speed 1)
 	const effectiveDuration = element.duration / currentSpeed;
 
@@ -108,22 +91,6 @@ export function SpeedTab({
 							/>
 						</div>
 					</PropertyItem>
-
-					{/* Reverse playback toggle - only for video elements */}
-					{element.type === "video" && (
-						<PropertyItem>
-							<PropertyItemLabel>Reverse</PropertyItemLabel>
-							<Button
-								variant={isReversed ? "default" : "outline"}
-								size="sm"
-								className="h-7 px-3"
-								onClick={toggleReverse}
-								title="Play video in reverse"
-							>
-								<Rewind className="size-4" />
-							</Button>
-						</PropertyItem>
-					)}
 
 					{/* Change audio pitch (stored, pitch shifting is P4+) */}
 					<PropertyItem>

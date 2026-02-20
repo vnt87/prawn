@@ -152,8 +152,6 @@
             "show": "Show",
             "hide": "Hide",
             "separateAudio": "Separate audio",
-            "reversePlayback": "Reverse playback",
-            "removeReverse": "Remove reverse",
             "freezeFrame": "Freeze frame",
             "deleteMultiple": "Delete {{count}} elements",
             "deleteText": "Delete text",
@@ -224,6 +222,12 @@
                 "description": "Are you sure you want to delete {{count}} scene{{count, plural, one {} other {s}}}? This action cannot be undone."
             }
         }
+    },
+    "commandPalette": {
+        "searchPlaceholder": "Search actions...",
+        "noResults": "No actions found",
+        "navigate": "Navigate",
+        "select": "Select"
     },
     "shortcuts": {
         "categories": {

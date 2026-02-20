@@ -123,10 +123,6 @@ export const ACTIONS = {
 		description: "Show/hide selected elements",
 		category: "selection",
 	},
-	"toggle-reverse-selected": {
-		description: "Toggle reverse playback for video",
-		category: "editing",
-	},
 	"freeze-frame": {
 		description: "Insert freeze frame at playhead",
 		category: "editing",

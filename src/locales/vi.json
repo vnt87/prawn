@@ -152,8 +152,6 @@
             "show": "Hiện",
             "hide": "Ẩn",
             "separateAudio": "Tách âm thanh",
-            "reversePlayback": "Phát ngược",
-            "removeReverse": "Bỏ phát ngược",
             "freezeFrame": "Khung hình đóng băng",
             "deleteMultiple": "Xóa {{count}} phần tử",
             "deleteText": "Xóa văn bản",
@@ -224,6 +222,12 @@
                 "description": "Bạn có chắc chắn muốn xóa {{count}} cảnh không? Thao tác này không thể hoàn tác."
             }
         }
+    },
+    "commandPalette": {
+        "searchPlaceholder": "Tìm kiếm hành động...",
+        "noResults": "Không tìm thấy hành động",
+        "navigate": "Điều hướng",
+        "select": "Chọn"
     },
     "shortcuts": {
         "categories": {

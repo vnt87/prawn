@@ -15,8 +15,6 @@ export interface VisualNodeParams {
 	opacity: number;
 	/** Playback speed multiplier. Default 1.0. */
 	speed?: number;
-	/** Play video in reverse. Default false. Only applies to video elements. */
-	reversed?: boolean;
 	/** Color / light filters to apply via Canvas 2D CSS filter. */
 	filters?: VideoFilters;
 	/** Canvas 2D compositing operation. Default 'source-over'. */
@@ -92,22 +90,15 @@ export abstract class VisualNode<
 > extends BaseNode<Params> {
 	/**
 	 * Convert global timeline time → local media time, accounting for
-	 * speed multiplier and reverse playback.
-	 * When reversed is true, plays the video backwards from trimEnd to trimStart.
+	 * speed multiplier.
 	 */
 	protected getLocalTime(time: number): number {
 		const speed = this.params.speed ?? 1;
-		const { trimStart, trimEnd, timeOffset, duration, reversed } = this.params;
-		
+		const { trimStart, timeOffset, duration } = this.params;
+
 		// Calculate progress through the clip (0 to 1)
 		const clipProgress = (time - timeOffset) / duration;
-		
-		// If reversed, play backwards from end to start
-		if (reversed) {
-			const trimDuration = trimEnd - trimStart;
-			return trimStart + (1 - clipProgress) * trimDuration;
-		}
-		
+
 		// Normal playback: offset from clip start, multiplied by speed, then offset by trimStart
 		return clipProgress * speed * duration + trimStart;
 	}
@@ -261,7 +252,7 @@ export abstract class VisualNode<
 	private computeSpringAnimFrame(type: AnimationType, t: number, animation?: ClipAnimation): AnimOverride {
 		// Get spring config from animation or use preset
 		const springConfig = animation?.springConfig ?? this.getSpringPreset(type);
-		
+
 		// Calculate frame number based on progress (t is 0-1, we need actual frame)
 		// Assuming 30fps reference for spring calculation
 		const fps = 30;
@@ -330,7 +321,7 @@ export abstract class VisualNode<
 	 */
 	private applyEasing(t: number, animation?: ClipAnimation): number {
 		const easingType = animation?.easing ?? 'ease-out';
-		
+
 		switch (easingType) {
 			case 'linear':
 				return t;
@@ -414,10 +405,10 @@ export abstract class VisualNode<
 
 		const temp = (filters.temperature ?? 0) / 100; // -1 to +1
 		const tint = (filters.tint ?? 0) / 100;        // -1 to +1
-		const hi   = (filters.highlights ?? 0) / 100;  // -1 to +1
-		const sh   = (filters.shadows ?? 0) / 100;     // -1 to +1
-		const wh   = (filters.whites ?? 0) / 100;      // -1 to +1
-		const bl   = (filters.blacks ?? 0) / 100;      // -1 to +1
+		const hi = (filters.highlights ?? 0) / 100;  // -1 to +1
+		const sh = (filters.shadows ?? 0) / 100;     // -1 to +1
+		const wh = (filters.whites ?? 0) / 100;      // -1 to +1
+		const bl = (filters.blacks ?? 0) / 100;      // -1 to +1
 
 		for (let i = 0; i < 256; i++) {
 			const t = i / 255; // normalised 0-1
@@ -449,7 +440,7 @@ export abstract class VisualNode<
 		const imageData = ctx.getImageData(x, y, w, h);
 		const data = imageData.data;
 		for (let p = 0; p < data.length; p += 4) {
-			data[p]     = rLUT[data[p]];      // R
+			data[p] = rLUT[data[p]];      // R
 			data[p + 1] = gLUT[data[p + 1]];  // G
 			data[p + 2] = bLUT[data[p + 2]];  // B
 			// data[p + 3] = alpha (unchanged)

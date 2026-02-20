@@ -197,7 +197,7 @@ export function useEditorActions() {
 			if (selectedElements.length > 0) {
 				// Check if ripple editing is enabled
 				const { rippleEditingEnabled } = useTimelineStore.getState();
-				
+
 				if (rippleEditingEnabled) {
 					editor.timeline.rippleDeleteElements({
 						elements: selectedElements,
@@ -261,38 +261,6 @@ export function useEditorActions() {
 		"toggle-elements-visibility-selected",
 		() => {
 			editor.timeline.toggleElementsVisibility({ elements: selectedElements });
-		},
-		undefined,
-	);
-
-	// Toggle reverse playback for selected video elements
-	useActionHandler(
-		"toggle-reverse-selected",
-		() => {
-			if (selectedElements.length === 0) return;
-
-			// Filter to only video elements
-			const videoElements = selectedElements.filter((el) => {
-				const track = editor.timeline.getTracks().find((t) => t.id === el.trackId);
-				const element = track?.elements.find((e) => e.id === el.elementId);
-				return element?.type === "video";
-			});
-
-			if (videoElements.length === 0) return;
-
-			// Toggle reversed property for each video element
-			editor.timeline.updateElements({
-				updates: videoElements.map((el) => {
-					const track = editor.timeline.getTracks().find((t) => t.id === el.trackId);
-					const element = track?.elements.find((e) => e.id === el.elementId);
-					return {
-						trackId: el.trackId,
-						elementId: el.elementId,
-						updates: { reversed: !((element as any)?.reversed ?? false) },
-					};
-				}),
-				pushHistory: true,
-			});
 		},
 		undefined,
 	);

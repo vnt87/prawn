@@ -31,6 +31,7 @@ import { DeleteProjectDialog } from "./dialogs/delete-project-dialog";
 import { ShortcutsDialog } from "./dialogs/shortcuts-dialog";
 import { IntegrationsDialog } from "./dialogs/integrations-dialog";
 import { AboutDialog } from "./dialogs/about-dialog";
+import { CommandPalette } from "./command-palette";
 import { toast } from "sonner";
 import { SOCIAL_LINKS } from "@/constants/site-constants";
 import { useTranslation } from "react-i18next";
@@ -62,6 +63,19 @@ export function EditorHeader() {
 
 	const [settingsOpen, setSettingsOpen] = useState(false);
 	const settingsRef = useRef<HTMLDivElement>(null);
+
+	// Keyboard shortcut for command palette (Cmd/Ctrl+/)
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if ((e.metaKey || e.ctrlKey) && e.key === "/") {
+				e.preventDefault();
+				setOpenDialog(openDialog === "command-palette" ? null : "command-palette");
+			}
+		};
+
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [openDialog, setOpenDialog]);
 
 	// Click outside handlers
 	useEffect(() => {
@@ -250,14 +264,16 @@ export function EditorHeader() {
 				</div>
 
 				<div className="header-right">
-					<div className="header-search">
+					<div
+						className="header-search cursor-pointer"
+						onClick={() => setOpenDialog("command-palette")}
+					>
 						<Search className="search-icon" />
 						<input
 							type="text"
 							placeholder={t("header.searchPlaceholder")}
 							readOnly
-							className="cursor-default"
-						/* Not implemented yet */
+							className="cursor-pointer"
 						/>
 					</div>
 
@@ -361,6 +377,7 @@ export function EditorHeader() {
 				isOpen={openDialog === "about"}
 				onOpenChange={(isOpen) => setOpenDialog(isOpen ? "about" : null)}
 			/>
+			<CommandPalette />
 		</>
 	);
 }

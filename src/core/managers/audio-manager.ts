@@ -195,7 +195,7 @@ export class AudioManager {
 		for (const source of this.queuedSources) {
 			try {
 				source.stop();
-			} catch {}
+			} catch { }
 			source.disconnect();
 		}
 		this.queuedSources.clear();
@@ -263,11 +263,13 @@ export class AudioManager {
 			if (!this.editor.playback.getIsPlaying()) return;
 			if (sessionId !== this.playbackSessionId) return;
 
-			const timelineTime = clip.startTime + (timestamp - clip.trimStart);
+			const timelineTime =
+				clip.startTime + (timestamp - clip.trimStart) / (clip.speed ?? 1);
 			if (timelineTime >= clipEnd) break;
 
 			const node = audioContext.createBufferSource();
 			node.buffer = buffer;
+			node.playbackRate.value = clip.speed ?? 1;
 			// Route through per-clip gain (which applies volume + fades)
 			node.connect(clipGain);
 

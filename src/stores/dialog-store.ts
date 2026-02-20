@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type DialogType = "delete" | "shortcuts" | "integrations" | "about" | null;
+type DialogType = "delete" | "shortcuts" | "integrations" | "about" | "command-palette" | null;
 type IntegrationsTab = "database" | "assets" | "storage" | "ai" | null;
 
 interface DialogState {

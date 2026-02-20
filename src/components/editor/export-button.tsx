@@ -14,17 +14,31 @@ import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/utils/ui";
 import { getExportMimeType, getExportFileExtension } from "@/lib/export";
-import { Check, Copy, Download, RotateCcw } from "lucide-react";
+import { Check, Copy, Download, RotateCcw, Monitor, Smartphone, Square } from "lucide-react";
 import {
 	EXPORT_FORMAT_VALUES,
 	EXPORT_QUALITY_VALUES,
+	RESOLUTION_PRESETS,
+	SOCIAL_PRESETS,
 	type ExportFormat,
 	type ExportQuality,
 	type ExportResult,
+	isVideoFormat,
+	isAudioFormat,
 } from "@/types/export";
+import { EXPORT_FORMAT_DESCRIPTIONS } from "@/constants/export-constants";
 import { PropertyGroup } from "@/components/editor/panels/properties/property-item";
 import { useEditor } from "@/hooks/use-editor";
-import { DEFAULT_EXPORT_OPTIONS } from "@/constants/export-constants";
+import { DEFAULT_EXPORT_OPTIONS, DEFAULT_GIF_OPTIONS } from "@/constants/export-constants";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { useTranslation } from "react-i18next";
 
 export function ExportButton() {
 	const [isExportPopoverOpen, setIsExportPopoverOpen] = useState(false);
@@ -77,6 +91,7 @@ function ExportPopover({
 }: {
 	onOpenChange: (open: boolean) => void;
 }) {
+	const { t } = useTranslation();
 	const editor = useEditor();
 	const activeProject = editor.project.getActive();
 	const [format, setFormat] = useState<ExportFormat>(
@@ -88,10 +103,16 @@ function ExportPopover({
 	const [includeAudio, setIncludeAudio] = useState<boolean>(
 		DEFAULT_EXPORT_OPTIONS.includeAudio || true,
 	);
+	const [resolution, setResolution] = useState<string>("project");
+	const [showAdvanced, setShowAdvanced] = useState(false);
+	const [gifOptions, setGifOptions] = useState(DEFAULT_GIF_OPTIONS);
 	const [isExporting, setIsExporting] = useState(false);
 	const [progress, setProgress] = useState(0);
 	const [exportResult, setExportResult] = useState<ExportResult | null>(null);
 	const cancelRequestedRef = useRef(false);
+	
+	const isVideo = isVideoFormat(format);
+	const isAudio = isAudioFormat(format);
 
 	const handleExport = async () => {
 		if (!activeProject) return;
@@ -101,15 +122,38 @@ function ExportPopover({
 		setProgress(0);
 		setExportResult(null);
 
+		// Build export options based on format type
+		const exportOptions: Parameters<typeof editor.project.export>[0]["options"] = {
+			format,
+			quality,
+			fps: activeProject.settings.fps,
+			includeAudio: isVideo ? includeAudio : undefined,
+			onProgress: ({ progress }) => setProgress(progress),
+			onCancel: () => cancelRequestedRef.current,
+		};
+
+		// Add resolution if not using project default
+		if (resolution !== "project") {
+			const preset = RESOLUTION_PRESETS.find(p => p.label === resolution);
+			if (preset) {
+				exportOptions.resolution = { width: preset.width, height: preset.height };
+			} else {
+				// Check social presets
+				const socialPreset = SOCIAL_PRESETS.find(p => p.platform === resolution);
+				if (socialPreset) {
+					exportOptions.resolution = { width: socialPreset.width, height: socialPreset.height };
+					exportOptions.fps = socialPreset.fps;
+				}
+			}
+		}
+
+		// Add GIF options if exporting as GIF
+		if (format === "gif") {
+			exportOptions.gif = gifOptions;
+		}
+
 		const result = await editor.project.export({
-			options: {
-				format,
-				quality,
-				fps: activeProject.settings.fps,
-				includeAudio,
-				onProgress: ({ progress }) => setProgress(progress),
-				onCancel: () => cancelRequestedRef.current,
-			},
+			options: exportOptions,
 		});
 
 		setIsExporting(false);
@@ -147,7 +191,7 @@ function ExportPopover({
 	};
 
 	return (
-		<PopoverContent className="w-[280px] p-0" align="end" sideOffset={8}>
+		<PopoverContent className="w-[320px] p-0" align="end" sideOffset={8}>
 			{exportResult && !exportResult.success ? (
 				<div className="p-4">
 					<ExportError
@@ -159,81 +203,153 @@ function ExportPopover({
 				<>
 					<div className="flex items-center justify-between px-4 py-3 border-b border-border">
 						<h3 className="font-medium text-sm">
-							{isExporting ? "Exporting project" : "Export project"}
+							{isExporting ? t("export.exportingTitle") : t("export.title")}
 						</h3>
 					</div>
 
-					<div className="flex flex-col">
+					<div className="flex flex-col max-h-[400px] overflow-y-auto">
 						{!isExporting && (
 							<>
-								<div className="flex flex-col py-2">
-									<PropertyGroup
-										title="Format"
-										defaultExpanded={true}
-										hasBorderTop={false}
-										hasBorderBottom={false}
-										className="border-b border-border/50"
+								{/* Format Selection */}
+								<PropertyGroup
+									title={t("export.format")}
+									defaultExpanded={true}
+									hasBorderTop={false}
+									hasBorderBottom={false}
+									className="border-b border-border/50"
+								>
+									<div className="space-y-1 px-1">
+										{/* Video formats */}
+										<div className="text-xs text-muted-foreground mb-1">Video</div>
+										{(["mp4", "webm", "gif"] as const).map((fmt) => (
+											<div
+												key={fmt}
+												className={cn(
+													"flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-accent",
+													format === fmt && "bg-accent"
+												)}
+												onClick={() => setFormat(fmt)}
+											>
+												<div className={cn(
+													"size-4 rounded-full border flex items-center justify-center",
+													format === fmt && "border-primary"
+												)}>
+													{format === fmt && <div className="size-2 rounded-full bg-primary" />}
+												</div>
+												<div className="flex-1">
+													<div className="text-sm font-medium">{EXPORT_FORMAT_DESCRIPTIONS[fmt].label}</div>
+													<div className="text-xs text-muted-foreground">{EXPORT_FORMAT_DESCRIPTIONS[fmt].description}</div>
+												</div>
+											</div>
+										))}
+										
+										{/* Audio formats */}
+										<div className="text-xs text-muted-foreground mt-2 mb-1">Audio Only</div>
+										{(["mp3", "wav"] as const).map((fmt) => (
+											<div
+												key={fmt}
+												className={cn(
+													"flex items-center gap-3 p-2 rounded cursor-pointer hover:bg-accent",
+													format === fmt && "bg-accent"
+												)}
+												onClick={() => setFormat(fmt)}
+											>
+												<div className={cn(
+													"size-4 rounded-full border flex items-center justify-center",
+													format === fmt && "border-primary"
+												)}>
+													{format === fmt && <div className="size-2 rounded-full bg-primary" />}
+												</div>
+												<div className="flex-1">
+													<div className="text-sm font-medium">{EXPORT_FORMAT_DESCRIPTIONS[fmt].label}</div>
+													<div className="text-xs text-muted-foreground">{EXPORT_FORMAT_DESCRIPTIONS[fmt].description}</div>
+												</div>
+											</div>
+										))}
+									</div>
+								</PropertyGroup>
+
+								{/* Quality Selection */}
+								<PropertyGroup
+									title={t("export.quality")}
+									defaultExpanded={true}
+									hasBorderBottom={false}
+									hasBorderTop={false}
+									className="border-b border-border/50"
+								>
+									<RadioGroup
+										value={quality}
+										onValueChange={(value) => {
+											if (isExportQuality(value)) {
+												setQuality(value);
+											}
+										}}
+										className="gap-1 px-1"
 									>
-										<RadioGroup
-											value={format}
-											onValueChange={(value) => {
-												if (isExportFormat(value)) {
-													setFormat(value);
-												}
-											}}
-											className="gap-2 px-1"
-										>
-											<div className="flex items-center space-x-2">
-												<RadioGroupItem value="mp4" id="mp4" />
-												<Label htmlFor="mp4" className="text-sm font-normal cursor-pointer">
-													MP4 (H.264)
+										{EXPORT_QUALITY_VALUES.slice(0, 3).map((q) => (
+											<div key={q} className="flex items-center space-x-2">
+												<RadioGroupItem value={q} id={`quality-${q}`} />
+												<Label htmlFor={`quality-${q}`} className="text-sm font-normal cursor-pointer">
+													{t(`export.${q}`)}
 												</Label>
 											</div>
-											<div className="flex items-center space-x-2">
-												<RadioGroupItem value="webm" id="webm" />
-												<Label htmlFor="webm" className="text-sm font-normal cursor-pointer">
-													WebM (VP9)
-												</Label>
-											</div>
-										</RadioGroup>
-									</PropertyGroup>
+										))}
+									</RadioGroup>
+								</PropertyGroup>
 
+								{/* Resolution (for video formats) */}
+								{isVideo && (
 									<PropertyGroup
-										title="Quality"
-										defaultExpanded={true}
+										title="Resolution"
+										defaultExpanded={false}
 										hasBorderBottom={false}
 										hasBorderTop={false}
 										className="border-b border-border/50"
 									>
-										<RadioGroup
-											value={quality}
-											onValueChange={(value) => {
-												if (isExportQuality(value)) {
-													setQuality(value);
-												}
-											}}
-											className="gap-2 px-1"
-										>
-											<div className="flex items-center space-x-2">
-												<RadioGroupItem value="low" id="low" />
-												<Label htmlFor="low" className="text-sm font-normal cursor-pointer">Low</Label>
+										<div className="space-y-2 px-1">
+											<Select value={resolution} onValueChange={setResolution}>
+												<SelectTrigger className="h-8 text-xs">
+													<SelectValue placeholder="Project default" />
+												</SelectTrigger>
+												<SelectContent>
+													<SelectItem value="project">Project default ({activeProject?.settings.canvasSize.width}x{activeProject?.settings.canvasSize.height})</SelectItem>
+													{RESOLUTION_PRESETS.map((preset) => (
+														<SelectItem key={preset.label} value={preset.label}>
+															{preset.label}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+											
+											{/* Social presets */}
+											<div className="text-xs text-muted-foreground">Social Media</div>
+											<div className="grid grid-cols-2 gap-1">
+												{SOCIAL_PRESETS.map((preset) => (
+													<button
+														key={preset.platform}
+														className={cn(
+															"flex flex-col items-start p-2 rounded text-left hover:bg-accent text-xs",
+															resolution === preset.platform && "bg-accent"
+														)}
+														onClick={() => setResolution(preset.platform)}
+													>
+														<span className="font-medium">{preset.platform}</span>
+														<span className="text-muted-foreground">{preset.description}</span>
+													</button>
+												))}
 											</div>
-											<div className="flex items-center space-x-2">
-												<RadioGroupItem value="medium" id="medium" />
-												<Label htmlFor="medium" className="text-sm font-normal cursor-pointer">Medium</Label>
-											</div>
-											<div className="flex items-center space-x-2">
-												<RadioGroupItem value="high" id="high" />
-												<Label htmlFor="high" className="text-sm font-normal cursor-pointer">High</Label>
-											</div>
-										</RadioGroup>
+										</div>
 									</PropertyGroup>
+								)}
 
+								{/* Audio option (for video formats) */}
+								{isVideo && (
 									<PropertyGroup
-										title="Audio"
+										title={t("export.audio")}
 										defaultExpanded={true}
 										hasBorderBottom={false}
 										hasBorderTop={false}
+										className="border-b border-border/50"
 									>
 										<div className="flex items-center space-x-2 px-1">
 											<Checkbox
@@ -244,11 +360,47 @@ function ExportPopover({
 												}
 											/>
 											<Label htmlFor="include-audio" className="text-sm font-normal cursor-pointer">
-												Include audio
+												{t("export.includeAudio")}
 											</Label>
 										</div>
 									</PropertyGroup>
-								</div>
+								)}
+
+								{/* GIF options */}
+								{format === "gif" && (
+									<PropertyGroup
+										title="GIF Settings"
+										defaultExpanded={true}
+										hasBorderBottom={false}
+										hasBorderTop={false}
+										className="border-b border-border/50"
+									>
+										<div className="space-y-3 px-1">
+											<div className="flex items-center justify-between">
+												<Label className="text-sm">Loop</Label>
+												<Checkbox
+													checked={gifOptions.loop}
+													onCheckedChange={(checked) =>
+														setGifOptions({ ...gifOptions, loop: !!checked })
+													}
+												/>
+											</div>
+											<div className="space-y-1">
+												<div className="flex justify-between">
+													<Label className="text-sm">FPS</Label>
+													<span className="text-xs text-muted-foreground">{gifOptions.fps}</span>
+												</div>
+												<Slider
+													value={[gifOptions.fps]}
+													min={5}
+													max={30}
+													step={1}
+													onValueChange={([v]) => setGifOptions({ ...gifOptions, fps: v })}
+												/>
+											</div>
+										</div>
+									</PropertyGroup>
+								)}
 
 								<div className="p-3 border-t border-border bg-muted/30">
 									<Button
@@ -257,7 +409,7 @@ function ExportPopover({
 										size="sm"
 									>
 										<Download className="size-4" />
-										Export Project
+										{t("export.button")}
 									</Button>
 								</div>
 							</>

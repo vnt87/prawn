@@ -170,7 +170,7 @@ export interface SpringConfig {
 }
 
 /** Easing type for animations. */
-export type EasingType = 
+export type EasingType =
 	| "linear"
 	| "ease"
 	| "ease-in"
@@ -223,6 +223,8 @@ interface BaseTimelineElement {
 	startTime: number;
 	trimStart: number;
 	trimEnd: number;
+	/** Playback speed multiplier. Default 1.0. Values > 1 speed up, < 1 slow down. */
+	speed?: number;
 }
 
 // ---- Video Element ----
@@ -234,10 +236,6 @@ export interface VideoElement extends BaseTimelineElement {
 	hidden?: boolean;
 	transform: Transform;
 	opacity: number;
-	/** Playback speed multiplier. Default 1.0. Values > 1 speed up, < 1 slow down. */
-	speed?: number;
-	/** Play video in reverse. Default false. */
-	reversed?: boolean;
 	/** Per-clip audio volume as a linear multiplier (0.0–2.0). Default 1.0. */
 	volume?: number;
 	/** Audio fade-in duration in seconds. Default 0. */
@@ -262,8 +260,6 @@ export interface ImageElement extends BaseTimelineElement {
 	hidden?: boolean;
 	transform: Transform;
 	opacity: number;
-	/** Speed field kept for interface consistency (affects duration calculation only). */
-	speed?: number;
 	/** Color/light filter adjustments applied in the renderer. */
 	filters?: VideoFilters;
 	/** Canvas 2D composite operation for layer blending. Default 'source-over'. */
