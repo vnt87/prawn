@@ -14,9 +14,9 @@
         "system": "Hệ thống",
         "general": "Chung",
         "integrations": "Tích hợp",
-        "comingSoon": "Sắp ra mắt",
+        "comingSoon": "Chưa làm",
         "shortcuts": "Phím tắt",
-        "github": "Mã nguồn GitHub",
+        "github": "Nguồn GitHub",
         "resetDefaults": "Đặt lại về mặc định",
         "conflictError": "Phím \"{{key}}\" đã được gán cho \"{{action}}\"",
         "or": "hoặc",
@@ -128,13 +128,13 @@
     },
     "timeline": {
         "toolbar": {
-            "snap": "Dính",
+            "snap": "Snap",
             "zoom": "Phóng to/thu nhỏ",
-            "split": "Chia nhỏ thành phần",
-            "splitLeft": "Chia bên trái",
-            "splitRight": "Chia bên phải",
-            "duplicate": "Nhân bản thành phần",
-            "delete": "Xóa thành phần",
+            "split": "Cắt đôi",
+            "splitLeft": "Chia sang trái",
+            "splitRight": "Chia sang phải",
+            "duplicate": "Duplicate",
+            "delete": "Xóa",
             "addBookmark": "Thêm dấu mốc",
             "removeBookmark": "Xóa dấu mốc",
             "noScene": "Không có cảnh",
@@ -145,15 +145,15 @@
             "recordVoiceover": "Ghi âm lồng tiếng"
         },
         "contextMenu": {
-            "split": "Chia cắt",
+            "split": "Cắt đôi",
             "copy": "Sao chép",
-            "duplicate": "Nhân đôi",
+            "duplicate": "Duplicate",
             "unmute": "Bật tiếng",
             "mute": "Tắt tiếng",
             "show": "Hiện",
             "hide": "Ẩn",
             "separateAudio": "Tách âm thanh",
-            "freezeFrame": "Khung hình đóng băng",
+            "freezeFrame": "Đóng băng khung hình",
             "deleteMultiple": "Xóa {{count}} phần tử",
             "deleteText": "Xóa văn bản",
             "deleteClip": "Xóa đoạn"
@@ -166,14 +166,14 @@
             "delete": "Xóa track"
         },
         "paste": "Dán",
-        "ruler": "Thước thời gian",
+        "ruler": "Ruler",
         "bookmarks": "Dấu mốc",
         "seekBookmark": "Đi tới dấu mốc lúc {{time}}s"
     },
     "properties": {
         "empty": {
             "title": "Ở đây chưa có gì",
-            "description": "Nhấp vào một thành phần trên dòng thời gian để chỉnh sửa thuộc tính"
+            "description": "Nhấp vào một thành phần trên timeline để chỉnh sửa"
         },
         "text": {
             "content": "Nội dung",
@@ -213,8 +213,8 @@
                 "position": "Vị trí",
                 "rotate": "Xoay",
                 "flip": "Lật",
-                "resetTransform": "Đặt lại biến đổi",
-                "blend": "Hòa trộn",
+                "resetTransform": "Reset lại",
+                "blend": "Blend",
                 "opacity": "Độ mờ",
                 "mode": "Chế độ",
                 "blendModes": {
@@ -461,7 +461,7 @@
             "anthropic": "Anthropic (Claude)",
             "custom": "Nhà cung cấp tùy chỉnh",
             "apiKey": "API Key",
-            "apiBaseUrl": "URL cơ sở API",
+            "apiBaseUrl": "API Base URL",
             "model": "Mô hình",
             "openaiApiKeyPlaceholder": "sk-...",
             "anthropicApiKeyPlaceholder": "sk-ant-...",
@@ -475,7 +475,7 @@
         "quality": "Chất lượng",
         "audio": "Âm thanh",
         "mp4Label": "MP4 (H.264) - Tương thích tốt hơn",
-        "webmLabel": "WebM (VP9) - Dung lượng tệp nhỏ hơn",
+        "webmLabel": "WebM (VP9) - File size bé hơn",
         "low": "Thấp",
         "medium": "Trung bình",
         "high": "Cao",
@@ -500,7 +500,7 @@
         "addToTimeline": "Chèn vào dòng thời gian",
         "clipDuration": "Đoạn",
         "markInAndOutFirst": "Đánh dấu điểm đầu và cuối trước",
-        "addToTimelineTooltip": "Chèn đoạn vào dòng thời gian",
+        "addToTimelineTooltip": "Chèn vào timeline",
         "zoomIn": "Phóng to",
         "zoomOut": "Thu nhỏ",
         "fitToView": "Vừa khít",
