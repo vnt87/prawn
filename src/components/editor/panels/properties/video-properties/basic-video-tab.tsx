@@ -11,6 +11,7 @@ import {
 	ChevronDown,
 	FlipHorizontal,
 	FlipVertical,
+	Info,
 } from "lucide-react";
 import {
 	PropertyGroup,
@@ -25,6 +26,13 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { useTranslation } from "react-i18next";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Common Canvas 2D blend modes to expose in the UI
 const BLEND_MODES: { value: GlobalCompositeOperation; label: string }[] = [
@@ -50,6 +58,7 @@ export function BasicVideoTab({
 	trackId: string;
 }) {
 	const editor = useEditor();
+	const { t } = useTranslation();
 
 	// ---- Helpers: push element updates through the command system ----
 
@@ -113,10 +122,21 @@ export function BasicVideoTab({
 			{/* ── Transform ── */}
 			<PropertyGroup title="Transform" defaultExpanded={true}>
 				<div className="space-y-4">
-					{/* Scale */}
 					<PropertyItem direction="column" className="items-stretch gap-2">
 						<div className="flex justify-between items-center">
-							<PropertyItemLabel>Scale</PropertyItemLabel>
+							<div className="flex items-center gap-1.5">
+								<PropertyItemLabel>{t("properties.video.scale")}</PropertyItemLabel>
+								<TooltipProvider>
+									<Tooltip delayDuration={300}>
+										<TooltipTrigger asChild>
+											<Info className="size-3 text-muted-foreground/70 hover:text-muted-foreground cursor-help" />
+										</TooltipTrigger>
+										<TooltipContent side="right" className="max-w-[200px] text-[11px] leading-relaxed">
+											{t("properties.video.scaleTooltip")}
+										</TooltipContent>
+									</Tooltip>
+								</TooltipProvider>
+							</div>
 							<div className="flex items-center gap-1">
 								<div className="bg-secondary rounded px-2 py-0.5 text-xs w-16 text-right">
 									{scalePercent}%
@@ -164,12 +184,6 @@ export function BasicVideoTab({
 							onValueChange={([v]) => updateTransformLive({ scale: v / 100 })}
 							onPointerUp={commitTransform}
 						/>
-					</PropertyItem>
-
-					{/* Uniform scale toggle (stored as a convention — both X and Y tied to one scale value) */}
-					<PropertyItem>
-						<PropertyItemLabel>Uniform scale</PropertyItemLabel>
-						<Switch defaultChecked disabled title="Uniform scale is always on" />
 					</PropertyItem>
 
 					{/* Position */}
@@ -344,6 +358,6 @@ export function BasicVideoTab({
 				</div>
 			</PropertyGroup>
 
-			</div>
+		</div>
 	);
 }

@@ -90,27 +90,38 @@ export function TransformControls({ canvasRef, zoom }: TransformControlsProps) {
 
 	/**
 	 * Calculate the visual bounding box for a text element.
-	 * Matches the rendering logic in text-node.ts.
+	 * Uses canvas measureText() for accurate width measurement,
+	 * matching the rendering logic in text-node.ts.
 	 */
 	function getTextElementBoundingBox(
-		element: TimelineElement & { type: 'text'; content: string; fontSize: number; fontFamily: string; letterSpacing?: number },
+		element: TimelineElement & { type: 'text'; content: string; fontSize: number; fontFamily: string; fontWeight?: string; fontStyle?: string; letterSpacing?: number },
 		canvasWidth: number,
 		canvasHeight: number
 	): BoundingBox {
 		// Scale font size based on canvas height (matches text-node.ts)
 		const scaledFontSize = element.fontSize * (canvasHeight / FONT_SIZE_SCALE_REFERENCE);
 
-		// Estimate text width - use a reasonable character width estimate
-		// Average character width is approximately 0.5 * fontSize for most fonts
-		const charWidthEstimate = scaledFontSize * 0.5;
-		let textWidth = element.content.length * charWidthEstimate;
+		// Use canvas measureText for accurate width
+		const measureCanvas = document.createElement('canvas');
+		const ctx = measureCanvas.getContext('2d');
+		let textWidth: number;
 
-		// Add letter spacing if present
-		if (element.letterSpacing) {
-			textWidth += element.letterSpacing * element.content.length;
+		if (ctx) {
+			const fontWeight = element.fontWeight === 'bold' ? 'bold' : 'normal';
+			const fontStyle = element.fontStyle === 'italic' ? 'italic' : 'normal';
+			ctx.font = `${fontStyle} ${fontWeight} ${scaledFontSize}px ${element.fontFamily}`;
+
+			if (element.letterSpacing) {
+				(ctx as unknown as { letterSpacing: string }).letterSpacing = `${element.letterSpacing}px`;
+			}
+
+			textWidth = ctx.measureText(element.content).width;
+		} else {
+			// Fallback: rough estimate
+			textWidth = element.content.length * scaledFontSize * 0.5;
 		}
 
-		// Text height approximately equals font size (with some line height)
+		// Text height: use font metrics when available
 		const textHeight = scaledFontSize * 1.2;
 
 		// Visual center = canvas center + position offset
@@ -154,11 +165,24 @@ export function TransformControls({ canvasRef, zoom }: TransformControlsProps) {
 			// Handle text elements
 			else if (element.type === 'text') {
 				const box = getTextElementBoundingBox(
-					element as TimelineElement & { type: 'text'; content: string; fontSize: number; fontFamily: string; letterSpacing?: number },
+					element as TimelineElement & { type: 'text'; content: string; fontSize: number; fontFamily: string; fontWeight?: string; fontStyle?: string; letterSpacing?: number },
 					canvasSize.width,
 					canvasSize.height
 				);
 				boxes.push(box);
+			}
+			// Handle sticker elements
+			else if (element.type === 'sticker') {
+				const stickerSize = canvasSize.height * 0.1 * element.transform.scale;
+				const centerX = canvasSize.width / 2 + element.transform.position.x;
+				const centerY = canvasSize.height / 2 + element.transform.position.y;
+				boxes.push({
+					x: centerX,
+					y: centerY,
+					width: stickerSize,
+					height: stickerSize,
+					rotation: element.transform.rotate ?? 0,
+				});
 			}
 		}
 

@@ -4,6 +4,8 @@ import {
 	Output,
 	Mp4OutputFormat,
 	WebMOutputFormat,
+	Mp3OutputFormat,
+	WavOutputFormat,
 	BufferTarget,
 	CanvasSource,
 	AudioBufferSource,
@@ -14,9 +16,7 @@ import {
 } from "mediabunny";
 import type { RootNode } from "./nodes/root-node";
 import { CanvasRenderer } from "./canvas-renderer";
-
-export type ExportFormat = "mp4" | "webm";
-export type ExportQuality = "low" | "medium" | "high" | "very_high";
+import type { ExportFormat, ExportQuality } from "@/types/export";
 
 type ExportParams = {
 	width: number;
@@ -85,25 +85,47 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 		const { fps } = this.renderer;
 		const frameCount = Math.ceil(rootNode.duration * fps);
 
-		const outputFormat =
-			this.format === "webm" ? new WebMOutputFormat() : new Mp4OutputFormat();
+		let outputFormat;
+		switch (this.format) {
+			case "webm":
+				outputFormat = new WebMOutputFormat();
+				break;
+			case "mp3":
+				outputFormat = new Mp3OutputFormat();
+				break;
+			case "wav":
+				outputFormat = new WavOutputFormat();
+				break;
+			case "gif":
+				// Fallback to mp4 for now for gif
+				outputFormat = new Mp4OutputFormat();
+				break;
+			case "mp4":
+			default:
+				outputFormat = new Mp4OutputFormat();
+				break;
+		}
 
 		const output = new Output({
 			format: outputFormat,
 			target: new BufferTarget(),
 		});
 
-		const videoSource = new CanvasSource(this.renderer.canvas, {
-			codec: this.format === "webm" ? "vp9" : "avc",
-			bitrate: qualityMap[this.quality],
-		});
+		const isAudioOnly = this.format === "mp3" || this.format === "wav";
 
-		output.addVideoTrack(videoSource, { frameRate: fps });
+		let videoSource: CanvasSource | null = null;
+		if (!isAudioOnly) {
+			videoSource = new CanvasSource(this.renderer.canvas, {
+				codec: this.format === "webm" ? "vp9" : "avc",
+				bitrate: qualityMap[this.quality],
+			});
+			output.addVideoTrack(videoSource, { frameRate: fps });
+		}
 
 		let audioSource: AudioBufferSource | null = null;
-		if (this.shouldIncludeAudio && this.audioBuffer) {
+		if ((this.shouldIncludeAudio || isAudioOnly) && this.audioBuffer) {
 			audioSource = new AudioBufferSource({
-				codec: this.format === "webm" ? "opus" : "aac",
+				codec: this.format === "webm" ? "opus" : this.format === "mp3" ? "mp3" : "aac",
 				bitrate: qualityMap[this.quality],
 			});
 			output.addAudioTrack(audioSource);
@@ -116,18 +138,21 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 			audioSource.close();
 		}
 
-		for (let i = 0; i < frameCount; i++) {
-			if (this.isCancelled) {
-				await output.cancel();
-				this.emit("cancelled");
-				return null;
+		if (videoSource) {
+			for (let i = 0; i < frameCount; i++) {
+				if (this.isCancelled) {
+					await output.cancel();
+					this.emit("cancelled");
+					return null;
+				}
+
+				const time = i / fps;
+				await this.renderer.render({ node: rootNode, time });
+				await videoSource.add(time, 1 / fps);
+
+				this.emit("progress", i / frameCount);
 			}
-
-			const time = i / fps;
-			await this.renderer.render({ node: rootNode, time });
-			await videoSource.add(time, 1 / fps);
-
-			this.emit("progress", i / frameCount);
+			videoSource.close();
 		}
 
 		if (this.isCancelled) {
@@ -136,8 +161,8 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 			return null;
 		}
 
-		videoSource.close();
 		await output.finalize();
+
 		this.emit("progress", 1);
 
 		const buffer = output.target.buffer;

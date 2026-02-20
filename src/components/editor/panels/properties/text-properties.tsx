@@ -1,3 +1,4 @@
+import { Bold, Italic, Underline, Strikethrough } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { FontPicker } from "@/components/ui/font-picker";
 import type { FontFamily } from "@/constants/font-constants";
@@ -327,7 +328,7 @@ export function TextProperties({
 										}
 										className="h-8 px-3 font-bold"
 									>
-										B
+										<Bold size={16} />
 									</Button>
 									<Button
 										variant={element.fontStyle === "italic" ? "default" : "outline"}
@@ -348,7 +349,7 @@ export function TextProperties({
 										}
 										className="h-8 px-3 italic"
 									>
-										I
+										<Italic size={16} />
 									</Button>
 									<Button
 										variant={
@@ -373,7 +374,7 @@ export function TextProperties({
 										}
 										className="h-8 px-3 underline"
 									>
-										U
+										<Underline size={16} />
 									</Button>
 									<Button
 										variant={
@@ -398,7 +399,7 @@ export function TextProperties({
 										}
 										className="h-8 px-3 line-through"
 									>
-										S
+										<Strikethrough size={16} />
 									</Button>
 								</div>
 							</PropertyItemValue>

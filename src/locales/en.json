@@ -186,7 +186,11 @@
             "background": "Background",
             "placeholder": "Name"
         },
-        "video": "Video properties",
+        "video": {
+            "title": "Video properties",
+            "scale": "Scale",
+            "scaleTooltip": "Currently only uniform scaling is supported (width and height at the same time). Because I initially coded it this way and now I'm too lazy to update a bunch of renderer code, transform UIs, drag handlers and undo/redo logic. If you need this feature for some reason, log a GitHub issue and I'll consider it if there are enough requests."
+        },
         "audio": "Audio properties"
     },
     "dialogs": {
