@@ -273,6 +273,44 @@ interface BaseTimelineElement {
 	speed?: number;
 }
 
+// ---- Mask ----
+
+/** Supported mask shapes that can be traced as Canvas 2D paths. */
+export type MaskShape =
+	| "rectangle"
+	| "circle"
+	| "split"
+	| "filmstrip"
+	| "stars"
+	| "heart";
+
+/**
+ * Clip mask applied before drawing a video or image element.
+ * Uses Canvas 2D ctx.clip() to restrict the visible region.
+ */
+export interface ClipMask {
+	/** Shape of the mask. Default 'rectangle'. */
+	shape: MaskShape;
+	/** Whether the mask is currently enabled. Default true. */
+	enabled: boolean;
+	/** Horizontal position of the mask center, as a fraction of canvas width (0.0 = left, 1.0 = right). Default 0.5. */
+	x: number;
+	/** Vertical position of the mask center, as a fraction of canvas height (0.0 = top, 1.0 = bottom). Default 0.5. */
+	y: number;
+	/** Horizontal scale of the mask, as a fraction of canvas width. Default 0.8. */
+	scaleX: number;
+	/** Vertical scale of the mask, as a fraction of canvas height. Default 0.8. */
+	scaleY: number;
+	/** Mask rotation in degrees. Default 0. */
+	rotation: number;
+	/** Feather (soft edge) in pixels. 0 = hard edge. Default 0. */
+	feather: number;
+	/** Corner radius for rectangle shape, 0-100. Default 0. */
+	roundCorners: number;
+	/** Invert the mask so the shape becomes the hidden region. Default false. */
+	inverted: boolean;
+}
+
 // ---- Video Element ----
 
 export interface VideoElement extends BaseTimelineElement {
@@ -300,6 +338,16 @@ export interface VideoElement extends BaseTimelineElement {
 	audioNormalization?: AudioNormalization;
 	/** Voice enhancement DSP settings. */
 	voiceEnhancement?: VoiceEnhancement;
+	/**
+	 * Pitch shift in semitones, applied without changing tempo.
+	 * Range: -12 (octave down) to +12 (octave up). Default 0 (no shift).
+	 * Only applied when `keepPitch` is true.
+	 */
+	pitchShift?: number;
+	/** When true, pitch is preserved at the original value as speed changes. Default false. */
+	keepPitch?: boolean;
+	/** Optional canvas clip mask applied when rendering. */
+	mask?: ClipMask;
 }
 
 // ---- Image Element ----
@@ -318,6 +366,8 @@ export interface ImageElement extends BaseTimelineElement {
 	animationIn?: ClipAnimation;
 	/** Exit animation applied at clip end. */
 	animationOut?: ClipAnimation;
+	/** Optional canvas clip mask applied when rendering. */
+	mask?: ClipMask;
 }
 
 // ---- Text Effects ----

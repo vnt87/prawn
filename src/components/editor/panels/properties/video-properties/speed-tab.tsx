@@ -94,16 +94,51 @@ export function SpeedTab({
 						</div>
 					</PropertyItem>
 
-					{/* Change audio pitch (stored, pitch shifting is P4+) */}
+					{/* Pitch: preserve pitch when changing speed */}
 					<PropertyItem>
 						<PropertyItemLabel>{t("properties.video.speed.changePitch")}</PropertyItemLabel>
-						<div className="flex flex-col items-end gap-1">
-							<Switch disabled />
-							<span className="text-[10px] bg-secondary px-2 py-0.5 rounded text-muted-foreground">
-								{t("common.comingSoon")}
-							</span>
-						</div>
+						<Switch
+							checked={(element as VideoElement).keepPitch ?? false}
+							onCheckedChange={(v) => {
+								editor.timeline.updateElements({
+									updates: [{ trackId, elementId: element.id, updates: { keepPitch: v } }],
+								});
+							}}
+						/>
 					</PropertyItem>
+
+					{/* Pitch shift slider (only shown when keepPitch is active) */}
+					{(element as VideoElement).keepPitch && (
+						<PropertyItem direction="column" className="items-stretch gap-2">
+							<div className="flex justify-between">
+								<PropertyItemLabel className="text-muted-foreground">
+									{t("properties.video.speed.pitchShift")}
+								</PropertyItemLabel>
+								<span className="text-xs bg-secondary px-2 py-0.5 rounded">
+									{((element as VideoElement).pitchShift ?? 0) > 0 ? "+" : ""}
+									{(element as VideoElement).pitchShift ?? 0} st
+								</span>
+							</div>
+							<Slider
+								value={[(element as VideoElement).pitchShift ?? 0]}
+								min={-12}
+								max={12}
+								step={1}
+								onValueChange={([v]) => {
+									editor.timeline.updateElements({
+										updates: [{ trackId, elementId: element.id, updates: { pitchShift: v } }],
+										pushHistory: false,
+									});
+								}}
+								onPointerUp={() => {
+									editor.timeline.updateElements({
+										updates: [{ trackId, elementId: element.id, updates: { pitchShift: (element as VideoElement).pitchShift ?? 0 } }],
+										pushHistory: true,
+									});
+								}}
+							/>
+						</PropertyItem>
+					)}
 
 				</div>
 			</PropertyGroup>

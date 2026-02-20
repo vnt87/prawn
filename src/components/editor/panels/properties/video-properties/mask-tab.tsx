@@ -1,4 +1,6 @@
-import type { ImageElement, VideoElement } from "@/types/timeline";
+"use client";
+
+import type { ClipMask, ImageElement, MaskShape, VideoElement } from "@/types/timeline";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -6,16 +8,11 @@ import {
     RectangleHorizontal,
     Star,
     Heart,
-    Type,
-    Brush,
-    PenTool,
     Layout,
     Film,
     RefreshCcw,
     ChevronUp,
     ChevronDown,
-    Lock,
-    Maximize2,
 } from "lucide-react";
 import {
     PropertyGroup,
@@ -23,51 +20,74 @@ import {
     PropertyItemLabel,
 } from "../property-item";
 import { cn } from "@/utils/ui";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { useEditor } from "@/hooks/use-editor";
+
+const DEFAULT_MASK: ClipMask = {
+    shape: "rectangle",
+    enabled: true,
+    x: 0.5,
+    y: 0.5,
+    scaleX: 0.8,
+    scaleY: 0.8,
+    rotation: 0,
+    feather: 0,
+    roundCorners: 0,
+    inverted: false,
+};
 
 export function MaskTab({
-    element: _element,
-    trackId: _trackId,
+    element,
+    trackId,
 }: {
     element: VideoElement | ImageElement;
-    /** Reserved for future mask persistence via updateElements */
     trackId: string;
 }) {
     const { t } = useTranslation();
-    const [selectedShape, setSelectedShape] = useState<string>("rectangle");
+    const editor = useEditor();
 
-    const shapes = [
+    const mask: ClipMask = element.mask ?? { ...DEFAULT_MASK, enabled: false };
+
+    function updateMask(updates: Partial<ClipMask>) {
+        editor.timeline.updateElements({
+            updates: [{ trackId, elementId: element.id, updates: { mask: { ...mask, ...updates } } }],
+        });
+    }
+
+    function removeMask() {
+        editor.timeline.updateElements({
+            updates: [{ trackId, elementId: element.id, updates: { mask: undefined } }],
+        });
+    }
+
+    const shapes: { id: MaskShape; label: string; icon: React.ElementType }[] = [
         { id: "split", label: t("properties.video.mask.shapes.split"), icon: Layout },
         { id: "filmstrip", label: t("properties.video.mask.shapes.filmstrip"), icon: Film },
         { id: "circle", label: t("properties.video.mask.shapes.circle"), icon: Circle },
         { id: "rectangle", label: t("properties.video.mask.shapes.rectangle"), icon: RectangleHorizontal },
         { id: "stars", label: t("properties.video.mask.shapes.stars"), icon: Star },
         { id: "heart", label: t("properties.video.mask.shapes.heart"), icon: Heart },
-        { id: "text", label: t("properties.video.mask.shapes.text"), icon: Type },
-        { id: "brush", label: t("properties.video.mask.shapes.brush"), icon: Brush },
-        { id: "pen", label: t("properties.video.mask.shapes.pen"), icon: PenTool },
     ];
 
     return (
         <div className="flex flex-col pb-20">
             <PropertyGroup title={t("properties.video.mask.title")} defaultExpanded={true} collapsible={false}>
+                {/* Mask on/off toggle */}
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                        <Switch defaultChecked />
+                        <Switch
+                            checked={mask.enabled}
+                            onCheckedChange={(v) => updateMask({ enabled: v })}
+                        />
                         <span className="text-xs font-medium">{t("properties.video.mask.title")}</span>
                     </div>
-                </div>
-
-                {/* Selected Mask Badge */}
-                <div className="flex items-center gap-2 mb-4">
-                    <div className="bg-secondary/50 px-3 py-1 rounded-full text-xs flex items-center gap-2">
-                        Mask1 {shapes.find((s) => s.id === selectedShape)?.label}
-                    </div>
-                    <Button variant="ghost" size="icon" className="size-6 rounded-full">
-                        <span className="text-lg leading-none">+</span>
-                    </Button>
+                    {element.mask && (
+                        <Button variant="ghost" size="sm" className="h-6 px-2 text-xs text-muted-foreground" onClick={removeMask}>
+                            <RefreshCcw className="size-3 mr-1" />
+                            {t("properties.video.adjust.resetAll")}
+                        </Button>
+                    )}
                 </div>
 
                 {/* Shape Grid */}
@@ -76,12 +96,12 @@ export function MaskTab({
                         <div
                             key={shape.id}
                             className="flex flex-col items-center gap-1 cursor-pointer group"
-                            onClick={() => setSelectedShape(shape.id)}
+                            onClick={() => updateMask({ shape: shape.id, enabled: true })}
                         >
                             <div
                                 className={cn(
                                     "size-10 rounded border flex items-center justify-center transition-colors",
-                                    selectedShape === shape.id
+                                    mask.shape === shape.id && mask.enabled
                                         ? "border-primary bg-primary/10 text-primary"
                                         : "border-border bg-card text-muted-foreground group-hover:border-primary/50"
                                 )}
@@ -96,103 +116,137 @@ export function MaskTab({
                 </div>
             </PropertyGroup>
 
-            {/* Mask Settings */}
+            {/* Mask Settings — only editable when enabled */}
             <PropertyGroup title={t("properties.video.mask.settings")} defaultExpanded={true}>
                 <div className="space-y-4">
+                    {/* Position */}
                     <PropertyItem>
                         <PropertyItemLabel>{t("properties.video.basic.position")}</PropertyItemLabel>
                         <div className="flex gap-2">
-                            <div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
-                                <span className="text-muted-foreground text-xs">X</span>
-                                <div className="flex-1 text-center text-xs">0</div>
-                                <div className="flex flex-col -gap-1">
-                                    <ChevronUp className="size-2 text-muted-foreground cursor-pointer" />
-                                    <ChevronDown className="size-2 text-muted-foreground cursor-pointer" />
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
-                                <span className="text-muted-foreground text-xs">Y</span>
-                                <div className="flex-1 text-center text-xs">0</div>
-                                <div className="flex flex-col -gap-1">
-                                    <ChevronUp className="size-2 text-muted-foreground cursor-pointer" />
-                                    <ChevronDown className="size-2 text-muted-foreground cursor-pointer" />
-                                </div>
-                            </div>
+                            <NumericInput
+                                label="X"
+                                value={Math.round(mask.x * 100)}
+                                onChange={(v) => updateMask({ x: v / 100 })}
+                                disabled={!mask.enabled}
+                            />
+                            <NumericInput
+                                label="Y"
+                                value={Math.round(mask.y * 100)}
+                                onChange={(v) => updateMask({ y: v / 100 })}
+                                disabled={!mask.enabled}
+                            />
                         </div>
                     </PropertyItem>
 
-                    <PropertyItem>
-                        <PropertyItemLabel>{t("properties.video.basic.rotate")}</PropertyItemLabel>
-                        <div className="flex gap-2 items-center">
-                            <div className="flex items-center gap-1 bg-secondary rounded px-2 py-1 w-20">
-                                <div className="flex-1 text-center text-xs">0.0°</div>
-                                <div className="flex flex-col -gap-1">
-                                    <ChevronUp className="size-2 text-muted-foreground cursor-pointer" />
-                                    <ChevronDown className="size-2 text-muted-foreground cursor-pointer" />
-                                </div>
-                            </div>
-                            <div className="size-6 rounded-full border border-muted-foreground/30 flex items-center justify-center relative cursor-pointer">
-                                <div className="absolute top-1/2 left-1/2 w-2 h-0.5 bg-primary -translate-x-1/2 -translate-y-1/2 rotate-45" />
-                            </div>
-                        </div>
-                    </PropertyItem>
-
+                    {/* Scale */}
                     <PropertyItem>
                         <PropertyItemLabel>{t("properties.video.scale")}</PropertyItemLabel>
-                        <div className="flex gap-2 items-center">
-                            <div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
-                                <Maximize2 className="size-3 text-muted-foreground rotate-90" />
-                                <div className="flex-1 text-center text-xs">540</div>
-                                <div className="flex flex-col -gap-1">
-                                    <ChevronUp className="size-2 text-muted-foreground cursor-pointer" />
-                                    <ChevronDown className="size-2 text-muted-foreground cursor-pointer" />
-                                </div>
-                            </div>
-                            <Lock className="size-3 text-muted-foreground" />
-                            <div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
-                                <Maximize2 className="size-3 text-muted-foreground" />
-                                <div className="flex-1 text-center text-xs">540</div>
-                                <div className="flex flex-col -gap-1">
-                                    <ChevronUp className="size-2 text-muted-foreground cursor-pointer" />
-                                    <ChevronDown className="size-2 text-muted-foreground cursor-pointer" />
-                                </div>
-                            </div>
+                        <div className="flex gap-2">
+                            <NumericInput
+                                label="W"
+                                value={Math.round(mask.scaleX * 100)}
+                                onChange={(v) => updateMask({ scaleX: v / 100 })}
+                                disabled={!mask.enabled}
+                            />
+                            <NumericInput
+                                label="H"
+                                value={Math.round(mask.scaleY * 100)}
+                                onChange={(v) => updateMask({ scaleY: v / 100 })}
+                                disabled={!mask.enabled}
+                            />
                         </div>
                     </PropertyItem>
 
+                    {/* Rotation */}
+                    <PropertyItem>
+                        <PropertyItemLabel>{t("properties.video.basic.rotate")}</PropertyItemLabel>
+                        <NumericInput
+                            label="°"
+                            value={mask.rotation}
+                            onChange={(v) => updateMask({ rotation: v })}
+                            disabled={!mask.enabled}
+                        />
+                    </PropertyItem>
+
+                    {/* Feather */}
                     <PropertyItem direction="column" className="items-stretch gap-2">
                         <div className="flex justify-between">
                             <PropertyItemLabel>{t("properties.video.mask.feather")}</PropertyItemLabel>
-                            <div className="bg-secondary px-2 py-0.5 rounded text-[10px] min-w-[30px] text-center">0</div>
+                            <div className="bg-secondary px-2 py-0.5 rounded text-[10px] min-w-[30px] text-center">{mask.feather}</div>
                         </div>
-                        <Slider defaultValue={[0]} max={100} step={1} />
+                        <Slider
+                            value={[mask.feather]}
+                            min={0}
+                            max={50}
+                            step={1}
+                            disabled={!mask.enabled}
+                            onValueChange={([v]) => updateMask({ feather: v })}
+                        />
                     </PropertyItem>
 
-                    <PropertyItem direction="column" className="items-stretch gap-2">
-                        <div className="flex justify-between">
-                            <PropertyItemLabel>{t("properties.video.mask.roundCorners")}</PropertyItemLabel>
-                            <div className="bg-secondary px-2 py-0.5 rounded text-[10px] min-w-[30px] text-center">0</div>
-                        </div>
-                        <Slider defaultValue={[0]} max={100} step={1} />
-                    </PropertyItem>
-                </div>
-            </PropertyGroup>
+                    {/* Round Corners (rectangle only) */}
+                    {mask.shape === "rectangle" && (
+                        <PropertyItem direction="column" className="items-stretch gap-2">
+                            <div className="flex justify-between">
+                                <PropertyItemLabel>{t("properties.video.mask.roundCorners")}</PropertyItemLabel>
+                                <div className="bg-secondary px-2 py-0.5 rounded text-[10px] min-w-[30px] text-center">{mask.roundCorners}</div>
+                            </div>
+                            <Slider
+                                value={[mask.roundCorners]}
+                                min={0}
+                                max={100}
+                                step={1}
+                                disabled={!mask.enabled}
+                                onValueChange={([v]) => updateMask({ roundCorners: v })}
+                            />
+                        </PropertyItem>
+                    )}
 
-            {/* Track Mask */}
-            <PropertyGroup title={t("properties.video.mask.track")} defaultExpanded={false}>
-                <div className="space-y-4">
+                    {/* Invert toggle */}
                     <PropertyItem>
-                        <PropertyItemLabel>{t("properties.video.mask.direction")}</PropertyItemLabel>
-                        <div className="bg-secondary rounded px-3 py-1.5 text-xs w-full max-w-[200px] flex justify-between items-center cursor-pointer">
-                            {t("properties.video.mask.both")}
-                            <ChevronDown className="size-3 opacity-50" />
-                        </div>
+                        <PropertyItemLabel>Invert</PropertyItemLabel>
+                        <Switch
+                            checked={mask.inverted}
+                            disabled={!mask.enabled}
+                            onCheckedChange={(v) => updateMask({ inverted: v })}
+                        />
                     </PropertyItem>
-                    <div className="flex justify-end">
-                        <Button size="sm" className="h-7 px-4">{t("properties.video.mask.trackBtn")}</Button>
-                    </div>
                 </div>
             </PropertyGroup>
+        </div>
+    );
+}
+
+// ── Tiny numeric input helper ──────────────────────────────────────────────
+
+function NumericInput({
+    label,
+    value,
+    onChange,
+    disabled = false,
+}: {
+    label: string;
+    value: number;
+    onChange: (v: number) => void;
+    disabled?: boolean;
+}) {
+    return (
+        <div className={cn("flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1", disabled && "opacity-50")}>
+            <span className="text-muted-foreground text-xs">{label}</span>
+            <input
+                type="number"
+                value={value}
+                disabled={disabled}
+                className="flex-1 text-center text-xs bg-transparent border-none outline-none w-0 min-w-0"
+                onChange={(e) => {
+                    const n = parseFloat(e.target.value);
+                    if (!isNaN(n)) onChange(n);
+                }}
+            />
+            <div className="flex flex-col gap-0">
+                <ChevronUp className="size-2 text-muted-foreground cursor-pointer" onClick={() => !disabled && onChange(value + 1)} />
+                <ChevronDown className="size-2 text-muted-foreground cursor-pointer" onClick={() => !disabled && onChange(value - 1)} />
+            </div>
         </div>
     );
 }

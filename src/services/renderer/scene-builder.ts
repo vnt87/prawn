@@ -68,6 +68,7 @@ export function buildScene(params: BuildSceneParams) {
 					blendMode: element.blendMode,
 					animationIn: element.animationIn,
 					animationOut: element.animationOut,
+					mask: element.mask,
 				};
 
 				if (mediaAsset.type === "video") {

@@ -1,6 +1,6 @@
 import type { CanvasRenderer } from "../canvas-renderer";
 import { BaseNode } from "./base-node";
-import type { AnimationType, ClipAnimation, Transform, VideoFilters, SpringConfig } from "@/types/timeline";
+import type { AnimationType, ClipAnimation, ClipMask, Transform, VideoFilters, SpringConfig } from "@/types/timeline";
 import { spring, interpolate, Easing, SpringPresets } from "@/lib/animation/remotion-animations";
 import { lutCache, } from "@/services/lut-cache/service";
 import { sampleLut3D } from "@/lib/lut/cube-parser";
@@ -25,6 +25,8 @@ export interface VisualNodeParams {
 	animationIn?: ClipAnimation;
 	/** Exit animation applied at clip end. */
 	animationOut?: ClipAnimation;
+	/** Optional clip mask applied before drawing. */
+	mask?: ClipMask;
 }
 
 /** Intermediate transform overrides produced by an animation frame calculation. */
@@ -491,6 +493,88 @@ export abstract class VisualNode<
 	}
 
 	/**
+	 * Build a Path2D for the given ClipMask shape and bounding box.
+	 * If mask.inverted is true, an outer canvas rect is added first so
+	 * ctx.clip("evenodd") makes the shape the *hidden* region.
+	 */
+	private buildMaskPath(
+		mask: ClipMask,
+		x: number,
+		y: number,
+		w: number,
+		h: number,
+	): Path2D {
+		const path = new Path2D();
+
+		if (mask.inverted) {
+			// Large outer rect: with evenodd fill-rule this inverts the mask
+			path.rect(-99999, -99999, 999999, 999999);
+		}
+
+		switch (mask.shape) {
+			case "rectangle": {
+				const r = (mask.roundCorners / 100) * Math.min(w, h) / 2;
+				if (r > 0) {
+					path.roundRect(x, y, w, h, r);
+				} else {
+					path.rect(x, y, w, h);
+				}
+				break;
+			}
+			case "circle":
+				path.ellipse(x + w / 2, y + h / 2, w / 2, h / 2, 0, 0, Math.PI * 2);
+				break;
+
+			case "split":
+				// Top half only
+				path.rect(x, y, w, h / 2);
+				break;
+
+			case "filmstrip": {
+				// Three vertical strips
+				const sw = w / 3;
+				path.rect(x, y, sw * 0.8, h);
+				path.rect(x + sw * 1.1, y, sw * 0.8, h);
+				path.rect(x + sw * 2.2, y, sw * 0.8, h);
+				break;
+			}
+
+			case "stars": {
+				const cx = x + w / 2;
+				const cy = y + h / 2;
+				const outerR = Math.min(w, h) / 2;
+				const innerR = outerR * 0.4;
+				const points = 5;
+				for (let i = 0; i < points * 2; i++) {
+					const angle = (i * Math.PI) / points - Math.PI / 2;
+					const r = i % 2 === 0 ? outerR : innerR;
+					const px = cx + Math.cos(angle) * r;
+					const py = cy + Math.sin(angle) * r;
+					if (i === 0) path.moveTo(px, py);
+					else path.lineTo(px, py);
+				}
+				path.closePath();
+				break;
+			}
+
+			case "heart": {
+				const cx = x + w / 2;
+				const top = y + h * 0.35;
+				const bottom = y + h * 0.97;
+				path.moveTo(cx, top);
+				path.bezierCurveTo(cx, y + h * 0.05, x, y + h * 0.05, x, top);
+				path.bezierCurveTo(x, y + h * 0.6, cx, y + h * 0.75, cx, bottom);
+				path.bezierCurveTo(cx, y + h * 0.75, x + w, y + h * 0.6, x + w, top);
+				path.bezierCurveTo(x + w, y + h * 0.05, cx, y + h * 0.05, cx, top);
+				path.closePath();
+				break;
+			}
+		}
+
+		return path;
+	}
+
+	/**
 	 * Core rendering method: applies transform, opacity, blend mode, CSS filters,
 	 * animation overrides, fade overlay, and vignette overlay.
 	 */
@@ -577,6 +661,32 @@ export abstract class VisualNode<
 			renderer.context.translate(centerX, centerY);
 			renderer.context.scale(flipX, flipY);
 			renderer.context.translate(-centerX, -centerY);
+		}
+
+		// ---- Apply canvas clip mask (if enabled) ----
+		const mask = this.params.mask;
+		if (mask && mask.enabled) {
+			const mW = renderer.width * mask.scaleX;
+			const mH = renderer.height * mask.scaleY;
+			const mX = renderer.width * mask.x - mW / 2;
+			const mY = renderer.height * mask.y - mH / 2;
+
+			if (mask.feather > 0) {
+				// Feather via shadow clipping trick:
+				// draw an outer rect as shadow source, restrict shadow to canvas
+				renderer.context.save();
+				renderer.context.shadowBlur = mask.feather * 2;
+				renderer.context.shadowColor = "black";
+				renderer.context.shadowOffsetX = renderer.width * 2;
+				renderer.context.shadowOffsetY = 0;
+				// Clip to shadow from a shape offset far to the right
+				const path = this.buildMaskPath(mask, mX - renderer.width * 2, mY, mW, mH);
+				renderer.context.clip(path, mask.inverted ? "evenodd" : "nonzero");
+				renderer.context.restore();
+			} else {
+				const path = this.buildMaskPath(mask, mX, mY, mW, mH);
+				renderer.context.clip(path, mask.inverted ? "evenodd" : "nonzero");
+			}
 		}
 
 		// ---- Draw the media ----

@@ -163,6 +163,12 @@ export interface AudioClipSource {
 	fadeOut: number;
 	/** Playback speed. Default 1.0. */
 	speed: number;
+	/**
+	 * Pitch shift in cents (100 cents = 1 semitone).
+	 * Applied via AudioBufferSourceNode.detune without changing tempo.
+	 * Default 0 (no shift).
+	 */
+	pitchShiftCents: number;
 	/** Audio normalization settings. */
 	normalization?: AudioNormalization;
 	/** Voice enhancement DSP settings. */
@@ -230,6 +236,7 @@ async function fetchLibraryAudioClip({
 			fadeIn: 0,
 			fadeOut: 0,
 			speed: element.speed ?? 1,
+			pitchShiftCents: 0,
 		};
 	} catch (error) {
 		console.warn("Failed to fetch library audio:", error);
@@ -285,6 +292,10 @@ function collectMediaAudioClip({
 		fadeIn,
 		fadeOut,
 		speed: element.speed ?? 1,
+		// pitchShift in semitones → cents. Only apply when keepPitch is enabled.
+		pitchShiftCents: ("keepPitch" in element && element.keepPitch)
+			? ((element as { pitchShift?: number }).pitchShift ?? 0) * 100
+			: 0,
 		normalization,
 		voiceEnhancement,
 	};

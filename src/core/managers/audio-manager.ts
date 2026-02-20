@@ -287,6 +287,10 @@ export class AudioManager {
 			const node = audioContext.createBufferSource();
 			node.buffer = buffer;
 			node.playbackRate.value = clip.speed ?? 1;
+			// Pitch shift in cents (100 = 1 semitone). Applied independently of tempo.
+			if (clip.pitchShiftCents !== 0) {
+				node.detune.value = clip.pitchShiftCents;
+			}
 
 			// Route through voice enhancement chain if enabled, otherwise directly to clipGain
 			if (voiceChain) {

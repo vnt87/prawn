@@ -236,7 +236,8 @@
                 "standard": "Standard",
                 "label": "Speed",
                 "effectiveDuration": "Effective duration",
-                "changePitch": "Change audio pitch"
+                "changePitch": "Change audio pitch",
+                "pitchShift": "Pitch shift (semitones)"
             },
             "audio": {
                 "basic": "Basic",

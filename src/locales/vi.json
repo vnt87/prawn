@@ -236,7 +236,8 @@
                 "standard": "Tiêu chuẩn",
                 "label": "Tốc độ",
                 "effectiveDuration": "Thời lượng thực tế",
-                "changePitch": "Thay đổi tông độ âm thanh"
+                "changePitch": "Thay đổi tông độ âm thanh",
+                "pitchShift": "Điều chỉnh pitch (bán âm)"
             },
             "audio": {
                 "basic": "Cơ bản",
