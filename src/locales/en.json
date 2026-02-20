@@ -430,6 +430,9 @@
         "assets": "Assets",
         "storage": "Storage",
         "ai": "AI",
+        "aiFeatures": "AI Features",
+        "aiFeaturesEnable": "Enable AI Features",
+        "aiFeaturesEnableHint": "Toggle to enable or disable all AI-powered features in the editor",
         "faceswap": "Face Swap",
         "upstash": {
             "title": "Upstash Redis",

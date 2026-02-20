@@ -36,6 +36,8 @@ import { Snowflake, Copy, Trash2, Scissors, Eye, EyeOff, Volume2, VolumeX, Audio
 import { uppercase } from "@/utils/string";
 import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
+import { getAllKeyframeTimes } from "@/lib/keyframe/keyframe-manager";
+import type { KeyframeData } from "@/types/keyframe";
 
 function getDisplayShortcut(action: TAction) {
 	const { defaultShortcuts } = getActionDefinition(action);
@@ -360,6 +362,14 @@ function ElementInner({
 					/>
 				</>
 			)}
+
+			{/* Keyframe diamond markers */}
+			{"keyframes" in element && element.keyframes && element.keyframes.length > 0 && (
+				<KeyframeDiamonds
+					element={element}
+					zoomLevel={zoomLevel}
+				/>
+			)}
 		</div>
 	);
 }
@@ -428,7 +438,8 @@ function FadeHandle({
 
 /**
  * Visual overlay showing the fade region on a timeline element.
- * Renders a diagonal line with a semi-transparent area indicating the fade.
+ * Renders a curved easing line with a semi-transparent area indicating the fade,
+ * similar to Sony Vegas's bezier-curved fade overlays.
  */
 function FadeOverlay({
 	side,
@@ -445,6 +456,16 @@ function FadeOverlay({
 
 	const isLeft = side === "left";
 
+	// Bezier curve paths for easing visualization
+	// Left fade: curves from bottom-left (0,100) to top-right (100,0) with easing
+	// Right fade: curves from bottom-right (100,100) to top-left (0,0) with easing
+	const fillPath = isLeft
+		? "M 0,0 L 100,0 L 100,0 Q 50,0 0,100 Z"  // filled area above the curve
+		: "M 0,0 L 100,0 L 100,100 Q 50,0 0,0 Z";
+	const curvePath = isLeft
+		? "M 0,100 Q 50,0 100,0"   // ease-out curve
+		: "M 0,0 Q 50,0 100,100";  // ease-in curve (mirrored)
+
 	return (
 		<div
 			className="pointer-events-none absolute top-0 z-40"
@@ -454,7 +475,6 @@ function FadeOverlay({
 				height: "100%",
 			}}
 		>
-			{/* Diagonal gradient overlay */}
 			<svg
 				width="100%"
 				height="100%"
@@ -462,17 +482,12 @@ function FadeOverlay({
 				viewBox="0 0 100 100"
 				className="absolute inset-0"
 			>
-				{/* Semi-transparent fill above the diagonal line */}
-				<polygon
-					points={isLeft ? "0,0 100,0 0,100" : "0,0 100,0 100,100"}
-					fill="rgba(0,0,0,0.45)"
-				/>
-				{/* Diagonal line */}
-				<line
-					x1={isLeft ? "0" : "100"}
-					y1="100"
-					x2={isLeft ? "100" : "0"}
-					y2="0"
+				{/* Semi-transparent fill above the easing curve */}
+				<path d={fillPath} fill="rgba(0,0,0,0.45)" />
+				{/* Easing curve line */}
+				<path
+					d={curvePath}
+					fill="none"
 					stroke="rgba(255,255,255,0.7)"
 					strokeWidth="1.5"
 					vectorEffect="non-scaling-stroke"
@@ -839,5 +854,46 @@ function ActionMenuItem({
 		>
 			{children}
 		</ContextMenuItem>
+	);
+}
+
+/**
+ * Render small diamond markers at the bottom of a timeline element
+ * to indicate keyframe positions. Gold/amber colored to match NLE conventions.
+ */
+function KeyframeDiamonds({
+	element,
+	zoomLevel,
+}: {
+	element: TimelineElementType & { keyframes?: KeyframeData };
+	zoomLevel: number;
+}) {
+	const times = getAllKeyframeTimes(element.keyframes);
+	if (times.length === 0) return null;
+
+	const pxPerSec = TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
+
+	return (
+		<div className="pointer-events-none absolute bottom-0 left-0 right-0 z-30" style={{ height: "10px" }}>
+			{times.map((time) => {
+				const leftPx = time * pxPerSec;
+				return (
+					<div
+						key={time}
+						className="absolute"
+						style={{
+							left: `${leftPx}px`,
+							bottom: "1px",
+							transform: "translateX(-3px)",
+						}}
+					>
+						{/* Small diamond shape */}
+						<div
+							className="size-[6px] rotate-45 bg-amber-400 border border-amber-500/50 shadow-sm"
+						/>
+					</div>
+				);
+			})}
+		</div>
 	);
 }

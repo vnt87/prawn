@@ -1,6 +1,7 @@
 "use client";
 
 import type { ImageElement, VideoElement } from "@/types/timeline";
+import type { KeyframeData } from "@/types/keyframe";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { KeyframeToggleButton } from "../keyframe-toggle-button";
 
 export function BasicVideoTab({
 	element,
@@ -59,6 +61,39 @@ export function BasicVideoTab({
 		{ value: "difference", label: t("properties.video.basic.blendModes.difference") },
 		{ value: "exclusion", label: t("properties.video.basic.blendModes.exclusion") },
 	];
+
+	// ---- Keyframe helpers ----
+
+	const project = editor.project.getActive();
+	const playheadTime = project.timelineViewState?.playheadTime ?? 0;
+	/** Time relative to clip start (used for keyframe positioning). */
+	const relativeTime = Math.max(0, playheadTime - element.startTime);
+
+	/** Update keyframes on this element via the command system. */
+	function updateKeyframes(newKeyframes: KeyframeData) {
+		editor.timeline.updateElements({
+			updates: [{ trackId, elementId: element.id, updates: { keyframes: newKeyframes } }],
+			pushHistory: true,
+		});
+	}
+
+	/** Seek the playhead to a relative time offset within this clip. */
+	function seekToRelativeTime(time: number) {
+		editor.project.setTimelineViewState({
+			viewState: {
+				...(project.timelineViewState ?? { zoomLevel: 1, scrollLeft: 0, playheadTime: 0 }),
+				playheadTime: element.startTime + time,
+			},
+		});
+	}
+
+	/** Common props for KeyframeToggleButton instances. */
+	const kfProps = {
+		element: element as unknown as import("@/types/timeline").TimelineElement,
+		relativeTime,
+		onKeyframesChange: updateKeyframes,
+		onSeekToRelativeTime: seekToRelativeTime,
+	};
 
 	// ---- Helpers: push element updates through the command system ----
 
@@ -126,6 +161,7 @@ export function BasicVideoTab({
 						<div className="flex justify-between items-center">
 							<div className="flex items-center gap-1.5">
 								<PropertyItemLabel>{t("properties.video.scale")}</PropertyItemLabel>
+								<KeyframeToggleButton property="transform.scale" {...kfProps} />
 								<TooltipProvider>
 									<Tooltip delayDuration={300}>
 										<TooltipTrigger asChild>
@@ -188,7 +224,10 @@ export function BasicVideoTab({
 
 					{/* Position */}
 					<PropertyItem>
-						<PropertyItemLabel>{t("properties.video.basic.position")}</PropertyItemLabel>
+						<div className="flex items-center gap-1.5">
+							<PropertyItemLabel>{t("properties.video.basic.position")}</PropertyItemLabel>
+							<KeyframeToggleButton property="transform.position.x" {...kfProps} showNav={false} />
+						</div>
 						<div className="flex gap-2">
 							{/* X */}
 							<div className="flex items-center gap-2 bg-secondary rounded px-2 py-1 flex-1">
@@ -229,7 +268,10 @@ export function BasicVideoTab({
 
 					{/* Rotation */}
 					<PropertyItem>
-						<PropertyItemLabel>{t("properties.video.basic.rotate")}</PropertyItemLabel>
+						<div className="flex items-center gap-1.5">
+							<PropertyItemLabel>{t("properties.video.basic.rotate")}</PropertyItemLabel>
+							<KeyframeToggleButton property="transform.rotate" {...kfProps} showNav={false} />
+						</div>
 						<div className="flex items-center gap-2">
 							<input
 								className="bg-secondary rounded px-2 py-0.5 text-xs w-20 text-right outline-none"
@@ -319,7 +361,10 @@ export function BasicVideoTab({
 				<div className="space-y-4">
 					{/* Opacity */}
 					<PropertyItem>
-						<PropertyItemLabel>{t("properties.video.basic.opacity")}</PropertyItemLabel>
+						<div className="flex items-center gap-1.5">
+							<PropertyItemLabel>{t("properties.video.basic.opacity")}</PropertyItemLabel>
+							<KeyframeToggleButton property="opacity" {...kfProps} />
+						</div>
 						<div className="flex items-center gap-2">
 							<Slider
 								value={[opacityPercent]}

@@ -1,7 +1,9 @@
 import type { CanvasRenderer } from "../canvas-renderer";
 import { BaseNode } from "./base-node";
 import type { AnimationType, ClipAnimation, ClipMask, Transform, VideoFilters, SpringConfig } from "@/types/timeline";
+import type { KeyframeData } from "@/types/keyframe";
 import { spring, interpolate, Easing, SpringPresets } from "@/lib/animation/remotion-animations";
+import { evaluateKeyframes, applyKeyframesToVisualParams } from "@/lib/keyframe/keyframe-engine";
 import { lutCache, } from "@/services/lut-cache/service";
 import { sampleLut3D } from "@/lib/lut/cube-parser";
 
@@ -27,6 +29,8 @@ export interface VisualNodeParams {
 	animationOut?: ClipAnimation;
 	/** Optional clip mask applied before drawing. */
 	mask?: ClipMask;
+	/** Keyframe animation data. */
+	keyframes?: KeyframeData;
 }
 
 /** Intermediate transform overrides produced by an animation frame calculation. */
@@ -591,7 +595,19 @@ export abstract class VisualNode<
 	}): void {
 		renderer.context.save();
 
-		const { transform, opacity, filters, blendMode, animationIn, animationOut } = this.params;
+		const { transform: baseTransform, opacity: baseOpacity, filters, blendMode, animationIn, animationOut } = this.params;
+
+		// ---- Evaluate keyframes (override static transform/opacity) ----
+		const relativeTime = this._currentLocalTime - this.params.trimStart;
+		let transform = baseTransform;
+		let opacity = baseOpacity;
+
+		if (this.params.keyframes?.length) {
+			const kfValues = evaluateKeyframes(this.params.keyframes, relativeTime);
+			const resolved = applyKeyframesToVisualParams(baseTransform, baseOpacity, kfValues);
+			transform = resolved.transform;
+			opacity = resolved.opacity;
+		}
 
 		// ---- Compute layout geometry ----
 		const containScale = Math.min(

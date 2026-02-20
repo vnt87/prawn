@@ -20,7 +20,7 @@ export function FaceSwapView({ onOpenFaceSwapDialog }: FaceSwapViewProps) {
 	const isConfigured = !!facefusionServiceUrl;
 
 	const handleOpenSettings = () => {
-		openIntegrationsDialog("faceswap" as any);
+		openIntegrationsDialog("ai");
 	};
 
 	return (
@@ -32,8 +32,8 @@ export function FaceSwapView({ onOpenFaceSwapDialog }: FaceSwapViewProps) {
 						<ScanFace className="w-4 h-4 text-primary" />
 						<span className="text-sm font-medium">{t("faceswap.title")}</span>
 					</div>
-					<Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-						{t("common.new")}
+					<Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+						BETA
 					</Badge>
 				</div>
 

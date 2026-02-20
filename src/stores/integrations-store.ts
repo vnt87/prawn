@@ -16,6 +16,9 @@ interface IntegrationsState {
     r2SecretAccessKey: string;
     r2BucketName: string;
 
+    // AI Features - Master Toggle
+    aiFeaturesEnabled: boolean;
+
     // AI - Transcription
     modalTranscriptionUrl: string;
     sttServiceUrl: string;
@@ -34,8 +37,9 @@ interface IntegrationsState {
     facefusionDefaultModel: string;
 
     // Actions
-    setIntegration: (key: keyof Omit<IntegrationsState, "setIntegration" | "facefusionEnableModal">, value: string) => void;
+    setIntegration: (key: keyof Omit<IntegrationsState, "setIntegration" | "facefusionEnableModal" | "aiFeaturesEnabled">, value: string) => void;
     setFacefusionEnableModal: (value: boolean) => void;
+    setAiFeaturesEnabled: (value: boolean) => void;
 }
 
 export const useIntegrationsStore = create<IntegrationsState>()(
@@ -49,6 +53,10 @@ export const useIntegrationsStore = create<IntegrationsState>()(
             r2AccessKeyId: "",
             r2SecretAccessKey: "",
             r2BucketName: "",
+            
+            // AI Features - Master Toggle
+            aiFeaturesEnabled: true,
+            
             modalTranscriptionUrl: "",
             sttServiceUrl: "",
             
@@ -76,6 +84,13 @@ export const useIntegrationsStore = create<IntegrationsState>()(
                 set((state) => ({
                     ...state,
                     facefusionEnableModal: value,
+                }));
+            },
+
+            setAiFeaturesEnabled: (value) => {
+                set((state) => ({
+                    ...state,
+                    aiFeaturesEnabled: value,
                 }));
             },
         }),

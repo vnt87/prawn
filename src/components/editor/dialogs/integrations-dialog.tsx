@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -13,8 +15,10 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { Database, Music, Cloud, Bot, Wand2, ScanFace } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/utils/ui";
 
 export function IntegrationsDialog({
     open,
@@ -55,8 +59,9 @@ export function IntegrationsDialog({
                 store.setIntegration(key as any, value);
             }
         });
-        // Handle boolean facefusionEnableModal separately
+        // Handle boolean values separately
         store.setFacefusionEnableModal(values.facefusionEnableModal);
+        store.setAiFeaturesEnabled(values.aiFeaturesEnabled);
         handleOpenChange(false);
     };
 
@@ -84,11 +89,7 @@ export function IntegrationsDialog({
                             </TabsTrigger>
                             <TabsTrigger value="ai" className="w-full justify-start gap-2 px-3">
                                 <Bot size={16} />
-                                {t("integrations.ai")}
-                            </TabsTrigger>
-                            <TabsTrigger value="faceswap" className="w-full justify-start gap-2 px-3">
-                                <ScanFace size={16} />
-                                {t("integrations.faceswap")}
+                                {t("integrations.aiFeatures")}
                             </TabsTrigger>
                         </TabsList>
 
@@ -204,182 +205,217 @@ export function IntegrationsDialog({
                             </TabsContent>
 
                             <TabsContent value="ai" className="mt-0 space-y-6">
-                                {/* Transcription Services */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2 pb-2 border-b">
-                                        <Bot className="text-muted-foreground" />
-                                        <h3 className="text-lg font-medium">{t("integrations.modal.title")}</h3>
-                                    </div>
-                                    <div className="grid gap-4">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="modalTranscriptionUrl">{t("integrations.modal.transcriptionUrl")}</Label>
-                                            <Input
-                                                id="modalTranscriptionUrl"
-                                                value={values.modalTranscriptionUrl}
-                                                onChange={(e) => handleChange("modalTranscriptionUrl", e.target.value)}
-                                                placeholder="https://user-modal-app.modal.run"
-                                            />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="sttServiceUrl">{t("integrations.stt.url")}</Label>
-                                            <Input
-                                                id="sttServiceUrl"
-                                                value={values.sttServiceUrl}
-                                                onChange={(e) => handleChange("sttServiceUrl", e.target.value)}
-                                                placeholder="http://localhost:8000"
-                                            />
-                                            <p className="text-xs text-muted-foreground">
-                                                {t("integrations.stt.description")}
+                                {/* Master Toggle - AI Features */}
+                                <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 p-4">
+                                    <div className="flex items-center gap-3">
+                                        <Bot className="text-primary h-5 w-5" />
+                                        <div className="space-y-0.5">
+                                            <div className="flex items-center gap-2">
+                                                <Label className="text-base font-medium">{t("integrations.aiFeaturesEnable")}</Label>
+                                                <Badge variant="secondary" className="text-[10px] bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">
+                                                    BETA
+                                                </Badge>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground">
+                                                {t("integrations.aiFeaturesEnableHint")}
                                             </p>
                                         </div>
                                     </div>
+                                    <Switch
+                                        checked={values.aiFeaturesEnabled}
+                                        onCheckedChange={(checked) => 
+                                            setValues((prev) => ({ ...prev, aiFeaturesEnabled: checked }))
+                                        }
+                                    />
                                 </div>
 
-                                {/* AI Video Generation */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2 pb-2 border-b">
-                                        <Wand2 className="text-muted-foreground" />
-                                        <h3 className="text-lg font-medium">{t("integrations.aiVideo.title")}</h3>
-                                    </div>
-                                    
-                                    {/* Provider Selection */}
-                                    <div className="grid gap-2">
-                                        <Label>{t("integrations.aiVideo.provider")}</Label>
-                                        <Select
-                                            value={values.aiVideoProvider}
-                                            onValueChange={(v) => handleChange("aiVideoProvider", v)}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="openai">OpenAI</SelectItem>
-                                                <SelectItem value="anthropic">Anthropic</SelectItem>
-                                                <SelectItem value="custom">Custom Endpoint</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-
-                                    {/* OpenAI Configuration */}
-                                    {values.aiVideoProvider === 'openai' && (
+                                <div className={cn(
+                                    "space-y-6 transition-opacity",
+                                    !values.aiFeaturesEnabled && "opacity-50 pointer-events-none"
+                                )}>
+                                    {/* Transcription Services */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 pb-2 border-b">
+                                            <Wand2 className="text-muted-foreground" />
+                                            <h3 className="text-lg font-medium">{t("integrations.modal.title")}</h3>
+                                        </div>
                                         <div className="grid gap-4">
                                             <div className="grid gap-2">
-                                                <Label htmlFor="openaiApiKey">{t("integrations.aiVideo.openaiApiKey")}</Label>
+                                                <Label htmlFor="modalTranscriptionUrl">{t("integrations.modal.transcriptionUrl")}</Label>
                                                 <Input
-                                                    id="openaiApiKey"
-                                                    type="password"
-                                                    value={values.openaiApiKey}
-                                                    onChange={(e) => handleChange("openaiApiKey", e.target.value)}
-                                                    placeholder="sk-..."
+                                                    id="modalTranscriptionUrl"
+                                                    value={values.modalTranscriptionUrl}
+                                                    onChange={(e) => handleChange("modalTranscriptionUrl", e.target.value)}
+                                                    placeholder="https://user-modal-app.modal.run"
+                                                    disabled={!values.aiFeaturesEnabled}
                                                 />
                                             </div>
                                             <div className="grid gap-2">
-                                                <Label htmlFor="openaiApiBaseUrl">{t("integrations.aiVideo.baseUrl")}</Label>
+                                                <Label htmlFor="sttServiceUrl">{t("integrations.stt.url")}</Label>
                                                 <Input
-                                                    id="openaiApiBaseUrl"
-                                                    value={values.openaiApiBaseUrl}
-                                                    onChange={(e) => handleChange("openaiApiBaseUrl", e.target.value)}
-                                                    placeholder="https://api.openai.com/v1"
+                                                    id="sttServiceUrl"
+                                                    value={values.sttServiceUrl}
+                                                    onChange={(e) => handleChange("sttServiceUrl", e.target.value)}
+                                                    placeholder="http://localhost:8000"
+                                                    disabled={!values.aiFeaturesEnabled}
                                                 />
                                                 <p className="text-xs text-muted-foreground">
-                                                    {t("integrations.aiVideo.baseUrlHint")}
+                                                    {t("integrations.stt.description")}
                                                 </p>
                                             </div>
                                         </div>
-                                    )}
-
-                                    {/* Anthropic Configuration */}
-                                    {values.aiVideoProvider === 'anthropic' && (
-                                        <div className="grid gap-4">
-                                            <div className="grid gap-2">
-                                                <Label htmlFor="anthropicApiKey">{t("integrations.aiVideo.anthropicApiKey")}</Label>
-                                                <Input
-                                                    id="anthropicApiKey"
-                                                    type="password"
-                                                    value={values.anthropicApiKey}
-                                                    onChange={(e) => handleChange("anthropicApiKey", e.target.value)}
-                                                    placeholder="sk-ant-..."
-                                                />
-                                            </div>
-                                            <div className="grid gap-2">
-                                                <Label htmlFor="anthropicApiBaseUrl">{t("integrations.aiVideo.baseUrl")}</Label>
-                                                <Input
-                                                    id="anthropicApiBaseUrl"
-                                                    value={values.anthropicApiBaseUrl}
-                                                    onChange={(e) => handleChange("anthropicApiBaseUrl", e.target.value)}
-                                                    placeholder="https://api.anthropic.com"
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Model Selection */}
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="aiVideoModel">{t("integrations.aiVideo.model")}</Label>
-                                        <Input
-                                            id="aiVideoModel"
-                                            value={values.aiVideoModel}
-                                            onChange={(e) => handleChange("aiVideoModel", e.target.value)}
-                                            placeholder="gpt-4o"
-                                        />
                                     </div>
-                                </div>
-                            </TabsContent>
 
-                            {/* FaceSwap Integration */}
-                            <TabsContent value="faceswap" className="mt-0 space-y-6">
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2 pb-2 border-b">
-                                        <ScanFace className="text-muted-foreground" />
-                                        <h3 className="text-lg font-medium">{t("integrations.facefusion.title")}</h3>
-                                    </div>
-                                    <div className="grid gap-4">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="facefusionServiceUrl">{t("integrations.facefusion.serviceUrl")}</Label>
-                                            <Input
-                                                id="facefusionServiceUrl"
-                                                value={values.facefusionServiceUrl}
-                                                onChange={(e) => handleChange("facefusionServiceUrl", e.target.value)}
-                                                placeholder="http://localhost:8004"
-                                            />
-                                            <p className="text-xs text-muted-foreground">
-                                                {t("integrations.facefusion.serviceUrlHint")}
-                                            </p>
+                                    {/* AI Video Generation */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 pb-2 border-b">
+                                            <Wand2 className="text-muted-foreground" />
+                                            <h3 className="text-lg font-medium">{t("integrations.aiVideo.title")}</h3>
                                         </div>
+                                        
+                                        {/* Provider Selection */}
                                         <div className="grid gap-2">
-                                            <Label htmlFor="facefusionDefaultModel">{t("integrations.facefusion.defaultModel")}</Label>
+                                            <Label>{t("integrations.aiVideo.provider")}</Label>
                                             <Select
-                                                value={values.facefusionDefaultModel}
-                                                onValueChange={(v) => handleChange("facefusionDefaultModel", v)}
+                                                value={values.aiVideoProvider}
+                                                onValueChange={(v) => handleChange("aiVideoProvider", v)}
+                                                disabled={!values.aiFeaturesEnabled}
                                             >
                                                 <SelectTrigger>
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="inswapper_128">InSwapper 128</SelectItem>
-                                                    <SelectItem value="inswapper_128_beta">InSwapper 128 Beta</SelectItem>
-                                                    <SelectItem value="hyperswap_1a_256">HyperSwap 1A 256</SelectItem>
-                                                    <SelectItem value="blendswap_256">BlendSwap 256</SelectItem>
-                                                    <SelectItem value="simswap_256">SimSwap 256</SelectItem>
+                                                    <SelectItem value="openai">OpenAI</SelectItem>
+                                                    <SelectItem value="anthropic">Anthropic</SelectItem>
+                                                    <SelectItem value="custom">Custom Endpoint</SelectItem>
                                                 </SelectContent>
                                             </Select>
-                                            <p className="text-xs text-muted-foreground">
-                                                {t("integrations.facefusion.defaultModelHint")}
-                                            </p>
                                         </div>
-                                        <div className="flex items-center justify-between rounded-lg border p-4">
-                                            <div className="space-y-0.5">
-                                                <Label className="text-base">{t("integrations.facefusion.modalProcessing")}</Label>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {t("integrations.facefusion.modalProcessingHint")}
+
+                                        {/* OpenAI Configuration */}
+                                        {values.aiVideoProvider === 'openai' && (
+                                            <div className="grid gap-4">
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="openaiApiKey">{t("integrations.aiVideo.apiKey")}</Label>
+                                                    <Input
+                                                        id="openaiApiKey"
+                                                        type="password"
+                                                        value={values.openaiApiKey}
+                                                        onChange={(e) => handleChange("openaiApiKey", e.target.value)}
+                                                        placeholder="sk-..."
+                                                        disabled={!values.aiFeaturesEnabled}
+                                                    />
+                                                </div>
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="openaiApiBaseUrl">{t("integrations.aiVideo.apiBaseUrl")}</Label>
+                                                    <Input
+                                                        id="openaiApiBaseUrl"
+                                                        value={values.openaiApiBaseUrl}
+                                                        onChange={(e) => handleChange("openaiApiBaseUrl", e.target.value)}
+                                                        placeholder="https://api.openai.com/v1"
+                                                        disabled={!values.aiFeaturesEnabled}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Anthropic Configuration */}
+                                        {values.aiVideoProvider === 'anthropic' && (
+                                            <div className="grid gap-4">
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="anthropicApiKey">{t("integrations.aiVideo.apiKey")}</Label>
+                                                    <Input
+                                                        id="anthropicApiKey"
+                                                        type="password"
+                                                        value={values.anthropicApiKey}
+                                                        onChange={(e) => handleChange("anthropicApiKey", e.target.value)}
+                                                        placeholder="sk-ant-..."
+                                                        disabled={!values.aiFeaturesEnabled}
+                                                    />
+                                                </div>
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="anthropicApiBaseUrl">{t("integrations.aiVideo.apiBaseUrl")}</Label>
+                                                    <Input
+                                                        id="anthropicApiBaseUrl"
+                                                        value={values.anthropicApiBaseUrl}
+                                                        onChange={(e) => handleChange("anthropicApiBaseUrl", e.target.value)}
+                                                        placeholder="https://api.anthropic.com"
+                                                        disabled={!values.aiFeaturesEnabled}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Model Selection */}
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="aiVideoModel">{t("integrations.aiVideo.model")}</Label>
+                                            <Input
+                                                id="aiVideoModel"
+                                                value={values.aiVideoModel}
+                                                onChange={(e) => handleChange("aiVideoModel", e.target.value)}
+                                                placeholder="gpt-4o"
+                                                disabled={!values.aiFeaturesEnabled}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* FaceSwap / FaceFusion */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 pb-2 border-b">
+                                            <ScanFace className="text-muted-foreground" />
+                                            <h3 className="text-lg font-medium">{t("integrations.facefusion.title")}</h3>
+                                        </div>
+                                        <div className="grid gap-4">
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="facefusionServiceUrl">{t("integrations.facefusion.serviceUrl")}</Label>
+                                                <Input
+                                                    id="facefusionServiceUrl"
+                                                    value={values.facefusionServiceUrl}
+                                                    onChange={(e) => handleChange("facefusionServiceUrl", e.target.value)}
+                                                    placeholder="http://localhost:8004"
+                                                    disabled={!values.aiFeaturesEnabled}
+                                                />
+                                                <p className="text-xs text-muted-foreground">
+                                                    {t("integrations.facefusion.serviceUrlHint")}
                                                 </p>
                                             </div>
-                                            <Switch
-                                                checked={values.facefusionEnableModal}
-                                                onCheckedChange={(checked) => 
-                                                    setValues((prev) => ({ ...prev, facefusionEnableModal: checked }))
-                                                }
-                                            />
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="facefusionDefaultModel">{t("integrations.facefusion.defaultModel")}</Label>
+                                                <Select
+                                                    value={values.facefusionDefaultModel}
+                                                    onValueChange={(v) => handleChange("facefusionDefaultModel", v)}
+                                                    disabled={!values.aiFeaturesEnabled}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="inswapper_128">InSwapper 128</SelectItem>
+                                                        <SelectItem value="inswapper_128_beta">InSwapper 128 Beta</SelectItem>
+                                                        <SelectItem value="hyperswap_1a_256">HyperSwap 1A 256</SelectItem>
+                                                        <SelectItem value="blendswap_256">BlendSwap 256</SelectItem>
+                                                        <SelectItem value="simswap_256">SimSwap 256</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {t("integrations.facefusion.defaultModelHint")}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center justify-between rounded-lg border p-4">
+                                                <div className="space-y-0.5">
+                                                    <Label className="text-base">{t("integrations.facefusion.modalProcessing")}</Label>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {t("integrations.facefusion.modalProcessingHint")}
+                                                    </p>
+                                                </div>
+                                                <Switch
+                                                    checked={values.facefusionEnableModal}
+                                                    onCheckedChange={(checked) => 
+                                                        setValues((prev) => ({ ...prev, facefusionEnableModal: checked }))
+                                                    }
+                                                    disabled={!values.aiFeaturesEnabled}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

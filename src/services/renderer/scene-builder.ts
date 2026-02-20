@@ -69,6 +69,7 @@ export function buildScene(params: BuildSceneParams) {
 					animationIn: element.animationIn,
 					animationOut: element.animationOut,
 					mask: element.mask,
+					keyframes: element.keyframes,
 				};
 
 				if (mediaAsset.type === "video") {

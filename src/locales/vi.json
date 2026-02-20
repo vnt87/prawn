@@ -430,10 +430,10 @@
         "assets": "Tài nguyên",
         "storage": "Lưu trữ",
         "ai": "AI",
+        "aiFeatures": "Tính năng AI",
+        "aiFeaturesEnable": "Bật tính năng AI",
+        "aiFeaturesEnableHint": "Bật hoặc tắt tất cả các tính năng AI trong trình chỉnh sửa",
         "upstash": {
-            "title": "Upstash Redis",
-            "url": "REST URL",
-            "token": "REST Token"
         },
         "freesound": {
             "title": "Freesound",

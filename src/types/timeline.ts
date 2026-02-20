@@ -1,3 +1,5 @@
+import type { KeyframeData } from "./keyframe";
+
 // ---- Scene ----
 
 export interface TScene {
@@ -352,6 +354,8 @@ export interface VideoElement extends BaseTimelineElement {
 	keepPitch?: boolean;
 	/** Optional canvas clip mask applied when rendering. */
 	mask?: ClipMask;
+	/** Keyframe animation data for this element. */
+	keyframes?: KeyframeData;
 }
 
 // ---- Image Element ----
@@ -372,6 +376,8 @@ export interface ImageElement extends BaseTimelineElement {
 	animationOut?: ClipAnimation;
 	/** Optional canvas clip mask applied when rendering. */
 	mask?: ClipMask;
+	/** Keyframe animation data for this element. */
+	keyframes?: KeyframeData;
 }
 
 // ---- Text Effects ----
@@ -455,6 +461,8 @@ export interface TextElement extends BaseTimelineElement {
 	lineHeight?: number;
 	/** Text shadow configuration. */
 	textShadow?: TextShadow;
+	/** Keyframe animation data for this element. */
+	keyframes?: KeyframeData;
 }
 
 // ---- Sticker Element ----
@@ -466,6 +474,8 @@ export interface StickerElement extends BaseTimelineElement {
 	transform: Transform;
 	opacity: number;
 	color?: string;
+	/** Keyframe animation data for this element. */
+	keyframes?: KeyframeData;
 }
 
 // ---- Union Types ----
