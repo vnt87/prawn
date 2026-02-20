@@ -1,12 +1,13 @@
 "use client";
 
+import { useRef } from "react";
 import type { ImageElement, VideoElement, VideoFilters } from "@/types/timeline";
 import { DEFAULT_VIDEO_FILTERS } from "@/types/timeline";
 import { cn } from "@/utils/ui";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { RefreshCcw } from "lucide-react";
+import { RefreshCcw, Upload, X } from "lucide-react";
 import {
 	PropertyGroup,
 	PropertyItem,
@@ -14,6 +15,9 @@ import {
 } from "../property-item";
 import { useEditor } from "@/hooks/use-editor";
 import { useTranslation } from "react-i18next";
+import { parseCubeFile } from "@/lib/lut/cube-parser";
+import { lutCache } from "@/services/lut-cache/service";
+import { generateUUID } from "@/utils/id";
 
 export function AdjustTab({
 	element,
@@ -177,17 +181,15 @@ export function AdjustTab({
 						onChange={(v) => updateFilterLive({ blacks: v })}
 						onCommit={(v) => commitFilters({ blacks: v })}
 					/>
-					{/* Brilliance — P4+ (not yet in VideoFilters type) */}
+					{/* Brilliance: luminance-adaptive midtone boost */}
 					<AdjustSlider
 						label={t("properties.video.adjust.brilliance")}
-						value={0}
+						value={filters.brilliance ?? 0}
 						defaultValue={0}
 						min={-100}
 						max={100}
-						disabled
-						badge={t("common.comingSoon")}
-						onChange={() => { }}
-						onCommit={() => { }}
+						onChange={(v) => updateFilterLive({ brilliance: v })}
+						onCommit={(v) => commitFilters({ brilliance: v })}
 					/>
 				</div>
 			</PropertyGroup>
@@ -238,26 +240,9 @@ export function AdjustTab({
 				</div>
 			</PropertyGroup>
 
-			{/* ── LUT (P4+) ── */}
-			<PropertyGroup title={t("properties.video.adjust.lut")} defaultExpanded={true} hasBorderTop>
-				<div className="space-y-4">
-					<PropertyItem direction="column" className="items-stretch gap-2">
-						<PropertyItemLabel>{t("properties.video.info.name")}</PropertyItemLabel>
-						<div className="bg-secondary px-3 py-2 rounded text-xs text-muted-foreground">
-							{t("properties.animation.none")} — {t("common.comingSoon").toLowerCase()}
-						</div>
-					</PropertyItem>
+			{/* ── LUT ── */}
+			<LutSection filters={filters} onUpdate={commitFilters} />
 
-					<PropertyItem direction="column" className="items-stretch gap-2">
-						<div className="flex justify-between">
-							<PropertyItemLabel className="text-muted-foreground">{t("properties.video.adjust.intensity")}</PropertyItemLabel>
-							<span className="text-xs text-muted-foreground">100</span>
-						</div>
-						<Slider defaultValue={[100]} max={100} step={1} disabled />
-					</PropertyItem>
-
-				</div>
-			</PropertyGroup>
 
 			{/* Reset all filters button */}
 			<div className="px-4 pb-4 pt-2 flex justify-end">
@@ -336,5 +321,111 @@ function AdjustSlider({
 				/>
 			</div>
 		</div>
+	);
+}
+
+// ---- LUT section sub-component ----
+
+function LutSection({
+	filters,
+	onUpdate,
+}: {
+	filters: VideoFilters;
+	onUpdate: (updates: Partial<VideoFilters>) => void;
+}) {
+	const { t } = useTranslation();
+	const fileInputRef = useRef<HTMLInputElement>(null);
+	const activeLut = filters.lut;
+
+	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (!file) return;
+
+		const text = await file.text();
+		const lutName = file.name.replace(/\.cube$/i, "");
+		const parsed = parseCubeFile(text, lutName);
+		if (!parsed) {
+			console.warn("[LutSection] Could not parse .cube file:", file.name);
+			return;
+		}
+
+		// Generate a stable ID from the file name + size (avoids duplicate cache entries)
+		const id = `lut-${lutName}-${file.size}`;
+		lutCache.set(id, parsed);
+
+		onUpdate({ lut: { id, name: lutName, intensity: activeLut?.intensity ?? 100 } });
+
+		// Reset input so the same file can be reloaded if needed
+		if (fileInputRef.current) fileInputRef.current.value = "";
+	};
+
+	const handleIntensityChange = (v: number) => {
+		if (!activeLut) return;
+		onUpdate({ lut: { ...activeLut, intensity: v } });
+	};
+
+	const handleRemove = () => {
+		onUpdate({ lut: undefined });
+	};
+
+	return (
+		<PropertyGroup title={t("properties.video.adjust.lut")} defaultExpanded={true} hasBorderTop>
+			<div className="space-y-4 pb-2">
+				{/* Hidden file input */}
+				<input
+					ref={fileInputRef}
+					type="file"
+					accept=".cube"
+					className="hidden"
+					onChange={handleFileChange}
+				/>
+
+				{activeLut ? (
+					/* Active LUT: show name + remove button */
+					<PropertyItem direction="row" className="items-center gap-2">
+						<span className="text-xs truncate flex-1 font-medium">{activeLut.name}</span>
+						<button
+							type="button"
+							onClick={handleRemove}
+							className="text-muted-foreground hover:text-destructive transition-colors"
+							title={t("common.remove")}
+						>
+							<X size={13} />
+						</button>
+					</PropertyItem>
+				) : (
+					/* No LUT: upload button */
+					<Button
+						size="sm"
+						variant="secondary"
+						className="w-full h-8 text-xs gap-1.5"
+						onClick={() => fileInputRef.current?.click()}
+					>
+						<Upload size={12} />
+						{t("properties.video.adjust.uploadLut")}
+					</Button>
+				)}
+
+				{/* Intensity slider (only shown when a LUT is active) */}
+				{activeLut && (
+					<PropertyItem direction="column" className="items-stretch gap-2">
+						<div className="flex justify-between">
+							<PropertyItemLabel className="text-muted-foreground">
+								{t("properties.video.adjust.intensity")}
+							</PropertyItemLabel>
+							<span className="text-xs text-muted-foreground">{activeLut.intensity}</span>
+						</div>
+						<Slider
+							value={[activeLut.intensity]}
+							min={0}
+							max={100}
+							step={1}
+							onValueChange={([v]) => handleIntensityChange(v)}
+							onPointerUp={() => handleIntensityChange(activeLut.intensity)}
+						/>
+					</PropertyItem>
+				)}
+			</div>
+		</PropertyGroup>
 	);
 }

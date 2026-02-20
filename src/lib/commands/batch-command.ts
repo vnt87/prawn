@@ -11,15 +11,15 @@ export class BatchCommand extends Command {
 		}
 	}
 
-	undo(): void {
+	async undo(): Promise<void> {
 		for (const command of [...this.commands].reverse()) {
-			command.undo();
+			await command.undo();
 		}
 	}
 
-	redo(): void {
+	async redo(): Promise<void> {
 		for (const command of this.commands) {
-			command.execute();
+			await command.execute();
 		}
 	}
 }

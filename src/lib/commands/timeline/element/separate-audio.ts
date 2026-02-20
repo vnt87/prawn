@@ -259,18 +259,36 @@ export class SeparateAudioCommand extends Command {
 		this.updateTracks(newTracks);
 	}
 
-	undo(): void {
-		// Restore original tracks
+	async undo(): Promise<void> {
+		// Restore original timeline tracks first
 		this.updateTracks(this.originalTracks);
 
-		// Clean up the created blob URL
+		// Clean up the created audio asset from memory + IndexedDB
+		if (this.createdAudioAssetId) {
+			try {
+				const { EditorCore } = await import("@/core");
+				const editor = EditorCore.getInstance();
+				const projectId = editor.project.getActive()?.metadata.id;
+				if (projectId) {
+					await editor.media.removeMediaAsset({
+						projectId,
+						id: this.createdAudioAssetId,
+					});
+				}
+			} catch (error) {
+				console.warn("[SeparateAudio] Failed to clean up audio asset on undo:", error);
+			}
+			this.createdAudioAssetId = null;
+		}
+
+		// Revoke the blob URL if still held
 		if (this.audioBlobUrl) {
 			URL.revokeObjectURL(this.audioBlobUrl);
 			this.audioBlobUrl = null;
 		}
 	}
 
-	redo(): void {
+	async redo(): Promise<void> {
 		this.updateTracks(this.newTracks);
 	}
 

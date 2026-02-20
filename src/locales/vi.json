@@ -3,6 +3,7 @@
         "save": "Lưu",
         "cancel": "Hủy",
         "delete": "Xóa",
+        "remove": "Gỡ bỏ",
         "rename": "Đổi tên",
         "export": "Xuất",
         "settings": "Cài đặt",
@@ -245,7 +246,14 @@
                 "enhancements": "Nâng cao",
                 "normalizeLoudness": "Chuẩn hóa âm lượng",
                 "normalizeLoudnessDesc": "Chuẩn hóa độ lớn của clip đã chọn theo mức mục tiêu.",
-                "enhanceVoice": "Tăng cường giọng nói"
+                "enhanceVoice": "Tăng cường giọng nói",
+                "enhanceVoiceDesc": "Áp dụng EQ và nén để giọng nói rõ hơn",
+                "targetLoudness": "Mục tiêu",
+                "measured": "Đo được",
+                "gain": "Tăng âm",
+                "highPass": "Lọc cao",
+                "compression": "Nén",
+                "deEsser": "Giảm xì"
             },
             "mask": {
                 "title": "Mặt nạ",
@@ -322,7 +330,8 @@
                 "fade": "Mờ dần",
                 "vignette": "Làm tối góc",
                 "intensity": "Cường độ",
-                "resetAll": "Đặt lại tất cả"
+                "resetAll": "Đặt lại tất cả",
+                "uploadLut": "Tải lên tệp LUT .cube"
             },
             "info": {
                 "details": "Chi tiết",

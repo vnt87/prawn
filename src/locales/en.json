@@ -3,6 +3,7 @@
         "save": "Save",
         "cancel": "Cancel",
         "delete": "Delete",
+        "remove": "Remove",
         "rename": "Rename",
         "export": "Export",
         "settings": "Settings",
@@ -245,7 +246,14 @@
                 "enhancements": "Enhancements",
                 "normalizeLoudness": "Normalize loudness",
                 "normalizeLoudnessDesc": "Normalize the loudness of the selected clip to a target level.",
-                "enhanceVoice": "Enhance voice"
+                "enhanceVoice": "Enhance voice",
+                "enhanceVoiceDesc": "Apply EQ and compression for clearer voice",
+                "targetLoudness": "Target",
+                "measured": "Measured",
+                "gain": "Gain",
+                "highPass": "High-Pass",
+                "compression": "Compression",
+                "deEsser": "De-Esser"
             },
             "mask": {
                 "title": "Mask",
@@ -322,7 +330,8 @@
                 "fade": "Fade",
                 "vignette": "Vignette",
                 "intensity": "Intensity",
-                "resetAll": "Reset all"
+                "resetAll": "Reset all",
+                "uploadLut": "Upload .cube LUT file"
             },
             "info": {
                 "details": "Details",

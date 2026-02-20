@@ -116,6 +116,23 @@ export interface VideoFilters {
 	 * Applied as a high-radius, low-amount unsharp mask targeting midtones. Default 0.
 	 */
 	clarity?: number;
+	/**
+	 * Brilliance, -100 to 100.
+	 * Boosts midtone luminance while preserving highlights. Default 0.
+	 */
+	brilliance?: number;
+	/**
+	 * 3D LUT applied as a color grade. `id` references a parsed LUT in the LUT cache.
+	 * `intensity` blends between the original and LUT-graded result (0 = original, 100 = full LUT).
+	 */
+	lut?: {
+		/** Unique identifier for the parsed LUT (used as a key in the LUT cache). */
+		id: string;
+		/** Name of the LUT shown in the UI. */
+		name: string;
+		/** Blend intensity from 0 (original) to 100 (full LUT). Default 100. */
+		intensity: number;
+	};
 }
 
 /** Default VideoFilters with all values at neutral. */
@@ -133,6 +150,7 @@ export const DEFAULT_VIDEO_FILTERS: VideoFilters = {
 	blacks: 0,
 	sharpen: 0,
 	clarity: 0,
+	brilliance: 0,
 };
 
 // ---- Shared: Animations ----
@@ -193,6 +211,32 @@ export interface ClipAnimation {
 	easing?: EasingType;
 }
 
+// ---- Audio Processing ----
+
+/** Audio normalization settings for loudness adjustment. */
+export interface AudioNormalization {
+	/** Whether normalization is enabled for this clip. */
+	enabled: boolean;
+	/** Target loudness in LUFS. Default: -14 (streaming standard). */
+	targetLufs: number;
+	/** Measured loudness in LUFS (cached for performance). */
+	measuredLufs?: number;
+	/** Calculated gain adjustment in dB (cached for performance). */
+	gainDb?: number;
+}
+
+/** Voice enhancement DSP settings. */
+export interface VoiceEnhancement {
+	/** Whether voice enhancement is enabled. */
+	enabled: boolean;
+	/** High-pass filter frequency in Hz. Removes low rumble. Default: 100. */
+	highPassFreq: number;
+	/** Compression intensity 0-100. Evens out volume levels. Default: 50. */
+	compression: number;
+	/** De-esser intensity 0-100. Reduces sibilance. Default: 30. */
+	deEsser: number;
+}
+
 // ---- Audio Elements ----
 
 interface BaseAudioElement extends BaseTimelineElement {
@@ -200,6 +244,8 @@ interface BaseAudioElement extends BaseTimelineElement {
 	volume: number;
 	muted?: boolean;
 	buffer?: AudioBuffer;
+	/** Audio normalization settings. */
+	normalization?: AudioNormalization;
 }
 
 export interface UploadAudioElement extends BaseAudioElement {
@@ -250,6 +296,10 @@ export interface VideoElement extends BaseTimelineElement {
 	animationIn?: ClipAnimation;
 	/** Exit animation applied at clip end. */
 	animationOut?: ClipAnimation;
+	/** Audio normalization settings. */
+	audioNormalization?: AudioNormalization;
+	/** Voice enhancement DSP settings. */
+	voiceEnhancement?: VoiceEnhancement;
 }
 
 // ---- Image Element ----

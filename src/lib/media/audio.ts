@@ -1,8 +1,10 @@
 import type {
 	AudioElement,
+	AudioNormalization,
 	LibraryAudioElement,
 	TimelineElement,
 	TimelineTrack,
+	VoiceEnhancement,
 } from "@/types/timeline";
 import type { MediaAsset } from "@/types/assets";
 import { canElementHaveAudio } from "@/lib/timeline/element-utils";
@@ -161,6 +163,10 @@ export interface AudioClipSource {
 	fadeOut: number;
 	/** Playback speed. Default 1.0. */
 	speed: number;
+	/** Audio normalization settings. */
+	normalization?: AudioNormalization;
+	/** Voice enhancement DSP settings. */
+	voiceEnhancement?: VoiceEnhancement;
 }
 
 async function fetchLibraryAudioSource({
@@ -262,6 +268,10 @@ function collectMediaAudioClip({
 	const fadeIn = "fadeIn" in element ? (element.fadeIn ?? 0) : 0;
 	const fadeOut = "fadeOut" in element ? (element.fadeOut ?? 0) : 0;
 
+	// Extract audio enhancement properties (VideoElement only)
+	const normalization = "audioNormalization" in element ? element.audioNormalization : undefined;
+	const voiceEnhancement = "voiceEnhancement" in element ? element.voiceEnhancement : undefined;
+
 	return {
 		id: element.id,
 		sourceKey: mediaAsset.id,
@@ -275,6 +285,8 @@ function collectMediaAudioClip({
 		fadeIn,
 		fadeOut,
 		speed: element.speed ?? 1,
+		normalization,
+		voiceEnhancement,
 	};
 }
 

@@ -1,6 +1,8 @@
 import type { EditorCore } from "@/core";
 import type { AudioClipSource } from "@/lib/media/audio";
 import { createAudioContext, collectAudioClips } from "@/lib/media/audio";
+import { dbToLinear } from "@/lib/audio/loudness";
+import { createVoiceEnhancementChain, type VoiceEnhancementChain } from "@/lib/audio/voice-enhancement";
 import {
 	ALL_FORMATS,
 	AudioBufferSink,
@@ -224,10 +226,25 @@ export class AudioManager {
 		const sourceStartTime =
 			clip.trimStart + (iteratorStartTime - clip.startTime);
 
+		// ---- Calculate effective volume with normalization ----
+		let effectiveVolume = clip.volume ?? 1;
+		if (clip.normalization?.enabled && clip.normalization.gainDb) {
+			// Apply normalization gain on top of base volume
+			effectiveVolume *= dbToLinear(clip.normalization.gainDb);
+		}
+
 		// ---- Per-clip GainNode for volume and fade automation ----
 		const clipGain = audioContext.createGain();
-		clipGain.gain.value = clip.volume ?? 1;
-		clipGain.connect(this.masterGain ?? audioContext.destination);
+		clipGain.gain.value = effectiveVolume;
+
+		// ---- Voice Enhancement Chain (if enabled) ----
+		let voiceChain: VoiceEnhancementChain | null = null;
+		if (clip.voiceEnhancement?.enabled) {
+			voiceChain = createVoiceEnhancementChain(audioContext, clip.voiceEnhancement);
+			voiceChain.output.connect(clipGain);
+		} else {
+			clipGain.connect(this.masterGain ?? audioContext.destination);
+		}
 
 		// Schedule fade-in: ramp from 0 → volume over fadeIn seconds from clip start
 		if (clip.fadeIn > 0) {
@@ -270,8 +287,13 @@ export class AudioManager {
 			const node = audioContext.createBufferSource();
 			node.buffer = buffer;
 			node.playbackRate.value = clip.speed ?? 1;
-			// Route through per-clip gain (which applies volume + fades)
-			node.connect(clipGain);
+
+			// Route through voice enhancement chain if enabled, otherwise directly to clipGain
+			if (voiceChain) {
+				node.connect(voiceChain.input);
+			} else {
+				node.connect(clipGain);
+			}
 
 			const startTimestamp =
 				this.playbackStartContextTime +

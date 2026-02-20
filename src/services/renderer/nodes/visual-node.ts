@@ -2,6 +2,8 @@ import type { CanvasRenderer } from "../canvas-renderer";
 import { BaseNode } from "./base-node";
 import type { AnimationType, ClipAnimation, Transform, VideoFilters, SpringConfig } from "@/types/timeline";
 import { spring, interpolate, Easing, SpringPresets } from "@/lib/animation/remotion-animations";
+import { lutCache, } from "@/services/lut-cache/service";
+import { sampleLut3D } from "@/lib/lut/cube-parser";
 
 /** Small epsilon to avoid off-by-one frame visibility bugs. */
 const VISUAL_EPSILON = 1 / 1000;
@@ -445,6 +447,46 @@ export abstract class VisualNode<
 			data[p + 2] = bLUT[data[p + 2]];  // B
 			// data[p + 3] = alpha (unchanged)
 		}
+
+		// ---- Brilliance: luminance-adaptive midtone boost/cut ----
+		// Uses a midtone mask that peaks at lum=0.5 and falls off to 0 at lum=0 and lum=1.
+		// This boosts midtones while naturally preserving highlights and shadows.
+		const bril = (filters.brilliance ?? 0) / 100; // -1 to +1
+		if (bril !== 0) {
+			const maxBoost = bril * 40; // ±40 pixel value shift at full midtone mask
+			for (let p = 0; p < data.length; p += 4) {
+				// Relative luminance (BT.709)
+				const lum = (data[p] * 0.2126 + data[p + 1] * 0.7152 + data[p + 2] * 0.0722) / 255;
+				// Midtone mask: 1.0 at lum=0.5, 0.0 at lum=0 or lum=1 (inverted parabola)
+				const midMask = 1 - Math.abs(lum - 0.5) * 2;
+				const boost = Math.round(maxBoost * midMask);
+				data[p] = Math.max(0, Math.min(255, data[p] + boost));
+				data[p + 1] = Math.max(0, Math.min(255, data[p + 1] + boost));
+				data[p + 2] = Math.max(0, Math.min(255, data[p + 2] + boost));
+			}
+		}
+
+		// ---- 3D LUT color grade ----
+		const lut = filters.lut;
+		if (lut && lutCache.has(lut.id)) {
+			const parsedLut = lutCache.get(lut.id)!;
+			const intensity = (lut.intensity ?? 100) / 100; // 0-1 blend factor
+			if (parsedLut.is3D) {
+				for (let p = 0; p < data.length; p += 4) {
+					const origR = data[p];
+					const origG = data[p + 1];
+					const origB = data[p + 2];
+					const [lr, lg, lb] = sampleLut3D(
+						parsedLut.data, parsedLut.size,
+						origR / 255, origG / 255, origB / 255
+					);
+					data[p] = Math.round(origR + (lr * 255 - origR) * intensity);
+					data[p + 1] = Math.round(origG + (lg * 255 - origG) * intensity);
+					data[p + 2] = Math.round(origB + (lb * 255 - origB) * intensity);
+				}
+			}
+		}
+
 		ctx.putImageData(imageData, x, y);
 	}
 
@@ -552,7 +594,9 @@ export abstract class VisualNode<
 			(filters?.whites ?? 0) !== 0 ||
 			(filters?.blacks ?? 0) !== 0 ||
 			(filters?.sharpen ?? 0) !== 0 ||
-			(filters?.clarity ?? 0) !== 0
+			(filters?.clarity ?? 0) !== 0 ||
+			(filters?.brilliance ?? 0) !== 0 ||
+			(filters?.lut != null)
 		);
 		if (needsPixelFilters && filters) {
 			this.applyPixelFilters(

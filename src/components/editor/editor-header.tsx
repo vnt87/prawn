@@ -168,8 +168,8 @@ export function EditorHeader() {
 			{ label: t("header.allProjects"), icon: LogOut, action: handleExit },
 		],
 		[t("header.edit")]: [
-			{ label: t("header.undo"), icon: Undo, action: () => editor.command.undo(), shortcut: "⌘Z" },
-			{ label: t("header.redo"), icon: Redo, action: () => editor.command.redo(), shortcut: "⇧⌘Z" },
+			{ label: t("header.undo"), icon: Undo, action: () => void editor.command.undo(), shortcut: "⌘Z" },
+			{ label: t("header.redo"), icon: Redo, action: () => void editor.command.redo(), shortcut: "⇧⌘Z" },
 		],
 		[t("header.help")]: [
 			{ label: t("common.shortcuts"), icon: Keyboard, action: () => setOpenDialog("shortcuts"), shortcut: "?" },

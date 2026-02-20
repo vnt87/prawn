@@ -42,7 +42,7 @@ export class FreezeFrameCommand extends Command {
 
 	async execute(): Promise<void> {
 		this.originalTracks = this.getTracks();
-		
+
 		// Find video element at freeze time
 		const { trackId, element } = this.findVideoAtTime(this.freezeTime);
 		if (!trackId || !element) {
@@ -127,7 +127,7 @@ export class FreezeFrameCommand extends Command {
 
 			// Calculate the relative position within the video
 			const relativeTime = this.freezeTime - element.startTime;
-			
+
 			// Create left part of video (before freeze)
 			const leftVideo: VideoElement = {
 				...element,
@@ -164,9 +164,27 @@ export class FreezeFrameCommand extends Command {
 		this.updateTracks(newTracks);
 	}
 
-	undo(): void {
+	async undo(): Promise<void> {
 		// Restore original tracks
 		this.updateTracks(this.originalTracks);
+
+		// Clean up the created image asset from memory + IndexedDB
+		if (this.createdImageAssetId) {
+			try {
+				const { EditorCore } = await import("@/core");
+				const editor = EditorCore.getInstance();
+				const projectId = editor.project.getActive()?.metadata.id;
+				if (projectId) {
+					await editor.media.removeMediaAsset({
+						projectId,
+						id: this.createdImageAssetId,
+					});
+				}
+			} catch (error) {
+				console.warn("[FreezeFrame] Failed to clean up image asset on undo:", error);
+			}
+			this.createdImageAssetId = null;
+		}
 
 		// Clean up the created blob URL
 		if (this.imageBlobUrl) {
@@ -175,20 +193,15 @@ export class FreezeFrameCommand extends Command {
 		}
 	}
 
-	redo(): void {
+	async redo(): Promise<void> {
 		this.updateTracks(this.newTracks);
-		if (this.imageBlobUrl) {
-			// Recreate blob URL for redo
-			// Note: This is a simplified implementation. In a production app,
-			// we'd need to store the blob data and recreate it.
-		}
 	}
 
 	private findVideoAtTime(time: number): { trackId: string | null; element: VideoElement | null } {
 		for (const track of this.originalTracks) {
 			for (const element of track.elements) {
 				if (element.type !== "video") continue;
-				
+
 				const elementEnd = element.startTime + element.duration;
 				if (time >= element.startTime && time < elementEnd) {
 					return { trackId: track.id, element };

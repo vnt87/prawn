@@ -352,7 +352,7 @@ export function useEditorActions() {
 	useActionHandler(
 		"undo",
 		() => {
-			editor.command.undo();
+			void editor.command.undo();
 		},
 		undefined,
 	);
@@ -360,7 +360,7 @@ export function useEditorActions() {
 	useActionHandler(
 		"redo",
 		() => {
-			editor.command.redo();
+			void editor.command.redo();
 		},
 		undefined,
 	);

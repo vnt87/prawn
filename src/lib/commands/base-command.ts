@@ -1,11 +1,11 @@
 export abstract class Command {
-	abstract execute(): void;
+	abstract execute(): void | Promise<void>;
 
-	undo(): void {
-		throw new Error("Undo not implemented for this command");
+	undo(): void | Promise<void> {
+		throw new Error(`[${this.constructor.name}] undo() is not implemented`);
 	}
 
-	redo(): void {
-		this.execute();
+	redo(): void | Promise<void> {
+		return this.execute();
 	}
 }
