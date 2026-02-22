@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "../components/ui/sonner";
 import { TooltipProvider } from "../components/ui/tooltip";
 import { I18nProvider } from "../components/providers/i18n-provider";
+import { PreventBrowserZoom } from "../components/prevent-browser-zoom";
 import { baseMetaData } from "./metadata";
 import { webEnv } from "@nvai/env/web";
 import { Inter } from "next/font/google";
@@ -32,6 +33,7 @@ export default function RootLayout({
 				>
 					<TooltipProvider>
 						<I18nProvider>
+							<PreventBrowserZoom />
 							<Toaster />
 							<Script
 								src="https://cdn.databuddy.cc/databuddy.js"

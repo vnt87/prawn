@@ -519,6 +519,8 @@ export interface ElementDragState {
 	clickOffsetTime: number;
 	currentTime: number;
 	currentMouseY: number;
+	/** Whether this is a clone operation (Alt+drag) */
+	isCloning: boolean;
 }
 
 export interface DropTarget {

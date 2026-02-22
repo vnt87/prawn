@@ -37,11 +37,11 @@ export function TimelinePlayhead({
 		playheadRef,
 	});
 
-	const timelineContainerHeight =
-		tracksScrollRef.current?.clientHeight ??
-		timelineRef.current?.clientHeight ??
-		400;
-	const totalHeight = Math.max(0, timelineContainerHeight - 4);
+	const scrollContainer = tracksScrollRef.current;
+	const visibleHeight = scrollContainer?.clientHeight ?? 400;
+	const fullScrollHeight = scrollContainer?.scrollHeight ?? visibleHeight;
+	// Use the full scrollable height so playhead spans all tracks even when scrolling
+	const totalHeight = Math.max(visibleHeight, fullScrollHeight);
 
 	const timelinePosition =
 		playheadPosition * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
@@ -64,28 +64,64 @@ export function TimelinePlayhead({
 	};
 
 	return (
+		<>
+			{/* Playhead line - spans the full scrollable height */}
+			<div
+				ref={playheadRef}
+				role="slider"
+				aria-label="Timeline playhead"
+				aria-valuemin={0}
+				aria-valuemax={duration}
+				aria-valuenow={playheadPosition}
+				tabIndex={0}
+				className="pointer-events-auto absolute z-60"
+				style={{
+					left: `${leftPosition}px`,
+					top: 0,
+					height: `${totalHeight}px`,
+					width: "2px",
+				}}
+				onMouseDown={handlePlayheadMouseDown}
+				onKeyDown={handlePlayheadKeyDown}
+			>
+				<div className="bg-foreground absolute left-0 h-full w-0.5 cursor-col-resize" />
+			</div>
+		</>
+	);
+}
+
+/**
+ * PlayheadTip - Renders the diamond-shaped playhead tip.
+ * This should be rendered inside the sticky header area so it stays visible when scrolling.
+ */
+export function TimelinePlayheadTip({
+	playheadPosition,
+	zoomLevel,
+	isSnappingToPlayhead = false,
+}: {
+	playheadPosition: number;
+	zoomLevel: number;
+	isSnappingToPlayhead?: boolean;
+}) {
+	const timelinePosition =
+		playheadPosition * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
+	const leftPosition = timelinePosition;
+
+	return (
 		<div
-			ref={playheadRef}
-			role="slider"
-			aria-label="Timeline playhead"
-			aria-valuemin={0}
-			aria-valuemax={duration}
-			aria-valuenow={playheadPosition}
-			tabIndex={0}
-			className="pointer-events-auto absolute z-60"
+			className="pointer-events-none absolute z-70"
 			style={{
 				left: `${leftPosition}px`,
-				top: 0,
-				height: `${totalHeight}px`,
-				width: "2px",
+				top: "6px",
 			}}
-			onMouseDown={handlePlayheadMouseDown}
-			onKeyDown={handlePlayheadKeyDown}
 		>
-			<div className="bg-foreground absolute left-0 h-full w-0.5 cursor-col-resize" />
-
+			{/* Diamond-shaped playhead tip */}
 			<div
-				className={`absolute top-1 left-1/2 size-3 -translate-x-1/2 transform rounded-full border-2 shadow-xs ${isSnappingToPlayhead ? "bg-foreground border-foreground" : "bg-foreground border-foreground/50"}`}
+				className={`size-2.5 -translate-x-1/2 rotate-45 transform border shadow-sm ${
+					isSnappingToPlayhead
+						? "bg-foreground border-foreground"
+						: "bg-foreground border-foreground/50"
+				}`}
 			/>
 		</div>
 	);

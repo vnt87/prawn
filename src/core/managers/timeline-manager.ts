@@ -24,6 +24,7 @@ import {
 	PasteCommand,
 	UpdateElementStartTimeCommand,
 	MoveElementCommand,
+	CloneElementCommand,
 	FreezeFrameCommand,
 	SeparateAudioCommand,
 } from "@/lib/commands/timeline";
@@ -125,6 +126,34 @@ export class TimelineManager {
 			createTrack,
 		);
 		this.editor.command.execute({ command });
+	}
+
+	/**
+	 * Clone an element to a target track (for Alt+drag operations).
+	 * Creates a copy of the element at the specified position.
+	 */
+	cloneElement({
+		sourceTrackId,
+		targetTrackId,
+		elementId,
+		newStartTime,
+		createTrack,
+	}: {
+		sourceTrackId: string;
+		targetTrackId: string;
+		elementId: string;
+		newStartTime: number;
+		createTrack?: { type: TrackType; index: number };
+	}): string | null {
+		const command = new CloneElementCommand(
+			sourceTrackId,
+			targetTrackId,
+			elementId,
+			newStartTime,
+			createTrack,
+		);
+		this.editor.command.execute({ command });
+		return command.getClonedElementId();
 	}
 
 	toggleTrackMute({ trackId }: { trackId: string }): void {

@@ -18,7 +18,7 @@ import {
 import { useTimelineZoom } from "@/hooks/timeline/use-timeline-zoom";
 import { useState, useRef, useCallback } from "react";
 import { TimelineTrackContent } from "./timeline-track";
-import { TimelinePlayhead } from "./timeline-playhead";
+import { TimelinePlayhead, TimelinePlayheadTip } from "./timeline-playhead";
 import { SelectionBox } from "../../selection-box";
 import { useSelectionBox } from "@/hooks/timeline/use-selection-box";
 import { SnapIndicator } from "./snap-indicator";
@@ -127,7 +127,7 @@ export function Timeline() {
 		onSnapPointChange: handleSnapPointChange,
 	});
 
-	const { handleRulerMouseDown: handlePlayheadRulerMouseDown } =
+	const { handleRulerMouseDown: handlePlayheadRulerMouseDown, playheadPosition } =
 		useTimelinePlayhead({
 			zoomLevel,
 			rulerRef,
@@ -201,9 +201,7 @@ export function Timeline() {
 
 	return (
 		<section
-			className={
-				"panel bg-background relative flex h-full flex-col overflow-hidden"
-			}
+			className="panel relative flex h-full flex-col overflow-hidden"
 			{...dragProps}
 			aria-label={t("assets.timeline")}
 		>
@@ -318,6 +316,7 @@ export function Timeline() {
 						<ScrollArea
 							className="size-full overflow-y-auto"
 							ref={tracksScrollRef}
+							style={{ backgroundColor: "var(--bg-timeline)" }}
 							onMouseDown={(event) => {
 								const isDirectTarget = event.target === event.currentTarget;
 								if (!isDirectTarget) return;
@@ -354,6 +353,14 @@ export function Timeline() {
 									ref={timelineHeaderRef}
 									className="bg-background sticky top-0 z-30 flex flex-col"
 								>
+									{/* Playhead tip - rendered in sticky header so it's always visible */}
+									<TimelinePlayheadTip
+										playheadPosition={playheadPosition}
+										zoomLevel={zoomLevel}
+										isSnappingToPlayhead={
+											showSnapIndicator && currentSnapPoint?.type === "playhead"
+										}
+									/>
 									<TimelineRuler
 										zoomLevel={zoomLevel}
 										dynamicTimelineWidth={dynamicTimelineWidth}
@@ -412,6 +419,9 @@ export function Timeline() {
 															height: `${getTrackHeight({
 																type: track.type,
 															})}px`,
+															backgroundColor: index % 2 === 0 
+																? 'rgba(255, 255, 255, 0.02)' 
+																: 'transparent',
 														}}
 													>
 														<TimelineTrackContent

@@ -26,6 +26,7 @@
   --bg-brush-cell: #1e1e1e;
   --bg-scrollbar-track: transparent;
   --bg-scrollbar-thumb: #555555;
+  --bg-timeline: #232323;
 
   /* Text colors */
   --text-primary: #d4d4d4;
@@ -149,6 +150,7 @@
   --bg-ruler: #f8f8f8;
   --bg-brush-cell: #ffffff;
   --bg-scrollbar-thumb: #cccccc;
+  --bg-timeline: #e8e8e8;
 
   --text-primary: #1a1a1a;
   --text-secondary: #4a4a4a;

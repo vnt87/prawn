@@ -113,8 +113,10 @@ export function TimelineElement({
 	);
 
 	const isBeingDragged = dragState.elementId === element.id;
+	const isCloning = isBeingDragged && dragState.isDragging && dragState.isCloning;
+	
 	const dragOffsetY =
-		isBeingDragged && dragState.isDragging
+		isBeingDragged && dragState.isDragging && !isCloning
 			? dragState.currentMouseY - dragState.startMouseY
 			: 0;
 	const elementStartTime =
@@ -125,7 +127,12 @@ export function TimelineElement({
 	const displayedDuration = isResizing ? currentDuration : element.duration;
 	const elementWidth =
 		displayedDuration * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
-	const elementLeft = displayedStartTime * 50 * zoomLevel;
+	const elementLeft = displayedStartTime * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
+	
+	// For cloning, calculate ghost position
+	const ghostOffsetY = isCloning
+		? dragState.currentMouseY - dragState.startMouseY
+		: 0;
 
 	const handleRevealInMedia = ({ event }: { event: React.MouseEvent }) => {
 		event.stopPropagation();
@@ -136,38 +143,72 @@ export function TimelineElement({
 
 	const isMuted = canElementHaveAudio(element) && element.muted === true;
 
+	// Original element position (stays in place during clone)
+	const originalLeft = element.startTime * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel;
+	
 	return (
 		<ContextMenu>
 			<ContextMenuTrigger asChild>
-				<div
-					className={`absolute top-0 h-full select-none ${isBeingDragged ? "z-30" : "z-10"
-						}`}
-					style={{
-						left: `${elementLeft}px`,
-						width: `${elementWidth}px`,
-						transform:
-							isBeingDragged && dragState.isDragging
-								? `translate3d(0, ${dragOffsetY}px, 0)`
-								: undefined,
-					}}
-				>
-					<ElementInner
-						element={element}
-						track={track}
-						isSelected={isSelected}
-						isBeingDragged={isBeingDragged}
-						hasAudio={hasAudio}
-						isMuted={isMuted}
-						mediaAssets={mediaAssets}
-						onElementClick={onElementClick}
-						onElementMouseDown={onElementMouseDown}
-						handleResizeStart={handleResizeStart}
-						handleFadeStart={handleFadeStart}
-						currentFadeIn={currentFadeIn}
-						currentFadeOut={currentFadeOut}
-						zoomLevel={zoomLevel}
-					/>
-				</div>
+				<>
+					{/* Original element - stays in place during cloning */}
+					<div
+						className={`absolute top-0 h-full select-none ${isBeingDragged && isCloning ? "z-10 opacity-50" : isBeingDragged ? "z-30" : "z-10"}`}
+						style={{
+							left: `${isCloning ? originalLeft : elementLeft}px`,
+							width: `${elementWidth}px`,
+							transform:
+								isBeingDragged && dragState.isDragging && !isCloning
+									? `translate3d(0, ${dragOffsetY}px, 0)`
+									: undefined,
+						}}
+					>
+						<ElementInner
+							element={element}
+							track={track}
+							isSelected={isSelected}
+							isBeingDragged={isBeingDragged && !isCloning}
+							hasAudio={hasAudio}
+							isMuted={isMuted}
+							mediaAssets={mediaAssets}
+							onElementClick={onElementClick}
+							onElementMouseDown={onElementMouseDown}
+							handleResizeStart={handleResizeStart}
+							handleFadeStart={handleFadeStart}
+							currentFadeIn={currentFadeIn}
+							currentFadeOut={currentFadeOut}
+							zoomLevel={zoomLevel}
+						/>
+					</div>
+					
+					{/* Ghost element - follows mouse during cloning */}
+					{isCloning && (
+						<div
+							className="pointer-events-none absolute top-0 z-50 opacity-70"
+							style={{
+								left: `${elementLeft}px`,
+								width: `${elementWidth}px`,
+								transform: `translate3d(0, ${ghostOffsetY}px, 0)`,
+							}}
+						>
+							<ElementInner
+								element={element}
+								track={track}
+								isSelected={false}
+								isBeingDragged={true}
+								hasAudio={hasAudio}
+								isMuted={isMuted}
+								mediaAssets={mediaAssets}
+								onElementClick={() => {}}
+								onElementMouseDown={() => {}}
+								handleResizeStart={() => {}}
+								handleFadeStart={() => {}}
+								currentFadeIn={currentFadeIn}
+								currentFadeOut={currentFadeOut}
+								zoomLevel={zoomLevel}
+							/>
+						</div>
+					)}
+				</>
 			</ContextMenuTrigger>
 			<ContextMenuContent className="z-200 w-64">
 				<ActionMenuItem

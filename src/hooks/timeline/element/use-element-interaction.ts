@@ -43,6 +43,7 @@ const initialDragState: ElementDragState = {
 	clickOffsetTime: 0,
 	currentTime: 0,
 	currentMouseY: 0,
+	isCloning: false,
 };
 
 interface PendingDragState {
@@ -52,6 +53,7 @@ interface PendingDragState {
 	startMouseY: number;
 	startElementTime: number;
 	clickOffsetTime: number;
+	isCloning: boolean;
 }
 
 function getMouseTimeFromClientX({
@@ -201,6 +203,7 @@ export function useElementInteraction({
 			clickOffsetTime,
 			initialCurrentTime,
 			initialCurrentMouseY,
+			isCloning,
 		}: StartDragParams) => {
 			setDragState({
 				isDragging: true,
@@ -212,6 +215,7 @@ export function useElementInteraction({
 				clickOffsetTime,
 				currentTime: initialCurrentTime,
 				currentMouseY: initialCurrentMouseY,
+				isCloning,
 			});
 		},
 		[],
@@ -453,25 +457,61 @@ export function useElementInteraction({
 				return;
 			}
 
-			if (dropTarget.isNewTrack) {
-				const newTrackId = generateUUID();
+			// Handle clone vs move operation
+			if (dragState.isCloning) {
+				// Clone the element to the target location
+				const sourceElement = sourceTrack.elements.find(
+					({ id }) => id === dragState.elementId,
+				);
+				if (!sourceElement) {
+					endDrag();
+					onSnapPointChange?.(null);
+					return;
+				}
 
-				editor.timeline.moveElement({
-					sourceTrackId: dragState.trackId,
-					targetTrackId: newTrackId,
-					elementId: dragState.elementId,
-					newStartTime: snappedTime,
-					createTrack: { type: sourceTrack.type, index: dropTarget.trackIndex },
-				});
-			} else {
-				const targetTrack = tracks[dropTarget.trackIndex];
-				if (targetTrack) {
-					editor.timeline.moveElement({
+				if (dropTarget.isNewTrack) {
+					const newTrackId = generateUUID();
+					// Clone element to a new track
+					editor.timeline.cloneElement({
 						sourceTrackId: dragState.trackId,
-						targetTrackId: targetTrack.id,
+						targetTrackId: newTrackId,
 						elementId: dragState.elementId,
 						newStartTime: snappedTime,
+						createTrack: { type: sourceTrack.type, index: dropTarget.trackIndex },
 					});
+				} else {
+					const targetTrack = tracks[dropTarget.trackIndex];
+					if (targetTrack) {
+						editor.timeline.cloneElement({
+							sourceTrackId: dragState.trackId,
+							targetTrackId: targetTrack.id,
+							elementId: dragState.elementId,
+							newStartTime: snappedTime,
+						});
+					}
+				}
+			} else {
+				// Standard move operation
+				if (dropTarget.isNewTrack) {
+					const newTrackId = generateUUID();
+
+					editor.timeline.moveElement({
+						sourceTrackId: dragState.trackId,
+						targetTrackId: newTrackId,
+						elementId: dragState.elementId,
+						newStartTime: snappedTime,
+						createTrack: { type: sourceTrack.type, index: dropTarget.trackIndex },
+					});
+				} else {
+					const targetTrack = tracks[dropTarget.trackIndex];
+					if (targetTrack) {
+						editor.timeline.moveElement({
+							sourceTrackId: dragState.trackId,
+							targetTrackId: targetTrack.id,
+							elementId: dragState.elementId,
+							newStartTime: snappedTime,
+						});
+					}
 				}
 			}
 
@@ -559,6 +599,7 @@ export function useElementInteraction({
 				elementRect: event.currentTarget.getBoundingClientRect(),
 				zoomLevel,
 			});
+			const isCloning = event.altKey;
 			pendingDragRef.current = {
 				elementId: element.id,
 				trackId: track.id,
@@ -566,6 +607,7 @@ export function useElementInteraction({
 				startMouseY: event.clientY,
 				startElementTime: element.startTime,
 				clickOffsetTime,
+				isCloning,
 			};
 			setIsPendingDrag(true);
 		},
