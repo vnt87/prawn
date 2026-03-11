@@ -52,6 +52,8 @@ type MenuSection = (MenuItem | "---")[];
 
 export function EditorHeader() {
 	const [activeMenu, setActiveMenu] = useState<string | null>(null);
+	const [brandOpen, setBrandOpen] = useState(false);
+	const brandRef = useRef<HTMLDivElement>(null);
 	const [isEditingTitle, setIsEditingTitle] = useState(false);
 	const [titleEditValue, setTitleEditValue] = useState("");
 	const editor = useEditor();
@@ -87,6 +89,9 @@ export function EditorHeader() {
 			}
 			if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
 				setSettingsOpen(false);
+			}
+			if (brandRef.current && !brandRef.current.contains(event.target as Node)) {
+				setBrandOpen(false);
 			}
 		}
 		document.addEventListener("mousedown", handleClickOutside);
@@ -189,9 +194,45 @@ export function EditorHeader() {
 		<>
 			<div className="header">
 				<div className="header-left">
-					<div className="header-brand" onClick={() => router.push("/")}>
+					<div className="header-brand" ref={brandRef} onClick={() => setBrandOpen((o) => !o)} style={{ cursor: "pointer", position: "relative" }}>
 						<ShrimpIcon className="brand-icon" />
-						<span className="brand-text">Video Audio Editor</span>
+						<span className="brand-text">CAVE</span>
+						<ChevronDown size={12} strokeWidth={3} style={{ marginLeft: 4, opacity: 0.7 }} />
+						{brandOpen && (
+							<div className="header-menu-dropdown" style={{ left: 0, minWidth: 260 }}>
+								{/* SHRIMP */}
+								<div
+									className="header-menu-dropdown-item"
+									onClick={(e) => {
+										e.stopPropagation();
+										window.open("https://image-editor.namvu.net/", "_blank");
+										setBrandOpen(false);
+									}}
+								>
+									<ShrimpIcon size={14} style={{ marginRight: 8, opacity: 0.7 }} />
+									<span><strong>SHRIMP</strong><span style={{ opacity: 0.6, marginLeft: 6, fontSize: "0.75em" }}>Simple Image Manipulation Program</span></span>
+								</div>
+								{/* CAVE */}
+								<div
+									className="header-menu-dropdown-item"
+									style={{ background: "var(--accent-subtle, rgba(255,255,255,0.05))" }}
+									onClick={(e) => { e.stopPropagation(); setBrandOpen(false); }}
+								>
+									<ShrimpIcon size={14} style={{ marginRight: 8 }} />
+									<span><strong>CAVE</strong><span style={{ opacity: 0.6, marginLeft: 6, fontSize: "0.75em" }}>CapCut Audio Video Editor</span></span>
+									<span style={{
+										marginLeft: "auto",
+										width: 8,
+										height: 8,
+										borderRadius: "50%",
+										background: "#22c55e",
+										boxShadow: "0 0 6px 2px #22c55e",
+										display: "inline-block",
+										flexShrink: 0,
+									}} />
+								</div>
+							</div>
+						)}
 					</div>
 
 					<div className="header-menu" ref={menuRef}>
